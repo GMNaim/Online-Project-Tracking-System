@@ -1,0 +1,106 @@
+#my-select {
+    padding: 8px;
+    width: 100%;
+    border: 1px solid rgba(0,0,0,.125);
+    align-items: center;
+    white-space: pre;
+
+    height: 40px;
+    font-size: 14px;
+    color: #495057;
+    border-radius: 3px;
+    box-shadow: 1px 1px #ccc;
+}
+#my-select:hover{
+    background: rgb(109, 99, 99);
+    color: white
+}
+
+#my-select:focus {
+    outline-color: rgba(0, 0, 0, .125);
+}
+select{
+  background-color: red;
+  border-color: red ;
+}
+
+/* #select_btn_id { 
+  border: 1px solid red;
+} */
+
+.error {
+  background-color: #eacbcb;
+}
+.success {
+  background-color: #468847;
+}
+
+
+
+
+
+
+
+
+
+    .dropdown-container {
+      width: 250px;
+      margin: 100px auto;
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      height: 40px;
+      font-size: 100%;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 3px; 
+      border: none;
+      border: 1px solid rgba(0,0,0,.125);
+      color: #495057;
+      appearance: none;
+      padding: 10px;
+      padding-right: 38px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      transition: color 0.3s ease, background-color 0.3s ease, border-bottom-color 0.3s ease;
+    }
+
+    /* For IE <= 11 */
+    select::-ms-expand {
+      display: none; 
+    }
+
+    .select-icon {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      pointer-events: none;
+      border: 1px solid #495057;
+      padding-left: 5px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .select-icon svg.icon {
+      transition: fill 0.3s ease;
+      fill: rgb(0, 0, 0);
+    }
+
+    select:hover,
+    select:focus {
+      color: #495057;
+      background-color: white;
+      border-bottom-color: #DCDCDC;
+      outline-color: rgba(0, 0, 0, .125);
+    }
+    select:hover ~ .select-icon,
+    select:focus ~ .select-icon {
+      background-color: white;
+      border-color: #000000;
+    }
+    select:hover ~ .select-icon svg.icon,
+    select:focus ~ .select-icon svg.icon {
+      fill: #495057;
+    }
