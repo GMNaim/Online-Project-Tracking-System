@@ -4,24 +4,23 @@
     <div class="sidebar-scroll">
         <nav id="leftsidebar-nav" class="sidebar-nav">
             <ul id="main-menu" class="metismenu">
-                <li class="align-items-center"><a href="./dashboard.html"><span>GM NAIM</span></a></li>
-                <li class="active"><a href="./dashboard.html"><i
+                <li class="align-items-center font-20" style="color: #3eacff"> <span>{{ request.user.username }}</span>
+                    <small style="color:#919290; font-size: 13px;">{{ request.user.role }}</small></li>
+                {% if admin  %}
+                    {#  if admin these list will be shown   #}
+                <li class="active"><a href="{% url 'admin-dashboard' %}"><i
                         class="icon-home"></i><span>Dashboard</span></a>
                 </li>
-                <li class=""><a href="./client_list.html"><i class="icon-home"></i><span>Client
+
+
+                <li class=""><a href="{% url 'client-list' %}"><i class="icon-home"></i><span>Client
                                         List</span></a>
                 </li>
-                <li class=""><a href="./project_list.html"><i class="icon-home"></i><span>Project
+                <li class=""><a href="{% url 'project-list' %}"><i class="icon-home"></i><span>Project
                                         List</span></a>
                 </li>
-                <li class=""><a href="./project_add.html"><i class="icon-home"></i><span>Project
+                <li class=""><a href="{% url 'project-add' %}"><i class="icon-home"></i><span>Project
                                         Add</span></a>
-                </li>
-                <li class=""><a href="./client_list.html"><i class="icon-home"></i><span>Client
-                                        List</span></a>
-                </li>
-                <li class=""><a href="./client_list.html"><i class="icon-home"></i><span>Client
-                                        List</span></a>
                 </li>
                 <li class="top">
                     <a href="#Maps" class="has-arrow"><i class="icon-map"></i> <span>Maps</span></a>
@@ -31,6 +30,8 @@
                         <li><a href="map-jvectormap.html">jVector Map</a></li>
                     </ul>
                 </li>
+                {% endif %}
+
             </ul>
         </nav>
     </div>

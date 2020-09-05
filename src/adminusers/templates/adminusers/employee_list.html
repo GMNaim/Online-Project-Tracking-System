@@ -6,10 +6,10 @@
 <div class="col-lg-12 col-md-12">
     <div class="card open_task">
         <div class="header">
-            <a href="{% url 'client-add' %}"
+            <a href="{% url 'employee-add' %}"
             >
                 <button type="button" class="btn btn-success"><i
-                        class="fa fa-plus-square"></i><span> Add New Client</span></button>
+                        class="fa fa-plus-square"></i><span>  Add Employee</span></button>
             </a>
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
@@ -28,7 +28,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4>Client List</h4>
+            <h4>Employee List</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable" id="datatable-client_list">
@@ -36,10 +36,10 @@
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Name</th>
-                            <th>Client ID</th>
+                            <th>Role</th>
                             <th>Phone</th>
-                            <th>Company Name</th>
-                            <th>Address</th>
+                            <th>Department</th>
+                            <th>Skill</th>
                             <th>Actions</th>
 
 

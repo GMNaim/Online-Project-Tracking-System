@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # local apps
     'base.apps.BaseConfig',
     'adminusers',
+    'accounts.apps.AccountsConfig'
 
 ]
 
@@ -127,3 +128,18 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+
+# Media folders settings
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+# CUSTOM USER MODEL
+AUTH_USER_MODEL = 'accounts.User'
+
+
+# custom message tags settings
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}

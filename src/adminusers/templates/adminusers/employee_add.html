@@ -1,0 +1,125 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header text-center">
+            <h2>Add Employee</h2>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn"
+                        x-placement="bottom-end"
+                        style="position: absolute; transform: translate3d(31px, 31px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <form id="basic-form" action="{% url 'employee-add' %}" method="POST" novalidate="" enctype="multipart/form-data" style="padding: 0 167px;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input name="first_name" type="text" value="{{ first_name }}" class="form-control " required="">
+                </div>
+
+                <div class="form-group">
+                    <label>Middle Name</label>
+                    <input name="middle_name" type="text" value="{{ middle_name }}" class="form-control ">
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input name="last_name" type="text" value="{{ last_name }}" class="form-control ">
+                </div>
+
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input name="username" type="text" value="{{ username }}" class="form-control " required="">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input name="email" type="email" value="{{ email }}" class="form-control " required="">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control " name="password" id="password" required="" value="{{ password }}">
+
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input name="phone" type="number" value="{{ phone }}" class="form-control " required="">
+                </div>
+
+                <div class=" form-group w-100">
+                    <label for="single-selection">Role</label>
+                    <div class="multiselect_div">
+                        <select id="single-selection" name="role"
+                                class="multiselect multiselect-custom" data-parsley-required
+                                data-parsley-trigger-after-failure="change"
+                                data-parsley-errors-container="#error-singleselect">
+                            <option value="">Select a role</option>
+                            {% for role in role_list %}
+                            <option value="{{ role.name }}"><{{ role.name }}/option>
+                            {% endfor %}
+                        </select>
+                        <p id="error-singleselect"></p>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" value="{{ address }}" class="form-control " rows="3" cols="30"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Radio Button</label>
+                    <br>
+                    <label class="fancy-radio">
+                        <input type="radio" name="gender" value="male" required=""
+                               data-parsley-errors-container="#error-radio"
+                               data-parsley-multiple="gender">
+                        <span><i></i>Male</span>
+                    </label>
+                    <label class="fancy-radio">
+                        <input type="radio" name="gender" value="female"
+                               data-parsley-multiple="gender">
+                        <span><i></i>Female</span>
+                    </label>
+                    <label class="fancy-radio">
+                        <input type="radio" name="gender" value="other"
+                               data-parsley-multiple="gender">
+                        <span><i></i>Other</span>
+                    </label>
+                    <p id="error-radio"></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                            <input name="profile_picture" type="file" id="dropify-event"  data-default-file={% static 'base/images/default_user.png' %} >
+                        <p id="dropify-event"></p>
+                </div>
+
+
+                <br>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+
+{% endblock %}
