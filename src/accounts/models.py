@@ -34,6 +34,13 @@ class User(AbstractUser):
     profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True, default='users/default_user.png')
 
     def get_full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        if self.first_name is None:
+            self.first_name = ''
+        if self.middle_name is None:
+            self.middle_name = ''
+        if self.last_name is None:
+            self.last_name = ''
+
+        return f'{self.first_name} {self.middle_name} {self.last_name}'
 
 

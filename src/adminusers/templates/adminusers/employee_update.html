@@ -5,7 +5,7 @@
 
     <div class="card open_task">
         <div class="header text-center">
-            <h2>Add Employee</h2>
+            <h2>Update Employee:: {{ employee.username }} </h2>
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,42 +25,43 @@
             </ul>
         </div>
         <div class="body">
-            <form id="basic-form" action="{% url 'employee-add' %}" method="POST" novalidate="" enctype="multipart/form-data" style="padding: 0 167px;">
+            <form id="basic-form" action="{% url 'employee-update' employee.username %}" method="POST" novalidate=""
+                  enctype="multipart/form-data" style="padding: 0 167px;">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>First Name</label>
-                    <input name="first_name" type="text" value="{{ first_name }}" class="form-control " required="">
+                    <input name="first_name" type="text" value="{{ employee.first_name|default_if_none:'' }}"
+                           class="form-control " required="">
                 </div>
 
                 <div class="form-group">
                     <label>Middle Name</label>
-                    <input name="middle_name" type="text" value="{{ middle_name }}" class="form-control ">
+                    <input name="middle_name" type="text" value="{{ employee.middle_name|default_if_none:'' }}"
+                           class="form-control ">
                 </div>
 
                 <div class="form-group">
                     <label>Last Name</label>
-                    <input name="last_name" type="text" value="{{ last_name }}" class="form-control ">
+                    <input name="last_name" type="text" value="{{ employee.last_name|default_if_none:'' }}"
+                           class="form-control ">
                 </div>
 
 
                 <div class="form-group">
                     <label>Username</label>
-                    <input name="username" type="text" value="{{ username }}" class="form-control " required="">
+                    <input name="username" type="text" value="{{ employee.username|default_if_none:'' }}"
+                           class="form-control " required="">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input name="email" type="email" value="{{ email }}" class="form-control " required="">
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" class="form-control " name="password" id="password" required="" value="{{ default_password }}" readonly`>
-
+                    <input name="email" type="email" value="{{ employee.email|default_if_none:'' }}"
+                           class="form-control " required="">
                 </div>
 
                 <div class="form-group">
                     <label>Phone</label>
-                    <input name="phone" type="number" value="{{ phone }}" class="form-control " required="">
+                    <input name="phone" type="number" value="{{ employee.mobile_number|default_if_none:'' }}"
+                           class="form-control " required="">
                 </div>
 
                 <div class=" form-group w-100">
@@ -71,8 +72,11 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect">
                             <option value="">Select a role</option>
-                            {% for urole in role_list %}
-                            <option {% if urole.name == role.name %} selected {% endif %} value="{{ urole.id }}">{{ urole.name }}</option>
+                            {% for role in role_list %}
+
+                                <option value="{{ role.id }}"
+                                        {% if employee.role.id == role.id %}selected{% endif %}>{{ role.name }}</option>
+
                             {% endfor %}
                         </select>
                         <p id="error-singleselect"></p>
@@ -82,7 +86,8 @@
 
                 <div class="form-group">
                     <label>Address</label>
-                    <textarea name="address" class="form-control " rows="3" cols="30">{{ address }}</textarea>
+                    <textarea name="address" class="form-control "
+                              rows="3" cols="30">{{ employee.address|default_if_none:'' }}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -109,19 +114,22 @@
 
                 <div class="form-group">
                     <label>Profile Picture</label>
-                            <input name="profile_picture" type="file" id="dropify-event"  data-default-file={% static 'base/images/default_user.png' %} >
-                        <p id="dropify-event"></p>
+                    <input name="profile_picture" type="file" id="dropify-event"
+                           data-default-file={{ employee.profile_picture.url }}>
+                    <p id="dropify-event"></p>
                 </div>
 
 
                 <br>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>
     </div>
 
+
     <script>
-        document.getElementById("radio-gender"+"{{ gender }}").checked = true;
+        document.getElementById("radio-gender"+"{{ employee.gender }}").checked = true;
+
     </script>
 
 {% endblock %}

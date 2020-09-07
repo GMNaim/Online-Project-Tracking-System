@@ -6,7 +6,7 @@
             <ul id="main-menu" class="metismenu">
                 <li class="align-items-center font-20" style="color: #3eacff"> <span>{{ request.user.username }}</span>
                     <small style="color:#919290; font-size: 13px;">{{ request.user.role }}</small></li>
-                {% if admin  %}
+                {% if request.user.role.name == 'Admin'  %}
                     {#  if admin these list will be shown   #}
                 <li class="active"><a href="{% url 'admin-dashboard' %}"><i
                         class="icon-home"></i><span>Dashboard</span></a>

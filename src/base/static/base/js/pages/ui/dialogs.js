@@ -50,14 +50,15 @@ function showSuccessMessage() {
 function showConfirmMessage() {
     swal({
         title: "Are you sure?",
-        text: "You will not be able to recover this imaginary file!",
+        text: "You will not be able to recover this Employee information!",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false
     }, function () {
-        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+        window.location.href = delete_user_url;
+        swal("Deleted!", "Employee has been deleted.", "success");
     });
 }
 
