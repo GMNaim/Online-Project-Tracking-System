@@ -6,10 +6,10 @@
     <div class="col-lg-12 col-md-12">
         <div class="card open_task">
             <div class="header">
-                <a href="{% url 'employee-add' %}"
+                <a href="{% url 'department-add' %}"
                 >
                     <button type="button" class="btn btn-success"><i
-                            class="fa fa-plus-square"></i><span>  Add Employee</span></button>
+                            class="fa fa-plus-square"></i><span>  Add Department</span></button>
                 </a>
                 <ul class="header-dropdown">
                     <li><a href="javascript:void(0);" data-toggle="cardloading"
@@ -28,51 +28,55 @@
                 </ul>
             </div>
             <div class="body">
-                <h4>Employee List</h4>
+                <h4>Department List</h4>
                 <div class="body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped dataTable"
                                id="datatable-client_list">
                             <thead>
-                            <tr  style="color: #fff; background-color: #424546">
+                            <tr class="bg-dark" style="color: white;">
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Role</th>
-                                <th>Department</th>
-                                <th>Username</th>
-                                <th>Join Date</th>
+                                <th>Head</th>
+                                <th>Employees</th>
+                                <th>Team</th>
+                                <th>Total Projects</th>
                                 <th>Actions</th>
 
 
                             </tr>
                             </thead>
                             <tbody>
-                            {% for employee in employee_list %}
+                            {% for dep in department %}
+
+
+                                {#                            {% for department_head in department_head %}#}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ employee.get_full_name }}</td>
-                                    <td>{{ employee.role }}</td>
-                                    <td>{{ employee.department.name }}</td>
-                                    <td>{{ employee.username }}</td>
-                                    <td>{{ employee.date_joined|date }}</td>
+                                    <td>{{ dep.name }}</td>
+                                    <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
+                                    <td>{{ dep.get_total_employee }}</td>
+                                    <td></td>
+                                    <td></td>
                                     <td class="actions">
-                                        <a href="{% url 'employee-update' employee.username %}">
+                                        <a href="{% url 'department-update' dep.name %}">
                                             <button type="button"
                                                     class="btn btn-success" title="Edit"><span
                                                     class="sr-only">Edit</span> <i
                                                     class="fa fa-edit"></i></button>
                                         </a>
 
-                                        <a id="confirm-button-url_a" data-username="{{ employee.username }}"
-                                           class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                           data-type="confirm"
+                                        <a id="confirm-button-url_d"
+                                           data-department="{{ dep.name }}"
+                                           class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
+                                           data-type="confirm_department_delete"
                                            title="Delete"><span class="sr-only">Delete</span> <i
                                                 class="fa fa-trash-o text-col-white"></i>
                                         </a>
                                     </td>
                                 </tr>
+                                {#                            {% endfor %}#}
                             {% endfor %}
-
                             </tbody>
                         </table>
                     </div>
@@ -82,12 +86,13 @@
     </div>
 
     <script>
-    // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
-        let delete_user_url = null;
+        let delete_department_url = null;
+
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
-            delete_user_url = "/admin/employee/delete/" + $(this).data('username');
-            console.log(delete_user_url);
+            let name ="Department " + $(this).data('department');
+                delete_department_url = "/admin/department/delete/" + $(this).data('department');
+            console.log(delete_department_url);
         });
     </script>
 

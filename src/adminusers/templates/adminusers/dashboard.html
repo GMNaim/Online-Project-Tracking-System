@@ -20,7 +20,7 @@
 
                                 <div>
                                     <div class="h4 mb-0 text-dark">
-                                        <span class="count">385</span>
+                                        <span class="count">{{ total_employee }}</span>
                                     </div>
                                     <small class="text-uppercase font-weight-bold">Employee</small>
                                     <div class="progress progress-xs mt-3 mb-0 bg-secondary"
@@ -52,14 +52,14 @@
                     </div>
 
                     <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                        <a href="#">
+                        <a href="{% url 'department-list' %}">
                         <div class="dashboard-card-body l-salmon">
                             <div class="h1 text-muted text-right mb-4">
                                 <i class="fa fa-institution text-secondary"></i>
                             </div>
                             <div>
                                 <div class="h4 mb-0 text-dark">
-                                    <span class="count">385</span>
+                                    <span class="count">{{ total_department }}</span>
                                 </div>
                                 <small
                                         class="text-uppercase font-weight-bold text-secondary">Department</small>
@@ -137,5 +137,6 @@
             {% endif %}
         </div>
     </div>
+
 
 {% endblock %}

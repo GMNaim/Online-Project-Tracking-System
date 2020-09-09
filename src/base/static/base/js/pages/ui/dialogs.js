@@ -13,6 +13,9 @@ $(function () {
         else if (type === 'confirm') {
             showConfirmMessage();
         }
+        else if(type === 'confirm_department_delete'){
+            showDepartmentDeleteConfirmMessage();
+        }
         else if (type === 'cancel') {
             showCancelMessage();
         }
@@ -50,7 +53,7 @@ function showSuccessMessage() {
 function showConfirmMessage() {
     swal({
         title: "Are you sure?",
-        text: "You will not be able to recover this Employee information!",
+        text: "Employee will be delete permanently.",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
@@ -61,6 +64,26 @@ function showConfirmMessage() {
         swal("Deleted!", "Employee has been deleted.", "success");
     });
 }
+
+function showDepartmentDeleteConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: "Department will be delete permanently.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_department_url;
+        swal("Deleted!", "Department has been deleted.", "success");
+    });
+}
+
+
+
+
+
 
 function showCancelMessage() {
     swal({

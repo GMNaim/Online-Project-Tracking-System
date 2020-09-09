@@ -25,7 +25,8 @@
             </ul>
         </div>
         <div class="body">
-            <form id="basic-form" action="{% url 'employee-add' %}" method="POST" novalidate="" enctype="multipart/form-data" style="padding: 0 167px;">
+            <form id="basic-form" action="{% url 'employee-add' %}" method="POST" novalidate=""
+                  enctype="multipart/form-data" style="padding: 0 167px;">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>First Name</label>
@@ -54,7 +55,8 @@
 
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" class="form-control " name="password" id="password" required="" value="{{ default_password }}" readonly`>
+                    <input type="password" class="form-control " name="password" id="password" required=""
+                           value="{{ default_password }}" readonly>
 
                 </div>
 
@@ -64,25 +66,43 @@
                 </div>
 
                 <div class=" form-group w-100">
-                    <label for="single-selection">Role</label>
+                    <label for="single-selection_role">Role</label>
                     <div class="multiselect_div">
-                        <select id="single-selection" name="role"
-                                class="multiselect multiselect-custom" data-parsley-required
+                        <select id="single-selection_role" name="role"
+                                class="multiselect multiselect-custom select_role" data-parsley-required
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect">
                             <option value="">Select a role</option>
-                            {% for urole in role_list %}
-                            <option {% if urole.name == role.name %} selected {% endif %} value="{{ urole.id }}">{{ urole.name }}</option>
+                            {% for e_role in role_list %}
+                                <option {% if e_role.name == role.name %} selected {% endif %}
+                                                                          value="{{ e_role.id }}">{{ e_role.name }}</option>
                             {% endfor %}
                         </select>
                         <p id="error-singleselect"></p>
                     </div>
                 </div>
 
+                <div class=" form-group w-100">
+                    <label for="single-selection">Department</label>
+                    <div class="multiselect_div">
+                        <select id="single-selection" name="department"
+                                class="multiselect multiselect-custom" data-parsley-required
+                                data-parsley-trigger-after-failure="change"
+                                data-parsley-errors-container="#error-singleselect2">
+                            <option value="">Select a Department</option>
+                            {#                            {% for e_department in department_list %}#}
+                            {#                                <option {% if e_department.name == department.name %} selected {% endif %}#}
+                            {#                                                                                      value="{{ e_department.id }}">{{ e_department.name }}</option>#}
+                            {#                            {% endfor %}#}
+                        </select>
+                        <p id="error-singleselect2"></p>
+                    </div>
+                </div>
 
                 <div class="form-group">
-                    <label>Address</label>
-                    <textarea name="address" class="form-control " rows="3" cols="30">{{ address }}</textarea>
+                    <label for="textarea-address">Address</label>
+                    <textarea id="textarea-address" name="address" class="form-control " rows="3"
+                              cols="30">{{ address }}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -109,11 +129,13 @@
 
                 <div class="form-group">
                     <label>Profile Picture</label>
-                            <input name="profile_picture" type="file" id="dropify-event"  data-default-file={% static 'base/images/default_user.png' %} >
-                        <p id="dropify-event"></p>
+                    <input name="profile_picture" type="file" id="dropify-event"
+                           data-default-file={% static 'base/images/default_user.png' %}>
+                    <p id="dropify-event"></p>
                 </div>
-
-
+                {#this is input is for getting the json data from the view#}
+                <input value="{{ all_department }}" id="all_department_input" hidden>
+                <input value="{{ existence_department_head }}" id="existence_department_input" hidden>
                 <br>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
@@ -121,7 +143,71 @@
     </div>
 
     <script>
-        document.getElementById("radio-gender"+"{{ gender }}").checked = true;
+        document.getElementById("radio-gender" + "{{ gender }}").checked = true;
+
+        console.log("{{ all_department }}")
+
+    </script>
+
+    <script>
+        // ============  Department options change =================
+
+
+        $(document).ready(function () {
+            let all_department = JSON.parse($("#all_department_input").val());
+            let existence_department_head = $("#existence_department_input").val();
+            console.log(existence_department_head, typeof existence_department_head);
+
+            let remove_extra_char = existence_department_head.replace(/['\[\]]+/g, '');
+            console.log(remove_extra_char);
+            let existing_dep_array = remove_extra_char.split(', ');
+            console.log(existing_dep_array);
+
+            let all_department_list = [];
+            $.each(all_department, function (key, value) {
+                all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array
+            });
+
+            $('#single-selection').append(all_department_list);  // adding the options to the select..
+
+
+            $("#single-selection_role").change(function () {
+                let selected_role = document.querySelector('#single-selection_role option:checked').innerText;
+
+                let department_select = document.querySelector('#single-selection');
+                if (selected_role.toLowerCase() === 'department head') {
+                    console.log(selected_role, 'selected--09');
+                    {#$("#single-selection").empty();#}
+
+                    //  let all_department_list = [];
+                    all_department_list = [];
+
+                    $.each(existing_dep_array, function (i, name) {
+                        {#$('#single-selection').remove(name);#}
+                        let aaa = $('#single-selection option').filter(function () {
+                            return $(this).html() === name;
+                        });
+                        aaa.prop('disabled', true);
+                        console.log(aaa, '===========================================')
+                    });
+
+                    $.each(all_department, function (key, value) {
+                        {#$("#single-selection option[value='option1']").remove();#}
+                        if (!existing_dep_array.includes(value.name)) {
+                            //console.log(existing_dep_array, value.name);
+                            console.log(!existing_dep_array.includes(value.name), value.name, '------------');
+                            all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array
+                        }
+                    });
+                    $('#single-selection').append(all_department_list)  // adding the options to the select..
+
+
+                }
+
+            })
+        });
+
+
     </script>
 
 {% endblock %}

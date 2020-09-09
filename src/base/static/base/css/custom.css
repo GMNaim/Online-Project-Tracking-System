@@ -28,6 +28,11 @@ select{
   border: 1px solid red;
 } */
 
+.main-body {
+    transition: 2s;
+}
+
+
 .error {
   background-color: #eacbcb;
 }

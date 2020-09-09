@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
+from departments.models import Department
 
 
 class Role(models.Model):
@@ -27,11 +28,14 @@ class User(AbstractUser):
                                 )])
     role = models.ForeignKey(
         Role, on_delete=models.PROTECT, null=False, blank=False, related_name='user_role', default=1)
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, blank=True,
+                                   related_name='employee_department', default=1)
     mobile_number = models.CharField(max_length=12)
     gender = models.IntegerField(choices=GENDER, default=1)
     address = models.TextField(blank=True, null=True)
     country = models.IntegerField(default=1)
-    profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True, default='users/default_user.png')
+    profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True,
+                                        default='users/default_user.png')
 
     def get_full_name(self):
         if self.first_name is None:
@@ -42,5 +46,3 @@ class User(AbstractUser):
             self.last_name = ''
 
         return f'{self.first_name} {self.middle_name} {self.last_name}'
-
-

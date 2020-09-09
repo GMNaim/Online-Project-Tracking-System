@@ -36,7 +36,7 @@ $(function() {
 
 
     // Multiselect
-    $('#multiselect1, #multiselect2, #single-selection, #multiselect5, #multiselect6').multiselect({
+    $('#multiselect1, #multiselect2, #single-selection, #single-selection_role, #multiselect5, #multiselect6').multiselect({
         maxHeight: 300
     });
     //Multi-select

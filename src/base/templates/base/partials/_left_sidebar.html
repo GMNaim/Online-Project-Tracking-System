@@ -4,32 +4,75 @@
     <div class="sidebar-scroll">
         <nav id="leftsidebar-nav" class="sidebar-nav">
             <ul id="main-menu" class="metismenu">
-                <li class="align-items-center font-20" style="color: #3eacff"> <span>{{ request.user.username }}</span>
-                    <small style="color:#919290; font-size: 13px;">{{ request.user.role }}</small></li>
-                {% if request.user.role.name == 'Admin'  %}
+
+
+                <li class="align-items-center font-20"><a ><i class="icon-user"
+                                                                       style="color: #1b92ff;"></i><span>{{ request.user.username }}
+                                  </span></a></li>
+                <li class="align-items-center" style="color: cornflowerblue"><span>{{ request.user.role }}</span></li>
+                {% if request.user.role.name == 'Admin' %}
                     {#  if admin these list will be shown   #}
-                <li class="active"><a href="{% url 'admin-dashboard' %}"><i
-                        class="icon-home"></i><span>Dashboard</span></a>
-                </li>
+                    <li class="active"><a href="{% url 'admin-dashboard' %}"><i
+                            class="icon-home"></i><span>Dashboard</span></a>
+                    </li>
+
+                    <li class="top">
+                        <a href="#Employee" class="has-arrow"><i class="icon-map"></i> <span>Employee</span></a>
+                        <ul>
+                            <li><a href="{% url 'employee-list' %}">Employee List</a></li>
+                            <li><a href="{% url 'employee-add' %}">Employee Add</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="top">
+                        <a href="#Department" class="has-arrow"><i class="icon-map"></i> <span>Department</span></a>
+                        <ul>
+                            <li><a href="{% url 'department-list' %}">Department List</a></li>
+                            <li><a href="{% url 'department-add' %}">Department Add</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="top">
+                        <a href="#Client" class="has-arrow"><i class="icon-map"></i> <span>Client</span></a>
+                        <ul>
+                            <li><a href="{% url 'client-list' %}">Client List</a></li>
+                            <li><a href="{% url 'client-add' %}">Client Add</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="top">
+                        <a href="#Project" class="has-arrow"><i class="icon-map"></i> <span>Project</span></a>
+                        <ul>
+                            <li><a href="{% url 'project-list' %}">Project List</a></li>
+                            <li><a href="{% url 'project-add' %}">Project Add</a></li>
+
+                        </ul>
+                    </li>
 
 
-                <li class=""><a href="{% url 'client-list' %}"><i class="icon-home"></i><span>Client
+
+
+
+
+                    <li class=""><a href="{% url 'client-list' %}"><i class="icon-home"></i><span>Client
                                         List</span></a>
-                </li>
-                <li class=""><a href="{% url 'project-list' %}"><i class="icon-home"></i><span>Project
+                    </li>
+                    <li class=""><a href="{% url 'project-list' %}"><i class="icon-home"></i><span>Project
                                         List</span></a>
-                </li>
-                <li class=""><a href="{% url 'project-add' %}"><i class="icon-home"></i><span>Project
+                    </li>
+                    <li class=""><a href="{% url 'project-add' %}"><i class="icon-home"></i><span>Project
                                         Add</span></a>
-                </li>
-                <li class="top">
-                    <a href="#Maps" class="has-arrow"><i class="icon-map"></i> <span>Maps</span></a>
-                    <ul>
-                        <li><a href="map-google.html">Google Map</a></li>
-                        <li><a href="map-yandex.html">Yandex Map</a></li>
-                        <li><a href="map-jvectormap.html">jVector Map</a></li>
-                    </ul>
-                </li>
+                    </li>
+                    <li class="top">
+                        <a href="#Maps" class="has-arrow"><i class="icon-map"></i> <span>Maps</span></a>
+                        <ul>
+                            <li><a href="map-google.html">Google Map</a></li>
+                            <li><a href="map-yandex.html">Yandex Map</a></li>
+                            <li><a href="map-jvectormap.html">jVector Map</a></li>
+                        </ul>
+                    </li>
                 {% endif %}
 
             </ul>

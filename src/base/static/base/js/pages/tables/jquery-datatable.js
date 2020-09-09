@@ -2,7 +2,7 @@ $(function () {
     // Initializing the datatable
     $('#datatable-client_list').DataTable({
         "order": [[0, "asc"]],
-        "lengthMenu": [[5, 10, 20, 50, 100, -1], [5, 10, 20, 50, 100, "All"]],
+        "lengthMenu": [[10, 20, 50, 100, -1], [10, 20, 50, 100, "All"]],
         "columnDefs": [{
             "targets": [6], // column index
             "orderable": false

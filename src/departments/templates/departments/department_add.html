@@ -1,0 +1,49 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header text-center">
+            <h2>Add Department</h2>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn"
+                        x-placement="bottom-end"
+                        style="position: absolute; transform: translate3d(31px, 31px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <form id="basic-form" action="{% url 'department-add' %}" method="POST" novalidate="" style="padding: 0 167px;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input id="name" name="name" type="text" value="{{ name }}" class="form-control " required="" >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control " rows="3" cols="30">{{ description }}</textarea>
+                </div>
+
+
+
+                <br>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
