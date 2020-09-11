@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Department
-
+from accounts.decorators import has_access
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def department_list(request):
     department = Department.objects.all()
 
@@ -18,6 +19,7 @@ def department_list(request):
 
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def department_add(request):
     if request.user.is_authenticated:
 
@@ -56,6 +58,7 @@ def department_add(request):
 
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def department_update(request, department_name):
     if request.user.is_authenticated:
         selected_department = get_object_or_404(Department, name=department_name)
@@ -93,6 +96,7 @@ def department_update(request, department_name):
 
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def department_delete(request, department_name):
     if request.user.is_authenticated:
         department = Department.objects.all()

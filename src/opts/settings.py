@@ -43,9 +43,9 @@ INSTALLED_APPS = [
     # local apps
     'base.apps.BaseConfig',
     'adminusers',
-    'accounts.apps.AccountsConfig',
+    'accounts',
     'departments.apps.DepartmentsConfig',
-
+    'teams.apps.TeamsConfig',
 
 ]
 

@@ -33,6 +33,10 @@ select{
 }
 
 
+.free-department-select_id {
+    display: none;
+}
+
 .error {
   background-color: #eacbcb;
 }

@@ -37,6 +37,8 @@
 <script src={% static "base/bundles/mainscripts.bundle.js" %}></script>
 <script src={% static "base/bundles/morrisscripts.bundle.js" %}></script>
 <script src={% static "base/js/pages/forms/dropify.js" %}></script>
+<!-- The javascript plugin to display page loading on top-->
+<script src={% static "base/js/popper.min.js" %}></script>
 <script src={% static "base/js/index.js" %}></script>
 <script src={% static "base/js/custom.js" %}></script>
 
@@ -44,8 +46,26 @@
     $(function () {
         // validation needs name of the element
         $('#single-selection').multiselect();
+        $('#single-selection-2').multiselect();
         $('#single-selection_role').multiselect();
+        $('#single-selection-team-leader').multiselect();
 
+
+        $('#multiselect-team-member').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            maxHeight: 200,
+            onChange: function(element, checked) {
+                let options = $('#multiselect-team-member option:selected');
+                let selected = [];
+                $(options).each(function(index, options){
+                    selected.push([$(this).val()]);
+                });
+
+                console.log(selected);
+            }
+
+        });
         // initialize after multi-select
         $('#basic-form').parsley();
     });

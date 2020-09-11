@@ -1,0 +1,111 @@
+{% extends 'accounts/_base.html' %}
+{% load static %}
+
+{% block content %}
+	
+	<div class="limiter">
+		<div class="container-login100">
+
+            {% block alert %}
+                {% include 'accounts/_alert.html' %}
+            {% endblock %}
+{#      <div style="width:960px">#}
+{#        <a href="/">#}
+{#          <span class="text-right btn btn-warning">#}
+{#            <i class="fa fa-angle-double-left" aria-hidden="true"></i> Home#}
+{#          </span>#}
+{#        </a>#}
+{#        <a href="{% url 'logout' %}">#}
+{#          <span class="text-right btn btn-danger">#}
+{#            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout#}
+{#          </span>#}
+{#        </a>#}
+{#      </div>#}
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="{% static 'accounts/images/img-01.png' %}" alt="IMG">
+				</div>
+
+
+
+				<form action="{% url 'registration' %}" method="POST" class="login100-form validate-form">
+        {% csrf_token %}
+					<span class="login100-form-title">
+						Employee Registration
+					</span>
+
+          
+					<div class="wrap-input100 validate-input" data-validate = "First Name is required">
+						<input class="input100" type="text" name="first_name" placeholder="First Name" value="{{ first_name }}">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Last Name required">
+						<input class="input100" type="text" name="last_name" placeholder="Last Name" value="{{ last_name }}">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user" aria-hidden="true"></i>
+						</span>
+					</div>
+
+                    <div class="wrap-input100 validate-input" data-validate = "Email is required">
+                        <input class="input100" type="email" name="email" placeholder="Email" value="{{ email }}">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate = "Username is required">
+                        <input class="input100" type="text" name="username" placeholder="Username" value="{{ username }}">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+							<i class="fa fa-user-circle" aria-hidden="true"></i>
+						</span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate = "Password is required">
+                        <input class="input100" type="password" name="password1" placeholder="Password">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate = "Password is required">
+                        <input class="input100" type="password" name="password2" placeholder="Confirm Password">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+                    </div>
+					
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit">
+							Register
+						</button>
+					</div>
+
+                    <div class="text-center p-t-12">
+						<span class="txt1" style="color: #000">
+							Already an Employee
+						</span>
+                        <a class="txt2" style="color:#1518fc;" href="{% url 'login'%}">
+                            Sign in here
+                        </a>
+                    </div>
+
+					<div class="text-center p-t-136">
+						<a class="txt2" href="#">			
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+{% endblock %}

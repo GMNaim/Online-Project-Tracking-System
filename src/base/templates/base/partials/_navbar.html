@@ -5,7 +5,7 @@
         <div class="container-fluid">
 
             <div class="navbar-brand">
-                <a href="{% url 'admin-dashboard' %}">
+                <a href="{% url 'dashboard' %}">
                     <img src={% static "base/images/logo-icon.svg" %} alt="OPTS-Logo" class="img-responsive logo">
                     <span class="name">OPTS</span>
                 </a>
@@ -126,8 +126,10 @@
                                                 <li><a href="javascript:void(0);"><i
                                                         class="icon-settings"></i>Settings</a></li>
                                                 <li class="divider"></li>
-                                                <li><a href="page-login.html"><i
+                                                {% if request.user.is_authenticated %}
+                                                <li><a href="{% url 'logout' %}"><i
                                                         class="icon-power"></i>Logout</a></li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </div>

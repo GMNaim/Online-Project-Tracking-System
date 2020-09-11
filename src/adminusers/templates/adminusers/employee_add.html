@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class=" form-group w-100">
+                <div id="all_department_select_id" class=" form-group w-100">
                     <label for="single-selection">Department</label>
                     <div class="multiselect_div">
                         <select id="single-selection" name="department"
@@ -90,14 +90,32 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect2">
                             <option value="">Select a Department</option>
-                            {#                            {% for e_department in department_list %}#}
-                            {#                                <option {% if e_department.name == department.name %} selected {% endif %}#}
-                            {#                                                                                      value="{{ e_department.id }}">{{ e_department.name }}</option>#}
-                            {#                            {% endfor %}#}
+                                                        {% for e_department in department_list %}
+                                                            <option {% if e_department.name == department.name %} selected {% endif %}
+                                                                                                                  value="{{ e_department.id }}">{{ e_department.name }}</option>
+                                                        {% endfor %}
                         </select>
                         <p id="error-singleselect2"></p>
                     </div>
                 </div>
+
+                <!-- this selection is for if select department head role -->
+                                <div id="free-department-select_id" hidden class=" form-group w-100" >
+                                    <label for="single-selection-2">Department</label>
+                                    <div class="multiselect_div">
+                                        <select id="single-selection-2" name="department_h"
+                                                class="multiselect multiselect-custom" data-parsley-required
+                                                data-parsley-trigger-after-failure="change"
+                                                data-parsley-errors-container="#error-singleselect3">
+                                            <option value="">Select a Department</option>
+                                            {% for free_department in free_department_head %}
+                                                <option {% if free_department.name == department.name %} selected {% endif %}
+                                                        value="{{ free_department.id }}">{{ free_department.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <p id="error-singleselect3"></p>
+                                    </div>
+                                </div>
 
                 <div class="form-group">
                     <label for="textarea-address">Address</label>
@@ -137,7 +155,7 @@
                 <input value="{{ all_department }}" id="all_department_input" hidden>
                 <input value="{{ existence_department_head }}" id="existence_department_input" hidden>
                 <br>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button id="submit-btn" type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
@@ -163,48 +181,64 @@
             let existing_dep_array = remove_extra_char.split(', ');
             console.log(existing_dep_array);
 
-            let all_department_list = [];
-            $.each(all_department, function (key, value) {
-                all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array
-            });
+            {#let all_department_list = [];#}
+            {#$.each(all_department, function (key, value) {#}
+            {#    all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array#}
+           // {#});#}
 
-            $('#single-selection').append(all_department_list);  // adding the options to the select..
+          //  $('#single-selection').append(all_department_list);  // adding the options to the select..
 
 
-            $("#single-selection_role").change(function () {
+            $("#single-selection_role").change(function (e) {
+                e.preventDefault();
+
                 let selected_role = document.querySelector('#single-selection_role option:checked').innerText;
 
                 let department_select = document.querySelector('#single-selection');
                 if (selected_role.toLowerCase() === 'department head') {
+                    e.preventDefault();
+
                     console.log(selected_role, 'selected--09');
                     {#$("#single-selection").empty();#}
+                    console.log('*************** ', e);
+
+                    $("#all_department_select_id").hide();
+                    $("#all_department_select_id").attr('hidden');
+                    $("#free-department-select_id").show();
+                    $("#free-department-select_id").removeAttr("hidden");
 
                     //  let all_department_list = [];
-                    all_department_list = [];
+                   // all_department_list = [];
 
-                    $.each(existing_dep_array, function (i, name) {
-                        {#$('#single-selection').remove(name);#}
-                        let aaa = $('#single-selection option').filter(function () {
-                            return $(this).html() === name;
-                        });
-                        aaa.prop('disabled', true);
-                        console.log(aaa, '===========================================')
-                    });
-
-                    $.each(all_department, function (key, value) {
+                    {#$.each(existing_dep_array, function (i, name) {#}
+                    {#$('#single-selection').remove(name);#}
+                    {#    let aaa = $('#single-selection option').filter(function () {#}
+                    {#        return $(this).html() === name;#}
+                    {#    });#}
+                    {#    aaa.prop('disabled', true);#}
+                    {#    console.log(aaa, '===========================================')#}
+                    //{#});#}
+                    {#$('#single-selection').empty().multiSelect('[]');#}
+                    {#$.each(all_department, function (key, value) {#}
                         {#$("#single-selection option[value='option1']").remove();#}
-                        if (!existing_dep_array.includes(value.name)) {
-                            //console.log(existing_dep_array, value.name);
-                            console.log(!existing_dep_array.includes(value.name), value.name, '------------');
-                            all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array
-                        }
-                    });
-                    $('#single-selection').append(all_department_list)  // adding the options to the select..
+                    {#    if (!existing_dep_array.includes(value.name)) {#}
+                    {#        //console.log(existing_dep_array, value.name);#}
+                    {#        console.log(!existing_dep_array.includes(value.name), value.name, '------------');#}
+                    {#        all_department_list.push('<option value=' + value.id + '>' + value.name + '</option>'); // creating the options and and adding to a array#}
+                    {#    }#}
+                   // {#});#}
+                   // $('#single-selection').append(all_department_list).multiSelect('refresh')  // adding the options to the select..
 
 
+                } else {
+                    e.preventDefault();
+                    $("#all_department_select_id").show();
+                    $("#all_department_select_id").removeAttr('hidden');
+                    $("#free-department-select_id").hide();
+                    $("#free-department-select_id").attr("hidden");
                 }
 
-            })
+            });
         });
 
 

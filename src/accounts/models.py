@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
+
 from departments.models import Department
+# from teams.models import Team
 
 
 class Role(models.Model):
@@ -27,15 +29,19 @@ class User(AbstractUser):
                                     message='Username contains alphanumeric, underscore and period(.). Length: 4 to 50'
                                 )])
     role = models.ForeignKey(
-        Role, on_delete=models.PROTECT, null=False, blank=False, related_name='user_role', default=1)
+        Role, on_delete=models.PROTECT, null=False, blank=False, related_name='user_role',
+        default=6)  # default id of role is 6 =  employee
     department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, blank=True,
-                                   related_name='employee_department', default=1)
-    mobile_number = models.CharField(max_length=12)
+                                   related_name='employee_department',
+                                   default=16)  # default id of department is 16 = not assigned
+    mobile_number = models.CharField(max_length=12, blank=True, null=True, default='')
     gender = models.IntegerField(choices=GENDER, default=1)
     address = models.TextField(blank=True, null=True)
     country = models.IntegerField(default=1)
     profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True,
                                         default='users/default_user.png')
+
+    # team_member = models.ForeignKey(Team, on_delete=models.PROTECT, blank=True, null=True, default=None)
 
     def get_full_name(self):
         if self.first_name is None:

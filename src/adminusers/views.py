@@ -1,63 +1,46 @@
+import json
+import re
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 
+from accounts.decorators import has_access
 from accounts.models import Role, User
 from departments.models import Department
-
-import json
 
 default_password = 'test123'
 
 
 @login_required
-def dashboard(request):
-    total_employee = User.objects.filter(is_active=True).count()
-    total_department = Department.objects.filter(is_active=True).count()
-    context = {'total_employee': total_employee, 'total_department': total_department}
-    return render(request, 'adminusers/dashboard.html', context)
-
-
-@login_required
-def client_list(request):
-    return render(request, 'adminusers/client_list.html')
-
-
-@login_required
-def client_add(request):
-    return render(request, 'adminusers/client_add.html')
-
-
-@login_required
-def project_add(request):
-    return render(request, 'adminusers/project_add.html')
-
-
-@login_required
-def project_list(request):
-    return render(request, 'adminusers/project_list.html')
-
-
-@login_required
-def employee_list(request):
-    user = User.objects.exclude(role__name__iexact='Super Admin')
-    context = {'employee_list': user}
-
-    return render(request, 'adminusers/employee_list.html', context)
-
-
-@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def employee_add(request):
+    print(str(request.user.groups.all()[0]))
     role_list = Role.objects.exclude(name__iexact='Super Admin')
     department_list = Department.objects.all()
-    existence_department_head = [user.department.name for user in User.objects.filter(role__name__iexact='Department Head')]
+    existence_department_head = [user.department.name for user in
+                                 User.objects.filter(role__name__iexact='Department Head')]
+    # free_department_head = [(user.department.name) for user in User.objects.filter(
+    #     role__name__in=['Admin', 'Super User', 'Team Leader', 'Team Member', 'Employee'])]
+    not_assigned_dep_head = []
+    for dep in department_list:
+        if dep.name not in existence_department_head:
+            not_assigned_dep_head.append(dep)
+    print(not_assigned_dep_head, '*********************************')
+    for n in not_assigned_dep_head:
+        print(n.name, n.id)
+    # free_department_head = User.objects.filter(
+    #     role__name__in=['Admin', 'Super User', 'Team Leader', 'Team Member', 'Employee']).values_list('department__name', flat=True)
+    # print(free_department_head, '---------------------------------------------------------- free department')
     all_department = [{'id': department.id, 'name': department.name} for department in department_list]
-    print(all_department, '=======================df=df=df')
+    # print(all_department, '=======================df=df=df')
     print('existence department', existence_department_head)
     context = {'role_list': role_list, 'department_list': department_list, 'default_password': default_password,
-               'existence_department_head': existence_department_head, 'all_department': json.dumps(all_department)} # creating string by dumps
+               'existence_department_head': existence_department_head, 'free_department_head': not_assigned_dep_head,
+               'all_department': json.dumps(all_department)}  # creating string by dumps
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name', '')
@@ -71,13 +54,15 @@ def employee_add(request):
         profile_picture = request.FILES.get('profile_picture')
         role = Role.objects.get(id=int(request.POST.get('role')))
         department = Department.objects.get(id=int(request.POST.get('department')))
+        department_h = Department.objects.get(id=int(request.POST.get('department_h')))
         print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
-              profile_picture, department, role)
+              profile_picture, department, role, type(role), department_h)
 
         context = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name, "username": username,
                    'email': email, 'phone': phone, 'password': password, 'address': address, 'gender': gender,
                    'role': role, 'role_list': role_list, 'department_list': department_list, 'department': department,
-                   'default_password': default_password, 'existence_department_head': existence_department_head}
+                   'default_password': default_password, 'existence_department_head': existence_department_head,
+                   'free_department_head': not_assigned_dep_head, 'all_department': json.dumps(all_department)}
 
         # Validating the information
         employee_add_error_link = 'adminusers/employee_add.html'
@@ -87,6 +72,10 @@ def employee_add(request):
 
         elif User.objects.filter(username=username).exists():
             messages.warning(request, f"Username {username} is already exists!")
+            return render(request, employee_add_error_link, context)
+
+        elif re.match(r"^[a-zA-Z0-9_.-]+$", username) is None:
+            messages.warning(request, f"Username {username} is not valid! Please provide a valid username")
             return render(request, employee_add_error_link, context)
 
         elif email.strip() == "":
@@ -109,8 +98,12 @@ def employee_add(request):
             messages.warning(request, f"Please Provide your gender!")
             return render(request, employee_add_error_link, context)
 
-        elif str(role) == "":
+        elif str(role.name) == "":
             messages.warning(request, f"Please Select a role!")
+            return render(request, employee_add_error_link, context)
+
+        elif str(department.name) in existence_department_head:
+            messages.warning(request, f"{department.name} has a department head.")
             return render(request, employee_add_error_link, context)
 
         else:
@@ -144,6 +137,26 @@ def employee_add(request):
                             user.profile_picture = profile_picture_name
                             print('------------- saving data')
                             user.save()
+                            # Adding group to the new users
+                            if str(role) == 'Admin':
+                                group = Group.objects.get(name__iexact='Admin')
+                                group.user_set.add(user)
+                            elif str(role) == 'Super User':
+                                group = Group.objects.get(name__iexact='Super User')
+                                group.user_set.add(user)
+                            elif str(role) == 'Department Head':
+                                group = Group.objects.get(name__iexact='Department Head')
+                                group.user_set.add(user)
+                            elif str(role) == 'Team Leader':
+                                group = Group.objects.get(name__iexact='Team Leader')
+                                group.user_set.add(user)
+                            elif str(role) == 'Team Member':
+                                group = Group.objects.get(name__iexact='Team Member')
+                                group.user_set.add(user)
+                            elif str(role) == 'Employee':
+                                group = Group.objects.get(name__iexact='Employee')
+                                group.user_set.add(user)
+
                             print(f"{username}' is successfully added to the database.")
                             messages.success(request, f"{username} is added to the database.")
                             return redirect('employee-list')
@@ -160,6 +173,26 @@ def employee_add(request):
                 else:
                     print('------------- saving data without image')
                     user.save()
+                    # Adding group to the new users
+                    if str(role) == 'Admin':
+                        group = Group.objects.get(name__iexact='Admin')
+                        group.user_set.add(user)
+                    elif str(role) == 'Super User':
+                        group = Group.objects.get(name__iexact='Super User')
+                        group.user_set.add(user)
+                    elif str(role) == 'Department Head':
+                        group = Group.objects.get(name__iexact='Department Head')
+                        group.user_set.add(user)
+                    elif str(role) == 'Team Leader':
+                        group = Group.objects.get(name__iexact='Team Leader')
+                        group.user_set.add(user)
+                    elif str(role) == 'Team Member':
+                        group = Group.objects.get(name__iexact='Team Member')
+                        group.user_set.add(user)
+                    elif str(role) == 'Employee':
+                        group = Group.objects.get(name__iexact='Employee')
+                        group.user_set.add(user)
+
                     print(f"{username}'s information is successfully saved.")
                     messages.success(request, f"{username} is added.")
                     return redirect('employee-list')
@@ -173,6 +206,169 @@ def employee_add(request):
 
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
+def client_list(request):
+    context = {'selected': True}
+    return render(request, 'adminusers/client_list.html', context)
+
+
+@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
+def client_add(request):
+    return render(request, 'adminusers/client_add.html')
+
+
+@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
+def project_add(request):
+    return render(request, 'adminusers/project_add.html')
+
+
+@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
+def project_list(request):
+    return render(request, 'adminusers/project_list.html')
+
+
+@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
+def employee_list(request):
+    user = User.objects.exclude(role__name__iexact='Super Admin')
+    context = {'employee_list': user, 'selected': True}
+
+    return render(request, 'adminusers/employee_list.html', context)
+
+
+#
+# @login_required
+# @has_access(allowed_roles=['Admin', 'Super User'])
+# def employee_add(request):
+#     role_list = Role.objects.exclude(name__iexact='Super Admin')
+#     department_list = Department.objects.all()
+#     existence_department_head = [user.department.name for user in
+#                                  User.objects.filter(role__name__iexact='Department Head')]
+#     all_department = [{'id': department.id, 'name': department.name} for department in department_list]
+#     print(all_department, '=======================df=df=df')
+#     print('existence department', existence_department_head)
+#     context = {'role_list': role_list, 'department_list': department_list, 'default_password': default_password,
+#                'existence_department_head': existence_department_head, 'all_department': json.dumps(all_department),
+#                'selected': True}  # creating string by dumps
+#     if request.method == "POST":
+#         first_name = request.POST.get('first_name')
+#         middle_name = request.POST.get('middle_name', '')
+#         last_name = request.POST.get('last_name', '')
+#         username = request.POST.get('username')
+#         email = request.POST.get('email')
+#         phone = request.POST.get('phone')
+#         password = request.POST.get('password')
+#         address = request.POST.get('address', '')
+#         gender = request.POST.get('gender')
+#         profile_picture = request.FILES.get('profile_picture')
+#         role = Role.objects.get(id=int(request.POST.get('role')))
+#         department = Department.objects.get(id=int(request.POST.get('department')))
+#         print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
+#               profile_picture, department, role)
+#
+#         context = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name, "username": username,
+#                    'email': email, 'phone': phone, 'password': password, 'address': address, 'gender': gender,
+#                    'role': role, 'role_list': role_list, 'department_list': department_list, 'department': department,
+#                    'default_password': default_password, 'existence_department_head': existence_department_head}
+#
+#         # Validating the information
+#         employee_add_error_link = 'adminusers/employee_add.html'
+#         if username.strip() == "":
+#             messages.warning(request, 'You must have to provide an username')
+#             return render(request, employee_add_error_link, context)
+#
+#         elif User.objects.filter(username=username).exists():
+#             messages.warning(request, f"Username {username} is already exists!")
+#             return render(request, employee_add_error_link, context)
+#
+#         elif email.strip() == "":
+#             messages.warning(request, 'You must have to provide a email!')
+#             return render(request, employee_add_error_link, context)
+#
+#         elif User.objects.filter(email=email).exists():
+#             messages.warning(request, f"Email {email} is already exists!")
+#             return render(request, employee_add_error_link, context)
+#
+#         elif first_name.strip() == "":
+#             messages.warning(request, f"Please Provide first name!")
+#             return render(request, employee_add_error_link, context)
+#
+#         elif phone.strip() == "":
+#             messages.warning(request, f"Please Provide your phone number!")
+#             return render(request, employee_add_error_link, context)
+#
+#         elif gender == "":
+#             messages.warning(request, f"Please Provide your gender!")
+#             return render(request, employee_add_error_link, context)
+#
+#         elif str(role) == "":
+#             messages.warning(request, f"Please Select a role!")
+#             return render(request, employee_add_error_link, context)
+#
+#         else:
+#             # Adding user in the database
+#             try:
+#                 user = User()
+#                 user.first_name = first_name
+#                 user.middle_name = middle_name
+#                 user.last_name = last_name
+#                 user.username = username
+#                 user.email = email
+#                 user.mobile_number = phone
+#                 user.address = address
+#                 user.gender = gender
+#                 user.role = role
+#                 user.department = department
+#
+#                 user.set_password(password)
+#
+#                 file_system_obj = FileSystemStorage()
+#                 if profile_picture is not None:
+#                     # if profile picture is not uploaded then profile_picture = None
+#                     profile_picture_name = file_system_obj.save(profile_picture.name,
+#                                                                 profile_picture)  # saving file
+#                     # ----- checking the file is image or not -----------
+#                     if str(profile_picture.content_type).startswith('image'):
+#
+#                         # profile_picture.content_type returns "image/png". so to check it is image we use startwith('image')
+#                         if profile_picture.size < 1000000:
+#                             # checking the size is less than 1 mb
+#                             user.profile_picture = profile_picture_name
+#                             print('------------- saving data')
+#                             user.save()
+#                             print(f"{username}' is successfully added to the database.")
+#                             messages.success(request, f"{username} is added to the database.")
+#                             return redirect('employee-list')
+#                         else:
+#                             print('image is grater than 1 mb', profile_picture.size)
+#                             messages.error(request, 'Image size is greater than 1 mb')
+#                             file_system_obj.delete(profile_picture_name)
+#                             return render(request, 'adminusers/employee_add.html', context)
+#                     else:
+#                         print('this is not image', profile_picture.content_type)
+#                         messages.error(request, 'Please upload an image')
+#                         file_system_obj.delete(profile_picture_name)
+#                         return render(request, 'adminusers/employee_add.html', context)
+#                 else:
+#                     print('------------- saving data without image')
+#                     user.save()
+#                     print(f"{username}'s information is successfully saved.")
+#                     messages.success(request, f"{username} is added.")
+#                     return redirect('employee-list')
+#             except Exception as e:
+#                 print(e, 'exception -----------=========================================!!!!!!!!!!!!!!!!!!!')
+#                 messages.error(request, f"Error: {e}")
+#                 return render(request, 'adminusers/employee_add.html')
+#             #     return redirect('employee-list')
+#
+#     return render(request, 'adminusers/employee_add.html', context)
+
+
+@login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def employee_update(request, employee_username):
     if request.user.is_authenticated:
         print('employee is authenticated ---------')
@@ -301,6 +497,7 @@ def employee_update(request, employee_username):
 
 
 @login_required
+@has_access(allowed_roles=['Admin', 'Super User'])
 def employee_delete(request, employee_username):
     if request.user.is_authenticated:
         user = User.objects.exclude(role__name__iexact='Super Admin')

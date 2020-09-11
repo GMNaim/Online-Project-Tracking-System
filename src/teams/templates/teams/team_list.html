@@ -1,0 +1,99 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="col-lg-12 col-md-12">
+        <div class="card open_task">
+            <div class="header">
+                <a href="{% url 'team-add' %}"
+                >
+                    <button type="button" class="btn btn-success"><i
+                            class="fa fa-plus-square"></i><span>  Add Team</span></button>
+                </a>
+                <ul class="header-dropdown">
+                    <li><a href="javascript:void(0);" data-toggle="cardloading"
+                           data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                    <li><a href="javascript:void(0);" class="full-screen"><i
+                            class="icon-size-fullscreen"></i></a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="false"></a>
+                        <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                            <li><a href="javascript:void(0);">Action</a></li>
+                            <li><a href="javascript:void(0);">Another Action</a></li>
+                            <li><a href="javascript:void(0);">Something else</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <h4>Team List</h4>
+                <div class="body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped dataTable"
+                               id="datatable-client_list">
+                            <thead>
+                            <tr class="bg-dark" style="color: white;">
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Head</th>
+                                <th>Employees</th>
+                                <th>Team</th>
+                                <th>Total Projects</th>
+                                <th>Actions</th>
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for dep in department %}
+
+
+                                {#                            {% for department_head in department_head %}#}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ dep.name }}</td>
+                                    <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
+                                    <td>{{ dep.get_total_employee }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="actions">
+                                        <a href="{% url 'department-update' dep.name %}">
+                                            <button type="button"
+                                                    class="btn btn-success" title="Edit"><span
+                                                    class="sr-only">Edit</span> <i
+                                                    class="fa fa-edit"></i></button>
+                                        </a>
+
+                                        <a id="confirm-button-url_d"
+                                           data-department="{{ dep.name }}"
+                                           class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
+                                           data-type="confirm_department_delete"
+                                           title="Delete"><span class="sr-only">Delete</span> <i
+                                                class="fa fa-trash-o text-col-white"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {#                            {% endfor %}#}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let delete_department_url = null;
+
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            let name ="Department " + $(this).data('department');
+                delete_department_url = "/admin/department/delete/" + $(this).data('department');
+            console.log(delete_department_url);
+        });
+    </script>
+
+{% endblock %}
