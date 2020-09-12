@@ -14,12 +14,12 @@ class Team(models.Model):
 
 
 class Membership(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, unique=True)
+    team = models.ForeignKey(Team, on_delete=models.SET_DEFAULT, default=10)
     date_joined = models.DateField(auto_now_add=True)
     is_leader = models.BooleanField(default=False)
-    is_member = models.BooleanField(default=True)
+    is_member = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.get_full_name() + '-->' + self.team.name
+        return self.user.username + ' --> ' + self.team.name
 

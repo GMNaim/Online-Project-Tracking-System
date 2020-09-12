@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from accounts.decorators import has_access
 from accounts.models import Role, User
 from departments.models import Department
+from teams.models import Membership
 
 default_password = 'test123'
 
@@ -106,6 +107,7 @@ def employee_add(request):
             messages.warning(request, f"{department.name} has a department head.")
             return render(request, employee_add_error_link, context)
 
+
         else:
             # Adding user in the database
             try:
@@ -121,7 +123,7 @@ def employee_add(request):
                 user.role = role
                 user.department = department
 
-                user.set_password(password)
+                user.set_password(default_password)
 
                 file_system_obj = FileSystemStorage()
                 if profile_picture is not None:
@@ -192,6 +194,10 @@ def employee_add(request):
                     elif str(role) == 'Employee':
                         group = Group.objects.get(name__iexact='Employee')
                         group.user_set.add(user)
+
+                    #     Adding the user to Membership table for creating the team later.
+                    membership = Membership.objects.create(user=user)
+                    print('membership-------------created', membership)
 
                     print(f"{username}'s information is successfully saved.")
                     messages.success(request, f"{username} is added.")

@@ -64,6 +64,16 @@
                                         List</span></a>
                     </li>
 
+                    {% elif request.user.role.name == 'Department Head' %}
+                    <li class="top">
+                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>Team</span></a>
+                        <ul>
+                            <li class="{% if 'admin/team/list' in request.path %} active {% endif %}"><a href="{% url 'team-list' %}">Team List</a></li>
+                            <li class="{% if 'admin/team/add' in request.path %} active {% endif %}"><a href="{% url 'team-add' %}">Team Add</a></li>
+
+                        </ul>
+                    </li>
+
                 {% endif %}
 
             </ul>

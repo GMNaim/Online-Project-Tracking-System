@@ -3,9 +3,9 @@ from . import views
 
 
 urlpatterns = [
-    path('list', views.team_list, name="team-list"),
-    path('add', views.team_add, name="team-add"),
-    path('update/<int:team_id>', views.team_update, name="team-update"),
-    path('delete/<int:team_id>', views.team_delete, name="team-delete"),
+    path('team/list', views.team_list, name="team-list"),
+    path('team/add', views.team_add, name="team-add"),
+    path('team/update/<int:team_id>', views.team_update, name="team-update"),
+    path('team/delete/<int:team_id>', views.team_delete, name="team-delete"),
 
 ]

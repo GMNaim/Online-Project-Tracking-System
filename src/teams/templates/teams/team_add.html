@@ -42,14 +42,9 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect2"
                                 multiple="multiple">
-
-                            <option value="bootstrap-marketplace">Bootstrap Marketplace</option>
-                            <option value="bootstrap-theme">Bootstrap Theme</option>
-                            <option value="html">HTML</option>
-                            <option value="html-template">HTML Template</option>
-                            <option value="wp-marketplace">WordPress Marketplace</option>
-                            <option value="wp-plugin">WordPress Plugin</option>
-                            <option value="wp-theme">WordPress Theme</option>
+                            {% for employee in employee_in_department %}
+                                <option value="{{ employee.id }}">{{ employee.username }}</option>
+                            {% endfor %}
                         </select>
                         <p id="error-singleselect2"></p>
                     </div>
@@ -63,7 +58,9 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect-team-leader">
                             <option value="">Select a team leader</option>
-                            <option value="sdf">sdf</option>
+                            {% for employee in employee_in_department %}
+                                <option value="{{ employee.id }}">{{ employee.username }}</option>
+                            {% endfor %}
                         </select>
                         <p id="error-singleselect-team-leader"></p>
                     </div>

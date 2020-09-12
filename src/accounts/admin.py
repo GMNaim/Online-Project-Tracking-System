@@ -15,6 +15,7 @@ class UserAdmin(admin.ModelAdmin):
         'is_superuser', 'is_staff')
     list_display = ('id', 'username', 'email', 'role', 'department',)
     list_display_links = ('id', 'username',)
+    list_editable = ('role', 'department')
     ordering = ('id',)
     search_fields = ('username', 'email', 'role__name', 'department__name', 'gender')
     list_per_page = 30
