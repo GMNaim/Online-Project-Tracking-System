@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'base.context_processors.left_sidebar_content',  # custom left sidebar context
             ],
         },
     },
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'opts.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db_testing.sqlite3',  # I deleted admin group from db.sqlite3.
     }
 }
 

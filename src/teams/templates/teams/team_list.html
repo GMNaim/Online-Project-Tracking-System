@@ -1,3 +1,4 @@
+
 {% extends 'base/base_template.html' %}
 {% load static %}
 
@@ -63,10 +64,10 @@
                                                     class="fa fa-edit"></i></button>
                                         </a>
 
-                                        <a id="confirm-button-url_d"
-                                           data-department=""
+                                        <a id="confirm-button-url_team"
+                                           data-team="{{ team_name }}"
                                            class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
-                                           data-type="confirm_department_delete"
+                                           data-type="confirm_team_delete_type"
                                            title="Delete"><span class="sr-only">Delete</span> <i
                                                 class="fa fa-trash-o text-col-white"></i>
                                         </a>
@@ -82,13 +83,15 @@
     </div>
 
     <script>
-        let delete_department_url = null;
-
+        let delete_team_url = null;
+        // after change here change in base/js/pages/ui/dialogs.js
         $('.delete-confirm').on('click', function (event) {
+            let name ="Team " + $(this).data('team');
+            console.log(name);
             event.preventDefault();
-            let name ="Department " + $(this).data('department');
-                delete_department_url = "/admin/department/delete/" + $(this).data('department');
-            console.log(delete_department_url);
+
+            delete_team_url = "/team/delete/" + $(this).data('team');
+            console.log(delete_team_url);
         });
     </script>
 

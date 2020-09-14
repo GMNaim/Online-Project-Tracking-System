@@ -25,7 +25,7 @@ def registration_view(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name', '')
-        username = request.POST.get('username')
+        username = str(request.POST.get('username')).strip()
         email = request.POST.get('email')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
@@ -114,7 +114,7 @@ def login_view(request):
     else:
         if request.user.is_authenticated:
             return redirect('dashboard')
-    return render(request, 'accounts/login.html')
+        return render(request, 'accounts/login.html')
 
 
 @login_required(login_url='login')

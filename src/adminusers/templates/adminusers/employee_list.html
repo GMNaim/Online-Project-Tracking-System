@@ -82,11 +82,11 @@
     </div>
 
     <script>
-    // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
         let delete_user_url = null;
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
-            delete_user_url = "/admin/employee/delete/" + $(this).data('username');
+            delete_user_url = "/employee/delete/" + $(this).data('username');
             console.log(delete_user_url);
         });
     </script>

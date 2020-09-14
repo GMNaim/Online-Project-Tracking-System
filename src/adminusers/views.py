@@ -1,3 +1,4 @@
+# // adminusers/views.py
 import json
 import re
 
@@ -16,31 +17,39 @@ from departments.models import Department
 
 
 # Role Names
-super_user = 'Super User'
-admin = 'Admin'
-department_head = 'Department Head'
-team_leader = 'Team Leader'
-team_member = 'Team Member'
-employee = 'Employee'
+role_super_user = 'Super User'
+role_admin = 'Admin'
+role_department_head = 'Department Head'
+role_team_leader = 'Team Leader'
+role_team_member = 'Team Member'
+role_employee = 'Employee'
 
 default_password = 'test123'  # default pass
 # getting user group
-group_super_user = Group.objects.get(name__iexact=super_user)
-group_admin = Group.objects.get(name__iexact=admin)
-group_department_head = Group.objects.get(name__iexact=department_head)
-group_team_leader = Group.objects.get(name__iexact=team_leader)
-group_team_member = Group.objects.get(name__iexact=team_member)
-group_employee = Group.objects.get(name__iexact=employee)
+group_super_user = Group.objects.get(name__iexact=role_super_user)
+group_admin = Group.objects.get(name__iexact=role_admin)
+group_department_head = Group.objects.get(name__iexact=role_department_head)
+group_team_leader = Group.objects.get(name__iexact=role_team_leader)
+group_team_member = Group.objects.get(name__iexact=role_team_member)
+group_employee = Group.objects.get(name__iexact=role_employee)
+
+
+def sidebar_department_name(request):
+    sidebar_department_name = ''
+    if request.user.department.id != 16:
+        sidebar_department_name = request.user.department.name
+        return sidebar_department_name
 
 
 @login_required
-@has_access(allowed_roles=[admin, super_user])
+@has_access(allowed_roles=[role_admin, role_super_user])
 def employee_add(request):
+    sidebar_department_name(request)
     print(str(request.user.groups.all()[0]))
-    role_list = Role.objects.exclude(name__iexact=super_user)
+    role_list = Role.objects.exclude(name__iexact=role_super_user)
     department_list = Department.objects.all()
     existence_department_head = [user.department.name for user in
-                                 User.objects.filter(role__name__iexact=department_head)]
+                                 User.objects.filter(role__name__iexact=role_department_head)]
     # free_department_head = [(user.department.name) for user in User.objects.filter(
     #     role__name__in=['Admin', 'Super User', 'Team Leader', 'Team Member', 'Employee'])]
     not_assigned_dep_head = []
@@ -58,12 +67,13 @@ def employee_add(request):
     print('existence department', existence_department_head)
     context = {'role_list': role_list, 'department_list': department_list, 'default_password': default_password,
                'existence_department_head': existence_department_head, 'free_department_head': not_assigned_dep_head,
-               'all_department': json.dumps(all_department)}  # creating string by dumps
+               'all_department': json.dumps(all_department),
+               'sidebar_department_name': sidebar_department_name(request)}  # creating string by dumps
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name', '')
         last_name = request.POST.get('last_name', '')
-        username = request.POST.get('username')
+        username = str(request.POST.get('username')).strip
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         password = request.POST.get('password')
@@ -85,7 +95,8 @@ def employee_add(request):
                    'role': role, 'role_list': role_list, 'department_list': department_list,
                    'default_password': default_password,
                    'existence_department_head': existence_department_head,
-                   'free_department_head': not_assigned_dep_head, 'all_department': json.dumps(all_department)}
+                   'free_department_head': not_assigned_dep_head, 'all_department': json.dumps(all_department),
+                   'sidebar_department_name': sidebar_department_name}
 
         # Validating the information
         employee_add_error_link = 'adminusers/employee_add.html'
@@ -163,17 +174,17 @@ def employee_add(request):
 
                             """============ Adding group to the new users ============"""
                             group_employee.user_set.add(user)  # all user is an employee
-                            if str(role) == admin:
+                            if str(role) == role_admin:
                                 group_admin.user_set.add(user)
-                            elif str(role) == super_user:
+                            elif str(role) == role_super_user:
                                 group_super_user.user_set.add(user)
-                            elif str(role) == department_head:
+                            elif str(role) == role_department_head:
                                 group_department_head.user_set.add(user)
-                            elif str(role) == team_leader:
+                            elif str(role) == role_team_leader:
                                 group_team_leader.user_set.add(user)
-                            elif str(role) == team_member:
+                            elif str(role) == role_team_member:
                                 group_team_member.user_set.add(user)
-                            elif str(role) == employee:
+                            elif str(role) == role_employee:
                                 group_employee.user_set.add(user)
 
                             print(f"{username}' is successfully added to the database.")
@@ -195,17 +206,17 @@ def employee_add(request):
 
                     """ Adding group to the new users"""
                     group_employee.user_set.add(user)  # all user is an employee
-                    if str(role) == admin:
+                    if str(role) == role_admin:
                         group_admin.user_set.add(user)
-                    elif str(role) == super_user:
+                    elif str(role) == role_super_user:
                         group_super_user.user_set.add(user)
-                    elif str(role) == department_head:
+                    elif str(role) == role_department_head:
                         group_department_head.user_set.add(user)
-                    elif str(role) == team_leader:
+                    elif str(role) == role_team_leader:
                         group_team_leader.user_set.add(user)
-                    elif str(role) == team_member:
+                    elif str(role) == role_team_member:
                         group_team_member.user_set.add(user)
-                    elif str(role) == employee:
+                    elif str(role) == role_employee:
                         group_team_member.user_set.add(user)
 
                     print(f"{username}'s information is successfully saved.")
@@ -221,15 +232,15 @@ def employee_add(request):
 
 
 @login_required
-@has_access(allowed_roles=[admin, super_user])
+@has_access(allowed_roles=[role_admin, role_super_user])
 def employee_update(request, employee_username):
     if request.user.is_authenticated:
         print('employee is authenticated ---------')
         employee = get_object_or_404(User, username=employee_username)
-        role_list = Role.objects.exclude(name__iexact=super_user)
+        role_list = Role.objects.exclude(name__iexact=role_super_user)
         department_list = Department.objects.all()
         existence_department_head = [user.department.name for user in
-                                     User.objects.filter(role__name__iexact=department_head)]
+                                     User.objects.filter(role__name__iexact=role_department_head)]
 
         not_assigned_dep_head = []
         for dep in department_list:
@@ -247,7 +258,7 @@ def employee_update(request, employee_username):
             first_name = request.POST.get('first_name')
             middle_name = request.POST.get('middle_name')
             last_name = request.POST.get('last_name')
-            username = request.POST.get('username')
+            username = str(request.POST.get('username')).strip
             email = request.POST.get('email')
             phone = request.POST.get('phone')
             password = request.POST.get('password')
@@ -260,7 +271,6 @@ def employee_update(request, employee_username):
                 department = Department.objects.get(id=16)
             else:
                 department = Department.objects.get(id=int(department))
-
 
             print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
                   profile_picture, department, role)
@@ -344,18 +354,18 @@ def employee_update(request, employee_username):
                                 """ Adding group to the new users"""
                                 employee.groups.clear()  # clearing all groups form the employee
                                 group_employee.user_set.add(employee)
-                                if str(role) == admin:
+                                if str(role) == role_admin:
                                     group_admin.user_set.add(employee)
-                                elif str(role) == super_user:
+                                elif str(role) == role_super_user:
                                     group_super_user.user_set.add(employee)
-                                elif str(role) == department_head:
+                                elif str(role) == role_department_head:
                                     group_department_head.user_set.add(employee)
-                                elif str(role) == team_leader:
+                                elif str(role) == role_team_leader:
                                     group_team_member.user_set.add(employee)
                                     group_team_leader.user_set.add(employee)
-                                elif str(role) == team_member:
+                                elif str(role) == role_team_member:
                                     group_team_member.user_set.add(employee)
-                                elif str(role) == employee:
+                                elif str(role) == role_employee:
                                     group_team_member.user_set.add(employee)
 
                                 print(f"{employee.username}'s information is successfully updated.")
@@ -377,18 +387,18 @@ def employee_update(request, employee_username):
                         """ Adding group to the new users"""
                         employee.groups.clear()  # clearing all groups form the employee
                         group_employee.user_set.add(employee)
-                        if str(role) == admin:
+                        if str(role) == role_admin:
                             group_admin.user_set.add(employee)
-                        elif str(role) == super_user:
+                        elif str(role) == role_super_user:
                             group_super_user.user_set.add(employee)
-                        elif str(role) == department_head:
+                        elif str(role) == role_department_head:
                             group_department_head.user_set.add(employee)
-                        elif str(role) == team_leader:
+                        elif str(role) == role_team_leader:
                             group_team_member.user_set.add(employee)
                             group_team_leader.user_set.add(employee)
-                        elif str(role) == team_member:
+                        elif str(role) == role_team_member:
                             group_team_member.user_set.add(employee)
-                        elif str(role) == employee:
+                        elif str(role) == role_employee:
                             group_team_member.user_set.add(employee)
 
                         print(f"{employee.username}'s information is successfully updated.")
@@ -404,10 +414,10 @@ def employee_update(request, employee_username):
 
 
 @login_required
-@has_access(allowed_roles=[admin, super_user])
+@has_access(allowed_roles=[role_admin, role_super_user])
 def employee_delete(request, employee_username):
     if request.user.is_authenticated:
-        user = User.objects.exclude(role__name__iexact=super_user)
+        user = User.objects.exclude(role__name__iexact=role_super_user)
         context = {'employee_list': user}
         employee = get_object_or_404(User, username=employee_username)
         try:

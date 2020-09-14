@@ -1,21 +1,27 @@
+
+
 $(function () {
     $('.js-sweetalert').on('click', function () {
-        var type = $(this).data('type');
-        if (type === 'basic') {
-            showBasicMessage();
-        }
-        else if (type === 'with-title') {
-            showWithTitleMessage();
-        }
-        else if (type === 'success') {
-            showSuccessMessage();
-        }
-        else if (type === 'confirm') {
+        let type = $(this).data('type');
+        // if (type === 'basic') {
+        //     showBasicMessage();
+        // }
+        // else if (type === 'with-title') {
+        //     showWithTitleMessage();
+        // }
+        // else if (type === 'success') {
+        //     showSuccessMessage();
+        // }
+        if (type === 'confirm') {
             showConfirmMessage();
+        }
+        else if(type === 'confirm_team_delete_type'){
+            showTeamDeleteConfirmMessage();
         }
         else if(type === 'confirm_department_delete'){
             showDepartmentDeleteConfirmMessage();
         }
+
         else if (type === 'cancel') {
             showCancelMessage();
         }
@@ -38,17 +44,17 @@ $(function () {
 });
 
 //These codes takes from http://t4t5.github.io/sweetalert/
-function showBasicMessage() {
-    swal("Here's a message!");
-}
-
-function showWithTitleMessage() {
-    swal("Here's a message!", "It's pretty, isn't it?");
-}
-
-function showSuccessMessage() {
-    swal("Good job!", "You clicked the button!", "success");
-}
+// function showBasicMessage() {
+//     swal("Here's a message!");
+// }
+//
+// function showWithTitleMessage() {
+//     swal("Here's a message!", "It's pretty, isn't it?");
+// }
+//
+// function showSuccessMessage() {
+//     swal("Good job!", "You clicked the button!", "success");
+// }
 
 function showConfirmMessage() {
     swal({
@@ -68,7 +74,7 @@ function showConfirmMessage() {
 function showDepartmentDeleteConfirmMessage() {
     swal({
         title: "Are you sure?",
-        text: "Department will be delete permanently.",
+        text: "Department will be deleted permanently.",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
@@ -80,85 +86,100 @@ function showDepartmentDeleteConfirmMessage() {
     });
 }
 
-
-
-
-
-
-function showCancelMessage() {
+function showTeamDeleteConfirmMessage() {
     swal({
         title: "Are you sure?",
-        text: "You will not be able to recover this imaginary file!",
+        text: "Team will be deleted permanently. You will lost all team members and team leader.",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel plx!",
-        closeOnConfirm: false,
-        closeOnCancel: false
-    }, function (isConfirm) {
-        if (isConfirm) {
-            swal("Deleted!", "Your imaginary file has been deleted.", "success");
-        } else {
-            swal("Cancelled", "Your imaginary file is safe :)", "error");
-        }
-    });
-}
-
-function showWithCustomIconMessage() {
-    swal({
-        title: "Sweet!",
-        text: "Here's a custom image.",
-        imageUrl: "../assets/images/sm/avatar2.jpg"
-    });
-}
-
-function showHtmlMessage() {
-    swal({
-        title: "HTML <small>Title</small>!",
-        text: "A custom <span style=\"color: #CC0000\">html<span> message.",
-        html: true
-    });
-}
-
-function showAutoCloseTimerMessage() {
-    swal({
-        title: "Auto close alert!",
-        text: "I will close in 2 seconds.",
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-function showPromptMessage() {
-    swal({
-        title: "An input!",
-        text: "Write something interesting:",
-        type: "input",
-        showCancelButton: true,
-        closeOnConfirm: false,
-        animation: "slide-from-top",
-        inputPlaceholder: "Write something"
-    }, function (inputValue) {
-        if (inputValue === false) return false;
-        if (inputValue === "") {
-            swal.showInputError("You need to write something!"); return false
-        }
-        swal("Nice!", "You wrote: " + inputValue, "success");
-    });
-}
-
-function showAjaxLoaderMessage() {
-    swal({
-        title: "Ajax request example",
-        text: "Submit to run ajax request",
-        type: "info",
-        showCancelButton: true,
-        closeOnConfirm: false,
-        showLoaderOnConfirm: true,
+        closeOnConfirm: false
     }, function () {
-        setTimeout(function () {
-            swal("Ajax request finished!");
-        }, 2000);
+        window.location.href = delete_team_url;
+        swal("Deleted!", "Team has been deleted.", "success");
     });
 }
+
+
+
+
+
+//
+// function showCancelMessage() {
+//     swal({
+//         title: "Are you sure?",
+//         text: "You will not be able to recover this imaginary file!",
+//         type: "warning",
+//         showCancelButton: true,
+//         confirmButtonColor: "#dc3545",
+//         confirmButtonText: "Yes, delete it!",
+//         cancelButtonText: "No, cancel plx!",
+//         closeOnConfirm: false,
+//         closeOnCancel: false
+//     }, function (isConfirm) {
+//         if (isConfirm) {
+//             swal("Deleted!", "Your imaginary file has been deleted.", "success");
+//         } else {
+//             swal("Cancelled", "Your imaginary file is safe :)", "error");
+//         }
+//     });
+// }
+//
+// function showWithCustomIconMessage() {
+//     swal({
+//         title: "Sweet!",
+//         text: "Here's a custom image.",
+//         imageUrl: "../assets/images/sm/avatar2.jpg"
+//     });
+// }
+//
+// function showHtmlMessage() {
+//     swal({
+//         title: "HTML <small>Title</small>!",
+//         text: "A custom <span style=\"color: #CC0000\">html<span> message.",
+//         html: true
+//     });
+// }
+//
+// function showAutoCloseTimerMessage() {
+//     swal({
+//         title: "Auto close alert!",
+//         text: "I will close in 2 seconds.",
+//         timer: 2000,
+//         showConfirmButton: false
+//     });
+// }
+//
+// function showPromptMessage() {
+//     swal({
+//         title: "An input!",
+//         text: "Write something interesting:",
+//         type: "input",
+//         showCancelButton: true,
+//         closeOnConfirm: false,
+//         animation: "slide-from-top",
+//         inputPlaceholder: "Write something"
+//     }, function (inputValue) {
+//         if (inputValue === false) return false;
+//         if (inputValue === "") {
+//             swal.showInputError("You need to write something!"); return false
+//         }
+//         swal("Nice!", "You wrote: " + inputValue, "success");
+//     });
+// }
+//
+// function showAjaxLoaderMessage() {
+//     swal({
+//         title: "Ajax request example",
+//         text: "Submit to run ajax request",
+//         type: "info",
+//         showCancelButton: true,
+//         closeOnConfirm: false,
+//         showLoaderOnConfirm: true,
+//     }, function () {
+//         setTimeout(function () {
+//             swal("Ajax request finished!");
+//         }, 2000);
+//     });
+// }

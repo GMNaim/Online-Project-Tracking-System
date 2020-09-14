@@ -48,33 +48,34 @@
                             </thead>
                             <tbody>
                             {% for dep in department %}
+                                {% if dep.id != 16 %}
 
+                                    {#                            {% for department_head in department_head %}#}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ dep.name }}</td>
+                                        <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
+                                        <td>{{ dep.get_total_employee }}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="actions">
+                                            <a href="{% url 'department-update' dep.name %}">
+                                                <button type="button"
+                                                        class="btn btn-success" title="Edit"><span
+                                                        class="sr-only">Edit</span> <i
+                                                        class="fa fa-edit"></i></button>
+                                            </a>
 
-                                {#                            {% for department_head in department_head %}#}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ dep.name }}</td>
-                                    <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
-                                    <td>{{ dep.get_total_employee }}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="actions">
-                                        <a href="{% url 'department-update' dep.name %}">
-                                            <button type="button"
-                                                    class="btn btn-success" title="Edit"><span
-                                                    class="sr-only">Edit</span> <i
-                                                    class="fa fa-edit"></i></button>
-                                        </a>
-
-                                        <a id="confirm-button-url_d"
-                                           data-department="{{ dep.name }}"
-                                           class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
-                                           data-type="confirm_department_delete"
-                                           title="Delete"><span class="sr-only">Delete</span> <i
-                                                class="fa fa-trash-o text-col-white"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                            <a id="confirm-button-url_d"
+                                               data-department="{{ dep.name }}"
+                                               class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
+                                               data-type="confirm_department_delete"
+                                               title="Delete"><span class="sr-only">Delete</span> <i
+                                                    class="fa fa-trash-o text-col-white"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                                 {#                            {% endfor %}#}
                             {% endfor %}
                             </tbody>
@@ -91,7 +92,7 @@
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
             let name ="Department " + $(this).data('department');
-                delete_department_url = "/admin/department/delete/" + $(this).data('department');
+            delete_department_url = "/department/delete/" + $(this).data('department');
             console.log(delete_department_url);
         });
     </script>

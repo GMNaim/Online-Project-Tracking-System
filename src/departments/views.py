@@ -27,7 +27,7 @@ def department_add(request):
 
         context = {'department': department, 'not_assigned': 'Not Assigned'}
         if request.method == "POST":
-            name = request.POST['name']
+            name = str(request.POST.get('name')).strip()
             description = request.POST['description']
             context['description'] = description
             context['name'] = name
@@ -66,7 +66,7 @@ def department_update(request, department_name):
 
         context = {'department': department, 'not_assigned': 'Not Assigned', 'selected_department': selected_department}
         if request.method == "POST":
-            name = request.POST['name']
+            name = str(request.POST['name']).strip()
             description = request.POST['description']
             context['description'] = description
             context['name'] = name
