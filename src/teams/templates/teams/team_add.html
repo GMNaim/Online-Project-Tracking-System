@@ -42,7 +42,7 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect2"
                                 multiple="multiple">
-                            {% for employee in employee_in_department %}
+                            {% for employee in free_employee_in_department %}
                                 <option value="{{ employee.id }}">{{ employee.username }}</option>
                             {% endfor %}
                         </select>
@@ -58,7 +58,7 @@
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect-team-leader">
                             <option value="">Select a team leader</option>
-                            {% for employee in employee_in_department %}
+                            {% for employee in free_employee_in_department %}
                                 <option value="{{ employee.id }}">{{ employee.username }}</option>
                             {% endfor %}
                         </select>

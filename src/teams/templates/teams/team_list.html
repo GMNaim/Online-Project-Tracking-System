@@ -37,9 +37,9 @@
                             <tr class="bg-dark" style="color: white;">
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Head</th>
-                                <th>Employees</th>
-                                <th>Team</th>
+                                <th>Team Leader</th>
+                                <th>Team Members</th>
+                                <th>Department</th>
                                 <th>Total Projects</th>
                                 <th>Actions</th>
 
@@ -47,19 +47,16 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for dep in department %}
-
-
-                                {#                            {% for department_head in department_head %}#}
+                            {% for team_name, team_leader, team_member, member_count, department in team_zipped %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ dep.name }}</td>
-                                    <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
-                                    <td>{{ dep.get_total_employee }}</td>
-                                    <td></td>
+                                    <td>{{ team_name }}</td>
+                                    <td>{{ team_leader|default_if_none:'' }}</td>
+                                    <td>{{ team_member }} ({{ member_count }})</td>
+                                    <td>{{ department }}</td>
                                     <td></td>
                                     <td class="actions">
-                                        <a href="{% url 'department-update' dep.name %}">
+                                        <a href="{% url 'team-update' team_name %}">
                                             <button type="button"
                                                     class="btn btn-success" title="Edit"><span
                                                     class="sr-only">Edit</span> <i
@@ -67,7 +64,7 @@
                                         </a>
 
                                         <a id="confirm-button-url_d"
-                                           data-department="{{ dep.name }}"
+                                           data-department=""
                                            class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
                                            data-type="confirm_department_delete"
                                            title="Delete"><span class="sr-only">Delete</span> <i
@@ -75,7 +72,6 @@
                                         </a>
                                     </td>
                                 </tr>
-                                {#                            {% endfor %}#}
                             {% endfor %}
                             </tbody>
                         </table>

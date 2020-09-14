@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from teams.models import Membership
+# from teams.models import Membership
 from .decorators import has_access
 from .models import Department
 from .models import User
@@ -84,8 +84,8 @@ def registration_view(request):
                 group.user_set.add(user)
 
                 #     Adding the user to Membership table for creating the team later.
-                membership = Membership.objects.create(user=user)
-                print('membership-------------created', membership)
+                # membership = Membership.objects.create(user=user)
+                # print('membership-------------created', membership)
 
                 messages.success(request,
                                  f"Hi {first_name} {last_name}, you have successfully registered. Please sign in now.")

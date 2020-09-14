@@ -4,6 +4,7 @@ from django.db import models
 
 from departments.models import Department
 # from teams.models import Team
+from teams.models import Team
 
 
 class Role(models.Model):
@@ -41,7 +42,9 @@ class User(AbstractUser):
     profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True,
                                         default='users/default_user.png')
 
-    # team_member = models.ForeignKey(Team, on_delete=models.PROTECT, blank=True, null=True, default=None)
+    team_member = models.ForeignKey(Team, on_delete=models.SET_DEFAULT, related_name='team_member_user', blank=True,
+                                    null=True, default=10)
+    is_team_leader = models.BooleanField(default=False)
 
     def get_full_name(self):
         if self.first_name is None:

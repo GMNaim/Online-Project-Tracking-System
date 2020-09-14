@@ -61,13 +61,13 @@
                 <div class="form-group">
                     <label>Phone</label>
                     <input name="phone" type="number" value="{{ employee.mobile_number|default_if_none:'' }}"
-                           class="form-control " required="">
+                           class="form-control ">
                 </div>
 
                 <div class=" form-group w-100">
-                    <label for="single-selection">Role</label>
+                    <label for="single-selection_role">Role</label>
                     <div class="multiselect_div">
-                        <select id="single-selection" name="role"
+                        <select id="single-selection_role" name="role"
                                 class="multiselect multiselect-custom" data-parsley-required
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect">
@@ -83,23 +83,42 @@
                     </div>
                 </div>
 
-                <div class=" form-group w-100">
-                    <label for="single-selection">Department</label>
+
+
+
+                <div id="all_department_select_id" class=" form-group w-100">
+                        <label for="single-selection">Department</label>
+                        <div class="multiselect_div">
+                            <select id="single-selection" name="department"
+                                    class="multiselect multiselect-custom" data-parsley-required
+                                    data-parsley-trigger-after-failure="change"
+                                    data-parsley-errors-container="#error-singleselect2">
+                                <option value="">Select a Department</option>
+
+                                {% for e_department in department_list %}
+                                    <option value="{{ e_department.id }}"
+                                            {% if employee.department.id == e_department.id %} selected {% endif %}
+                                    >{{ e_department.name }}</option>
+                                {% endfor %}
+
+                            </select>
+                            <p id="error-singleselect2"></p>
+                        </div>
+                </div>
+
+                <!-- this selection is for if select department head role -->
+                <div id="free-department-select_id" hidden class=" form-group w-100" >
+                    <label for="single-selection-2">Department</label>
                     <div class="multiselect_div">
-                        <select id="single-selection" name="department"
-                                class="multiselect multiselect-custom" data-parsley-required
-                                data-parsley-trigger-after-failure="change"
-                                data-parsley-errors-container="#error-singleselect2">
+                        <select id="single-selection-2" name="department_"
+                                class="multiselect multiselect-custom">
                             <option value="">Select a Department</option>
-
-                            {% for e_department in department_list %}
-                                <option value="{{ e_department.id }}"
-                                        {% if employee.department.id == e_department.id %} selected {% endif %}
-                                >{{ e_department.name }}</option>
+                            {% for free_department in free_department_head %}
+                                <option {% if free_department.name == department.name %} selected {% endif %}
+                                                                                         value="{{ free_department.id }}">{{ free_department.name }}</option>
                             {% endfor %}
-
                         </select>
-                        <p id="error-singleselect2"></p>
+                        <p id="error-singleselect3"></p>
                     </div>
                 </div>
 
@@ -139,6 +158,10 @@
                 </div>
 
 
+                {#this  input is for getting the json data from the view#}
+                <input value="{{ all_department }}" id="all_department_input" hidden>
+                <input value="{{ existence_department_head }}" id="existence_department_input" hidden>
+
                 <br>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
@@ -148,6 +171,59 @@
 
     <script>
         document.getElementById("radio-gender" + "{{ employee.gender }}").checked = true;
+
+    </script>
+
+    <script>
+        // ============  Department options change =================
+
+
+        $(document).ready(function () {
+            let all_department = JSON.parse($("#all_department_input").val());
+            let existence_department_head = $("#existence_department_input").val();
+            console.log(existence_department_head, typeof existence_department_head);
+            let remove_extra_char = existence_department_head.replace(/['\[\]]+/g, '');
+            console.log(remove_extra_char);
+            let existing_dep_array = remove_extra_char.split(', ');
+            console.log(existing_dep_array);
+
+            $("#single-selection_role").change(function (e) {
+                e.preventDefault();
+                let selected_role = document.querySelector('#single-selection_role option:checked').innerText;
+                let department_select = document.querySelector('#single-selection');
+                if (selected_role.toLowerCase() === 'department head') {
+                    e.preventDefault();
+                    console.log(selected_role, 'selected--09');
+                    console.log('*************** ', e);
+                    $("#all_department_select_id").hide();
+                    $("#free-department-select_id").removeAttr("hidden");
+                    $("#free-department-select_id").show();
+
+                } else if (selected_role.toLowerCase() === 'admin') {
+                    e.preventDefault();
+                    console.log(selected_role)
+                    $("#free-department-select_id").hide();
+                    console.log('department head is not selected');
+                    $("#all_department_select_id").show();
+                }
+            });
+            $("#submit-btn").click(function(){
+                if ($("#single-selection").val() === ''){
+                    $(this).attr('disabled', 'disabled');
+                    console.log('single-selection disabled--------------------');
+                    console.log($("#single-selection-2").val())
+                }
+                else if($("#single-selection-2").val() === ''){
+                    $(this).attr('disabled', 'disabled');
+                    console.log('single-selection 2 disabled--------------------');
+                    console.log($("#single-selection").val())
+                }
+                $("#basic-form").submit();
+                console.log('form submitted------------------------');
+            });
+
+        });
+
 
     </script>
 

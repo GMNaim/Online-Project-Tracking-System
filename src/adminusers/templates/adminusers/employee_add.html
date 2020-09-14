@@ -62,7 +62,7 @@
 
                 <div class="form-group">
                     <label>Phone</label>
-                    <input name="phone" type="number" value="{{ phone }}" class="form-control " required="">
+                    <input name="phone" type="number" value="{{ phone }}" class="form-control">
                 </div>
 
                 <div class=" form-group w-100">
@@ -86,7 +86,7 @@
                     <label for="single-selection">Department</label>
                     <div class="multiselect_div">
                         <select id="single-selection" name="department"
-                                class="multiselect multiselect-custom"
+                                class="multiselect multiselect-custom"  data-parsley-required
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect2">
                             <option value="">Select a Department</option>
@@ -103,8 +103,8 @@
                                 <div id="free-department-select_id" hidden class=" form-group w-100" >
                                     <label for="single-selection-2">Department</label>
                                     <div class="multiselect_div">
-                                        <select id="single-selection-2" name="department_h"
-                                                class="multiselect multiselect-custom"
+                                        <select id="single-selection-2" name="department"
+                                                class="multiselect multiselect-custom"  data-parsley-required
                                                 data-parsley-trigger-after-failure="change"
                                                 data-parsley-errors-container="#error-singleselect3">
                                             <option value="">Select a Department</option>
@@ -151,7 +151,7 @@
                            data-default-file={% static 'base/images/default_user.png' %}>
                     <p id="dropify-event"></p>
                 </div>
-                {#this is input is for getting the json data from the view#}
+                {#this  input is for getting the json data from the view#}
                 <input value="{{ all_department }}" id="all_department_input" hidden>
                 <input value="{{ existence_department_head }}" id="existence_department_input" hidden>
                 <br>
@@ -203,9 +203,10 @@
                     console.log('*************** ', e);
 
                     $("#all_department_select_id").hide();
-                    $("#all_department_select_id").attr('hidden');
-                    $("#free-department-select_id").show();
+                    {#$(this).attr('hidden');#}
                     $("#free-department-select_id").removeAttr("hidden");
+                    $("#free-department-select_id").show();
+
 
                     //  let all_department_list = [];
                    // all_department_list = [];
@@ -230,15 +231,38 @@
                    // $('#single-selection').append(all_department_list).multiSelect('refresh')  // adding the options to the select..
 
 
-                } else {
+                } else if (selected_role.toLowerCase() === 'admin') {
                     e.preventDefault();
-                    $("#all_department_select_id").show();
-                    $("#all_department_select_id").removeAttr('hidden');
+                    console.log(selected_role)
                     $("#free-department-select_id").hide();
-                    $("#free-department-select_id").attr("hidden");
+                    console.log('department head is not selected');
+                    $("#all_department_select_id").show();
+
+                   // $("#all_department_select_id").removeAttr('hidden');
+
+                    {#$(this).hide();#}
+
                 }
 
             });
+
+
+            $("#submit-btn").click(function(){
+                if ($("#single-selection").val() === ''){
+                    $(this).attr('disabled', 'disabled');
+                    console.log('single-selection disabled--------------------');
+                    console.log($("#single-selection-2").val())
+                }
+                else if($("#single-selection-2").val() === ''){
+                    $(this).attr('disabled', 'disabled');
+                    console.log('single-selection 2 disabled--------------------');
+                    console.log($("#single-selection").val())
+                }
+
+                $("#basic-form").submit();
+                console.log('form submitted------------------------');
+            });
+
         });
 
 

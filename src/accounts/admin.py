@@ -12,10 +12,10 @@ class UserAdmin(admin.ModelAdmin):
     fields = (
         'first_name', 'middle_name', 'last_name', 'gender', 'username', 'email', 'password', 'mobile_number',
         'address', 'department', 'role', 'profile_picture', 'groups', 'user_permissions', 'date_joined', 'last_login', 'is_active',
-        'is_superuser', 'is_staff')
-    list_display = ('id', 'username', 'email', 'role', 'department',)
+        'is_superuser', 'is_staff', 'team_member', 'is_team_leader')
+    list_display = ('id', 'username', 'email', 'role', 'department', 'team_member', 'is_team_leader')
     list_display_links = ('id', 'username',)
-    list_editable = ('role', 'department')
+    list_editable = ('role', 'department', 'team_member', 'is_team_leader')
     ordering = ('id',)
     search_fields = ('username', 'email', 'role__name', 'department__name', 'gender')
     list_per_page = 30
