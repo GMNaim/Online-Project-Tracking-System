@@ -39,362 +39,57 @@
                             <th>Client ID</th>
                             <th>Phone</th>
                             <th>Company Name</th>
-                            <th>Address</th>
+                            <th>Date Added</th>
                             <th>Actions</th>
 
 
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Tiger Nixon</td>
-                            <td>Tiger Nixon</td>
-                            <td>System Architect</td>
-                            <td>Edinburgh</td>
-                            <td>2011/04/25</td>
-                            <td class="actions">
-                                <button type="button"
-                                        class="btn btn-success" title="Edit"><span
-                                        class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Garrett Winters</td>
-                            <td>Garrett Winters</td>
-                            <td>Accountant</td>
-                            <td>Tokyo</td>
-                            <td>2011/07/25</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Ashton Cox</td>
-                            <td>Ashton Cox</td>
-                            <td>Junior Technical Author</td>
-                            <td>San Francisco</td>
-                            <td>2009/01/12</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Cedric Kelly</td>
-                            <td>Cedric Kelly</td>
-                            <td>Senior Javascript Developer</td>
-                            <td>Edinburgh</td>
-                            <td>2012/03/29</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Airi Satou</td>
-                            <td>Airi Satou</td>
-                            <td>Accountant</td>
-                            <td>Tokyo</td>
+                        {% for client in client_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.client_id }}</td>
+                                <td>{{ client.phone }}</td>
+                                <td>{{ client.company_name }}</td>
+                                <td>{{ client.date_added|date }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'client-update' client.client_id %}">
+                                        <button type="button"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
 
-                            <td>2008/11/28</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Brielle Williamson</td>
-                            <td>Brielle Williamson</td>
-                            <td>Integration Specialist</td>
-                            <td>New York</td>
-
-                            <td>2012/12/02</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Herrod Chandler</td>
-                            <td>Herrod Chandler</td>
-                            <td>Sales Assistant</td>
-                            <td>San Francisco</td>
-
-                            <td>2012/08/06</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>Rhona Davidson</td>
-                            <td>Rhona Davidson</td>
-                            <td>Integration Specialist</td>
-                            <td>Tokyo</td>
-
-                            <td>2010/10/14</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>Colleen Hurst</td>
-                            <td>Colleen Hurst</td>
-                            <td>Javascript Developer</td>
-                            <td>San Francisco</td>
-
-                            <td>2009/09/15</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>Sonya Frost</td>
-                            <td>Sonya Frost</td>
-                            <td>Software Engineer</td>
-                            <td>Edinburgh</td>
-
-                            <td>2008/12/13</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>11</td>
-                            <td>Jena Gaines</td>
-                            <td>Jena Gaines</td>
-                            <td>Office Manager</td>
-                            <td>London</td>
-
-                            <td>2008/12/19</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12</td>
-                            <td>Quinn Flynn</td>
-                            <td>Quinn Flynn</td>
-                            <td>Support Lead</td>
-                            <td>Edinburgh</td>
-
-                            <td>2013/03/03</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>13</td>
-                            <td>Charde Marshall</td>
-                            <td>Charde Marshall</td>
-                            <td>Regional Director</td>
-                            <td>San Francisco</td>
-
-                            <td>2008/10/16</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>14</td>
-                            <td>Haley Kennedy</td>
-                            <td>Haley Kennedy</td>
-                            <td>Senior Marketing Designer</td>
-                            <td>London</td>
-
-                            <td>2012/12/18</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>15</td>
-                            <td>Tatyana Fitzpatrick</td>
-                            <td>Tatyana Fitzpatrick</td>
-                            <td>Regional Director</td>
-                            <td>London</td>
-
-                            <td>2010/03/17</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>16</td>
-                            <td>Michael Silva</td>
-                            <td>Michael Silva</td>
-                            <td>Marketing Designer</td>
-                            <td>London</td>
-
-                            <td>2012/11/27</td>
-                            <td>
-                                <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                        class="fa fa-edit"></i></button>
-                                <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                        class="fa fa-trash-o"></i></button>
-                            </td>
-                        </tr>
+                                    <a id="confirm-button-url" data-client_id="{{ client.client_id }}"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="client_delete_confirm"
+                                       title="Delete"><span class="sr-only">Delete</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
 
                         </tbody>
                     </table>
                 </div>
 
-
-                <!-- <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped"
-                        id="addrowExample">
-                        <thead>
-                            <tr class="bg-dark" style="color: white;">
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Company Name</th>
-                                <th>Company Name</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            <tr class="gradeA">
-                                <td>Garrett Winters</td>
-                                <td>Accountant</td>
-                                <td>Tokyo</td>
-                                <td>Tokyo</td>
-                                <td class=" ">
-                                    <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                            class="fa fa-edit"></i></button> <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                            class="fa fa-trash-o"></i></button>
-                                </td>
-                            </tr>
-                            <tr class="gradeA">
-                                <td>Ashton Cox</td>
-                                <td>Junior Technical Author</td>
-                                <td>San Francisco</td>
-                                <td>San Francisco</td>
-                                <td class=" ">
-                                    <button type="button" class="btn btn-success"
-                                        title="Edit"><span class="sr-only">Edit</span> <i
-                                            class="fa fa-edit"></i></button> <button
-                                        type="button" class="btn btn-danger"
-                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                            class="fa fa-trash-o"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Office</th>
-                                <th>Actions</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div> -->
             </div>
         </div>
     </div>
 </div>
 
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_client_url = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_client_url = "/client/delete/" + $(this).data('client_id');
+            console.log(delete_client_url);
+        });
+    </script>
 
 {% endblock %}

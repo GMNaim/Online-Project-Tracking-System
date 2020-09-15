@@ -5,7 +5,7 @@
 
     <div class="card open_task">
         <div class="header text-center">
-            <h2>Add Project</h2>
+            <h2>Update Project :: </h2>
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <form id="basic-form" method="POST" action="{% url 'project-add' %}" novalidate=""
+            <form id="basic-form" method="POST" action="{% url 'project-update' project_code %}" novalidate=""
                   style="padding: 0 167px;">
                 {% csrf_token %}
                 <div class="form-group">
@@ -42,7 +42,7 @@
                                 data-parsley-errors-container="#error-singleselect">
                             <option value="">Select a client</option>
                             {% for client in client_list %}
-                                <option value="{{ client.id }}" {% if selected_client == client.id %}
+                                <option value="{{ client.id }}" {% if client.id == selected_client.id %}
                                         selected {% endif %}>{{ client.name }} :: {{ client.company_name }}</option>
                             {% endfor %}
                         </select>
@@ -60,7 +60,7 @@
                                 data-parsley-errors-container="#error-singleselect-dep">
                             <option value="">Select a department</option>
                             {% for department in department_list %}
-                                <option value="{{ department.id }}"{% if selected_department == department.id %}
+                                <option value="{{ department.id }}"{% if selected_department.id == department.id %}
                                         selected {% endif %} >{{ department.name }}</option>
                             {% endfor %}
 
@@ -81,7 +81,7 @@
                     <div class="input-group">
                         <input id="delivery_date" data-provide="datepicker" name="delivery_date"
                                data-date-autoclose="true"
-                               required validateDate value="{{ delivery_date|date }}"
+                               required validateDate value="{{ delivery_date }}"
                                class="form-control" data-date-format="yyyy-mm-dd"
                                data-parsley-required data-parsley-trigger-after-failure="change"
                                data-parsley-errors-container="#error-date">

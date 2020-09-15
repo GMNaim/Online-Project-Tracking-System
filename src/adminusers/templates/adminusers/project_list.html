@@ -2,341 +2,91 @@
 {% load static %}
 {% block main_content %}
 
-<div class="card open_task">
-    <div class="header">
-        <a href="{% url 'project-add' %}">
-            <button type="button" class="btn btn-success"><i
-                    class="fa fa-plus-square"></i><span> Add New Project</span></button>
-        </a>
-        <ul class="header-dropdown">
-            <li><a href="javascript:void(0);" data-toggle="cardloading"
-                   data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
-            <li><a href="javascript:void(0);" class="full-screen"><i
-                    class="icon-size-fullscreen"></i></a></li>
-            <li class="dropdown">
-                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
-                   role="button" aria-haspopup="true" aria-expanded="false"></a>
-                <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
-                    <li><a href="javascript:void(0);">Action</a></li>
-                    <li><a href="javascript:void(0);">Another Action</a></li>
-                    <li><a href="javascript:void(0);">Something else</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <div class="body">
-        <h4>Project List</h4>
+    <div class="card open_task">
+        <div class="header">
+            <a href="{% url 'project-add' %}">
+                <button type="button" class="btn btn-success"><i
+                        class="fa fa-plus-square"></i><span> Add New Project</span></button>
+            </a>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
         <div class="body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
-                       id="datatable-project_list">
-                    <thead>
-                    <tr class="bg-dark" style="color: white;">
-                        <th>#</th>
-                        <th>Project Name</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Client</th>
-                        <th>Added Date</th>
-                        <th>Actions</th>
+            <h4>Project List</h4>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
+                           id="datatable-project_list">
+                        <thead>
+                        <tr class="bg-dark" style="color: white;">
+                            <th>#</th>
+                            <th>Project Name</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Client</th>
+                            <th>Added Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
 
+                        <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.department.name }}</td>
+                                <td>{{ project.get_status_display }}</td>
+                                <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
+                                <td>{{ project.created_at|date }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'project-update' project.code %}">
+                                        <button type="button"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
 
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>a Bank</td>
-                        <td>2011/04/25</td>
-                        <td class="actions">
-                            <button type="button"
-                                    class="btn btn-success" title="Edit"><span
-                                    class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Garrett Winters</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td> Bank</td>
-                        <td>2011/07/25</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Ashton Cox</td>
-                        <td>Junior Technical Author</td>
-                        <td>San Francisco</td>
-                        <td>Islamic Bank</td>
-                        <td>2009/01/12</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Cedric Kelly</td>
-                        <td>Senior Javascript Developer</td>
-                        <td>Edinburgh</td>
-                        <td>Islamic Bank</td>
-                        <td>2012/03/29</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Airi Satou</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>ccc</td>
+                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="team_delete_confirm"
+                                       title="Delete"><span class="sr-only">Delete</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
 
-                        <td>2008/11/28</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Brielle Williamson</td>
-                        <td>Integration Specialist</td>
-                        <td>New York</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2012/12/02</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Herrod Chandler</td>
-                        <td>Sales Assistant</td>
-                        <td>San Francisco</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2012/08/06</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Rhona Davidson</td>
-                        <td>Integration Specialist</td>
-                        <td>Tokyo</td>
-                        <td>ddd</td>
-
-                        <td>2010/10/14</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Colleen Hurst</td>
-                        <td>Javascript Developer</td>
-                        <td>San Francisco</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2009/09/15</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Sonya Frost</td>
-                        <td>Software Engineer</td>
-                        <td>Edinburgh</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2008/12/13</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>Jena Gaines</td>
-                        <td>Office Manager</td>
-                        <td>London</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2008/12/19</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>Quinn Flynn</td>
-                        <td>Support Lead</td>
-                        <td>Edinburgh</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2013/03/03</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>Charde Marshall</td>
-                        <td>Regional Director</td>
-                        <td>San Francisco</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2008/10/16</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>Haley Kennedy</td>
-                        <td>Senior Marketing Designer</td>
-                        <td>London</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2012/12/18</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>Tatyana Fitzpatrick</td>
-                        <td>Regional Director</td>
-                        <td>London</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2010/03/17</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>Michael Silva</td>
-                        <td>Marketing Designer</td>
-                        <td>London</td>
-                        <td>Islamic Bank</td>
-
-                        <td>2012/11/27</td>
-                        <td>
-                            <button type="button" class="btn btn-success"
-                                    title="Edit"><span class="sr-only">Edit</span> <i
-                                    class="fa fa-edit"></i></button>
-                            <button
-                                    type="button" class="btn btn-danger"
-                                    title="Delete"><span class="sr-only">Delete</span> <i
-                                    class="fa fa-trash-o"></i></button>
-                        </td>
-                    </tr>
-
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
         </div>
     </div>
-</div>
+    </div>
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_project_url = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_project_url = "/project/delete/" + $(this).data('project');
+            console.log(delete_project_url);
+        });
+    </script>
+
 
 
 {% endblock %}

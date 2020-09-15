@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-# from teams.models import Membership
+from adminusers.models import Client
+from teams.models import Team
 from .decorators import has_access
 from .models import Department
 from .models import User
@@ -16,8 +17,11 @@ from .models import User
 @has_access(allowed_roles=['Super User', 'Admin', 'Employee', 'Department Head', 'Team Leader', 'Team Member'])
 def dashboard(request):
     total_employee = User.objects.filter(is_active=True).count()
-    total_department = Department.objects.filter(is_active=True).count()
-    context = {'total_employee': total_employee, 'total_department': total_department, 'selected': True}
+    total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
+    total_team = Team.objects.exclude(id=10).count()
+    total_client = Client.objects.all().count()
+    context = {'total_employee': total_employee, 'total_department': total_department, 'total_team': total_team,
+               'total_client': total_client}
     return render(request, 'adminusers/dashboard.html', context)
 
 
@@ -83,10 +87,6 @@ def registration_view(request):
                 print(group, '--======================--')
                 group.user_set.add(user)
 
-                #     Adding the user to Membership table for creating the team later.
-                # membership = Membership.objects.create(user=user)
-                # print('membership-------------created', membership)
-
                 messages.success(request,
                                  f"Hi {first_name} {last_name}, you have successfully registered. Please sign in now.")
                 return redirect('login')
@@ -104,7 +104,8 @@ def login_view(request):
     if request.method == "POST":  # If method=POST then request is valid otherwise not
         employee_username = request.POST['username']  # Collecting employee id
         password = request.POST['password']  # Collecting password
-        user = authenticate(username=employee_username, password=password)  # If user is valid then authenticte otherwise not
+        user = authenticate(username=employee_username,
+                            password=password)  # If user is valid then authenticte otherwise not
         if user is not None:
             login(request, user)  # If valid user then login
             return redirect('dashboard')

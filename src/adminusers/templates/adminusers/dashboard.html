@@ -7,9 +7,8 @@
 
 
             <div class=" ">
-                {% if request.user.role.name == 'Admin' %}
+                {% if request.user.role.name == 'Admin' or request.user.role.name == 'Super User' %}
                 <div class="dashboard-card-group">
-
 
                         <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                             <a href="{% url 'employee-list' %}">
@@ -40,7 +39,7 @@
 
                             <div>
                                 <div class="h4 mb-0 text-light">
-                                    <span class="count">1238</span>
+                                    <span class="count">{{total_team}}</span>
                                 </div>
                                 <small
                                         class="text-light text-uppercase font-weight-bold">Team</small>
@@ -92,14 +91,14 @@
                     </div>
 
                     <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                        <a href="#">
+                        <a href="{% url 'client-list' %}">
                         <div class="dashboard-card-body l-seagreen">
                             <div class="h1 text-right text-secondary mb-4">
                                 <i class="fa fa-address-book"></i>
                             </div>
                             <div>
                                 <div class="h4 mb-0 text-dark">
-                                    <span class="count">28</span>
+                                    <span class="count">{{ total_client }}</span>
                                 </div>
                                 <small
                                         class="text-uppercase font-weight-bold text-secondary">Client</small>

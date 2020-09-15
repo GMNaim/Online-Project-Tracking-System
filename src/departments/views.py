@@ -10,6 +10,7 @@ from accounts.decorators import has_access
 def department_list(request):
     department = Department.objects.all()
 
+
     # for d in department:
     #     print(d.get_department_info())
     #     print(d.name, d.get_total_employee(), 'total employee----')

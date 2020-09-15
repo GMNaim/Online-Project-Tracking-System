@@ -17,60 +17,62 @@
 
                 {% if request.user.role.name == 'Admin' or request.user.role.name == 'Super User' %}
                     {#  if admin these list will be shown   #}
-                    <li class="{% if 'admin/dashboard' in request.path %} active {% endif %}"><a
+                    <li class="{% if '/dashboard' in request.path %} active {% endif %}"><a
                             href="{% url 'dashboard' %}"><i
                             class="icon-home"></i><span>Dashboard</span></a>
                     </li>
 
-                    <li class="top">
+                    <li class="{% if '/employee' in request.path %} active {% endif %}">
                         <a href="#Employee" class="has-arrow"><i class="icon-map"></i> <span>Employee</span></a>
                         <ul>
-                            <li class="{% if 'admin/employee/list' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/employee/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'employee-list' %}">Employee List</a></li>
-                            <li class="{% if 'admin/employee/add' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/employee/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'employee-add' %}">Employee Add</a></li>
 
                         </ul>
                     </li>
 
-                    <li class="top">
+                    <li class="{% if '/team' in request.path %} active {% endif %}">
                         <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>Team</span></a>
                         <ul>
-                            <li class="{% if 'admin/team/list' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'team-list' %}">Team List</a></li>
-                            <li class="{% if 'admin/team/add' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-add' %}">Team Add</a></li>
+                            {% if request.user.role.name == 'Department Head' %}
+                                <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
+                                        href="{% url 'team-add' %}">Team Add</a></li>
+                            {% endif %}
 
                         </ul>
                     </li>
 
-                    <li class="top">
+                    <li class="{% if '/department' in request.path %} active {% endif %}">
                         <a href="#Department" class="has-arrow"><i class="icon-map"></i> <span>Department</span></a>
                         <ul>
-                            <li class="{% if 'admin/department/list' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/department/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'department-list' %}">Department List</a></li>
-                            <li class="{% if 'admin/department/add' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/department/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'department-add' %}">Department Add</a></li>
 
                         </ul>
                     </li>
 
-                    <li class="top">
+                    <li class="{% if '/client' in request.path %} active {% endif %}">
                         <a href="#Client" class="has-arrow"><i class="icon-map"></i> <span>Client</span></a>
                         <ul>
-                            <li class="{% if 'admin/client/list' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/client/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'client-list' %}">Client List</a></li>
-                            <li class="{% if 'admin/client/add' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/client/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'client-add' %}">Client Add</a></li>
 
                         </ul>
                     </li>
-                    <li class="top">
+                    <li class="{% if '/project' in request.path %} active {% endif %}">
                         <a href="#Project" class="has-arrow"><i class="icon-map"></i> <span>Project</span></a>
                         <ul>
-                            <li class="{% if 'admin/project/list' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/project/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'project-list' %}">Project List</a></li>
-                            <li class="{% if 'admin/project/add' in request.path %} active {% endif %}"><a
+                            <li class="{% if '/project/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'project-add' %}">Project Add</a></li>
 
                         </ul>

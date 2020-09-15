@@ -56,8 +56,8 @@
                                         <td>{{ dep.name }}</td>
                                         <td>{{ dep.get_department_info.get_full_name|default_if_none:'Not Assigned' }}</td>
                                         <td>{{ dep.get_total_employee }}</td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{{ dep.get_team_count }}</td>
+                                        <td>{{ dep.get_total_project }}</td>
                                         <td class="actions">
                                             <a href="{% url 'department-update' dep.name %}">
                                                 <button type="button"

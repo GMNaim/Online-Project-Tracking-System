@@ -36,8 +36,29 @@ def team_list(request):
     if request.user.is_authenticated:
 
         """ ======================       work with new model data  ============================="""
-        team = Team.objects.all()
-        team_in_dep = team.filter(department__name__iexact=request.user.department.name).exclude(
+        all_team = Team.objects.exclude(id=10)
+        # for t in all_team:
+        #     print(t.get_total_member(), '------------------------------------- &&&&&&&&&&&&&& ', t.name)
+        #     print(t.get_team_leader(), '------------------------------------- &&&&&&&&&&&&&& ', t.name)
+        """ Team in all department """
+        all_team_leader = []
+        all_team_members = []
+        all_member_count = []
+        all_team_name = []
+        all_team_dep = []
+        if all_team.count() != 0:
+            for team in all_team:
+                print(f"team Name: {team}")
+                all_team_name.append(team.name)
+                print(all_member_count.append(team.team_member_user.count()))
+                all_team_dep.append(team.department)
+                team_l = team.team_member_user.get(is_team_leader=True)
+                all_team_leader.append(team_l)
+                all_team_members.append(', '.join(list(team.team_member_user.values_list('username', flat=True))))
+        all_team_zipped = zip(all_team_name, all_team_leader, all_team_members, all_member_count, all_team_dep)
+
+        """ team in department """
+        team_in_dep = all_team.filter(department__name__iexact=request.user.department.name).exclude(
             department_id=16)  # department id = 16 is the Not Assigned dep.
         print(team_in_dep.count() == 0)
         team_leader = []
@@ -56,7 +77,7 @@ def team_list(request):
                 team_members.append(', '.join(list(team.team_member_user.values_list('username', flat=True))))
 
         team_zipped = zip(team_name, team_leader, team_members, member_count, team_dep)
-        context = {"team_in_dep": team_in_dep, 'team_zipped': team_zipped}
+        context = {"team_in_dep": team_in_dep, 'team_zipped': team_zipped, 'all_team_zipped': all_team_zipped}
 
         return render(request, 'teams/team_list.html', context)
 
@@ -247,7 +268,7 @@ def team_update(request, team_name):
 
                         """ Changing the attributes of old team leader."""
                         existing_team_leader.role = Role.objects.get(
-                            name__iexact="Team Member")  # giving old team leader to employee role
+                            name__iexact=role_team_member)  # giving old team leader to employee role
                         existing_team_leader.is_team_leader = False  # as he is not a leader now so false.
                         existing_team_leader.save()  # saving update of existing team leader.
 

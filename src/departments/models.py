@@ -34,6 +34,24 @@ class Department(models.Model):
             total_employee = 0
         return total_employee
 
+    def get_team_count(self):
+        from teams.models import Team
+        total_team = 0
+        try:
+            total_team = Team.objects.filter(department_id=self.id).count()
+        except:
+            total_team = 0
+        return total_team
+
+    def get_total_project(self):
+        from adminusers.models import Project
+        total_project = 0
+        try:
+            total_project = Project.objects.filter(department_id=self.id).count()
+        except:
+            total_project = 0
+        return total_project
+
     # def get_total_department(self):
     #     return self.objects.filter(is_active=True).count()
 

@@ -22,6 +22,14 @@ $(function () {
             showDepartmentDeleteConfirmMessage();
         }
 
+        else if(type === 'client_delete_confirm'){
+            showClientDeleteConfirmMessage();
+        }
+
+        else if(type === 'team_delete_confirm'){
+            showProjectDeleteConfirmMessage();
+        }
+
         else if (type === 'cancel') {
             showCancelMessage();
         }
@@ -98,6 +106,37 @@ function showTeamDeleteConfirmMessage() {
     }, function () {
         window.location.href = delete_team_url;
         swal("Deleted!", "Team has been deleted.", "success");
+    });
+}
+
+function showClientDeleteConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: "Client will be deleted permanently. All projects information related with this client will be deleted.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_client_url;
+        swal("Deleted!", "Client has been deleted.", "success");
+    });
+}
+
+
+function showProjectDeleteConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: "Project will be deleted permanently. All information and progress of the project will be deleted.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_project_url;
+        swal("Deleted!", "Project has been deleted.", "success");
     });
 }
 
