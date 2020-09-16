@@ -45,6 +45,7 @@ class User(AbstractUser):
     team_member = models.ForeignKey(Team, on_delete=models.SET_DEFAULT, related_name='team_member_user', blank=True,
                                     null=True, default=10)
     is_team_leader = models.BooleanField(default=False)
+    notification_count = models.IntegerField(default=0)
 
     def get_full_name(self):
         if self.first_name is None:

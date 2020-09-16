@@ -1,11 +1,14 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %}
+    Module Update - {{ selected_module.name }}
+{% endblock %}
 {% block main_content %}
 
 
     <div class="card open_task">
         <div class="header text-center">
-            <h2>Update Project :: {{ name }}</h2>
+            <h2>Update Module :: "{{ selected_module.name }}" of project :: "{{ selected_project.name }}"</h2>
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,7 +28,7 @@
             </ul>
         </div>
         <div class="body">
-            <form id="basic-form" method="POST" action="{% url 'project-update' project_code %}" novalidate=""
+            <form id="basic-form" method="POST" action="{% url 'module-update' selected_project.code selected_module.id %}" novalidate=""
                   style="padding: 0 167px;">
                 {% csrf_token %}
                 <div class="form-group">
@@ -34,38 +37,19 @@
                 </div>
 
                 <div class=" form-group w-100">
-                    <label for="single-selection-client">Client</label>
+                    <label for="single-selection-client">Team</label>
                     <div class="multiselect_div">
-                        <select id="single-selection-client" name="select_client"
+                        <select id="single-selection-client" name="select_team"
                                 class="multiselect multiselect-custom" data-parsley-required
                                 data-parsley-trigger-after-failure="change"
                                 data-parsley-errors-container="#error-singleselect">
-                            <option value="">Select a client</option>
-                            {% for client in client_list %}
-                                <option value="{{ client.id }}" {% if client.id == selected_client.id %}
-                                        selected {% endif %}>{{ client.name }} :: {{ client.company_name }}</option>
+                            <option value="">Select a Team</option>
+                            {% for team in team_in_department %}
+                                <option value="{{ team.id }}" {% if selected_module.assigned_team.id == team.id %}
+                                        selected {% endif %}>{{ team.name }}</option>
                             {% endfor %}
                         </select>
                         <p id="error-singleselect"></p>
-                    </div>
-                </div>
-
-
-                <div class=" form-group w-100">
-                    <label for="single-selection-department">Department</label>
-                    <div class="multiselect_div">
-                        <select id="single-selection-department" name="select_department"
-                                class="multiselect multiselect-custom"
-                                data-parsley-required data-parsley-trigger-after-failure="change"
-                                data-parsley-errors-container="#error-singleselect-dep">
-                            <option value="">Select a department</option>
-                            {% for department in department_list %}
-                                <option value="{{ department.id }}"{% if selected_department.id == department.id %}
-                                        selected {% endif %} >{{ department.name }}</option>
-                            {% endfor %}
-
-                        </select>
-                        <p id="error-singleselect-dep"></p>
                     </div>
                 </div>
 
@@ -76,14 +60,12 @@
                               required>{{ description }}</textarea>
                 </div>
 
-
-
                 <div class="form-group">
-                    <label>Delivery Date</label>
+                    <label>Submission Date</label>
                     <div class="input-group">
-                        <input id="delivery_date" data-provide="datepicker" name="delivery_date"
+                        <input id="submission_date" data-provide="datepicker" name="submission_date"
                                data-date-autoclose="true"
-                               required validateDate value="{{ delivery_date }}"
+                               required validateDate value="{{ submission_date }}"
                                class="form-control" data-date-format="yyyy-mm-dd"
                                data-parsley-required data-parsley-trigger-after-failure="change"
                                data-parsley-errors-container="#error-date">
@@ -92,28 +74,27 @@
                 </div>
 
 
-
                 <div class=" form-group w-100">
                     <label for="single-selection-project_assign">Assign to Department Head</label>
                     <div class="multiselect_div">
-                        <select id="single-selection-project_assign" name="project_status"
+                        <select id="single-selection-project_assign" name="module_status"
                                 class="multiselect multiselect-custom"
                                 data-parsley-errors-container="#error-singleselect-project_status">
                             <option value="" selected>Select a status</option>
-                            <option value="1" >Not Assigned</option>
-                            <option value="2" {% if project_status == 2 %} selected{% endif %}>Assigned</option>
-                            <option value="2" {% if project_status == 3 %} selected disabled{% endif %}>Running</option>
-                            <option value="2" {% if project_status == 4 %} selected disabled{% endif %}>Completed</option>
+                            <option value="1">Not Assigned</option>
+                            <option value="2" {% if module_status == 2 %} selected{% endif %}>Assigned</option>
+                            <option value="3" disabled {% if module_status == 3 %} selected {% endif %}>In Progress</option>
+                            <option value="4" disabled {% if module_status == 4 %} selected {% endif %}>Completed
+                            </option>
                         </select>
                         <p id="error-singleselect-project_status"></p>
                     </div>
                 </div>
 
 
-
                 <br>
                 <button type="submit" id="submit"
-                        class="btn btn-primary font-weight-bold">Submit
+                        class="btn btn-primary font-weight-bold">Update
                 </button>
             </form>
         </div>
@@ -122,7 +103,7 @@
         {#let date = new Date();#}
         {#date.setDate(date.getDate()-1);#}
         {##}
-        {#$('#delivery_date').datepicker({#}
+        {#$('#submission_date').datepicker({#}
         {#    startDate: date#}
         //{#});#}
     </script>

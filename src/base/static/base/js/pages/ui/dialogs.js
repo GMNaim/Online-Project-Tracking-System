@@ -30,6 +30,10 @@ $(function () {
             showProjectDeleteConfirmMessage();
         }
 
+        else if(type === 'module_delete_confirm'){
+            showModuleDeleteConfirmMessage();
+        }
+
         else if (type === 'cancel') {
             showCancelMessage();
         }
@@ -137,6 +141,22 @@ function showProjectDeleteConfirmMessage() {
     }, function () {
         window.location.href = delete_project_url;
         swal("Deleted!", "Project has been deleted.", "success");
+    });
+}
+
+
+function showModuleDeleteConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: "Module will be deleted permanently. All information and progress of the module will be deleted.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_module_url;
+        swal("Deleted!", "Module has been deleted.", "success");
     });
 }
 

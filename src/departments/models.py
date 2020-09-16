@@ -1,5 +1,7 @@
 from django.db import models
 
+# from teams.models import Team
+
 
 class Department(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -7,6 +9,7 @@ class Department(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     description = models.TextField(blank=True, null=True, default='')
+    notification = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

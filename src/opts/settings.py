@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'base.context_processors.left_sidebar_content',  # custom left sidebar context
+                'base.context_processors.nav_bar_content',  # custom nav bar context
             ],
         },
     },

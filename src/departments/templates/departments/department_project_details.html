@@ -1,0 +1,148 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% block title %}
+Department: {{ selected_project.department.name }} - {{ selected_project.name }} - All Project
+{% endblock %}
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header">
+            <h2 style="font-size: 25px; margin-bottom: 10px !important;">Project Information</h2>
+            <div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Project
+                            Name: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_project.name }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Project
+                            Code: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_project.code }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;padding-bottom: 5px !important;">Project
+                            Description: </p>
+
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_project.description }}</p>
+                    </div>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Project Submission
+                            Date: </p>
+
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_project.delivery_date }}</p>
+                    </div>
+                </div>
+
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <a href="{% url 'module-create' selected_project.code %}">
+                <button type="button" class="btn btn-success"><i
+                        class="fa fa-plus-square"></i><span> Create New Module</span></button>
+            </a>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <h5>All Module List</h5>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
+                           id="datatable-project_list">
+                        <thead>
+                        <tr class="bg-dark" style="color: white;">
+                            <th>#</th>
+                            <th>Module Name</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                            <th>Assigned Date</th>
+                            <th>Submission Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for module in module_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ module.name }}</td>
+                                <td>{{ module.assigned_team.name }} :: {{ module.assigned_team.get_team_leader }}</td>
+                                <td>{{ module.get_status_display }}</td>
+                                <td>{{ module.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
+                                <td>{{ module.submission_date|date }}</td>
+                                <td class="actions">
+                                    <a
+     {% if module.status == 2 %}{% else %}href="{% url 'module-assign' selected_project.code  module.id %}"{% endif %}>
+                                        <button type="button"
+                                                class="btn btn-primary" title="Assign Module"><span
+                                                class="sr-only">Assign Project</span> <i
+                                                class="fa fa-share-square-o"></i></button>
+                                    </a>
+                                    <a href="{% url 'module-update' selected_project.code module.id %}">
+                                        <button type="button"
+                                                class="btn btn-success" title="Edit Module"><span
+                                                class="sr-only">Details</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
+                                    <a id="confirm-button-url_module" data-project="{{ selected_project.code }}"
+                                       data-module="{{ module.id }}"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="module_delete_confirm"
+                                       title="Delete Module"><span class="sr-only">Delete Module</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_module_url = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_module_url = "/department/project/" + $(this).data('project') + "/module/delete/" + $(this).data('module');
+            console.log(delete_module_url);
+        });
+    </script>
+
+
+
+{% endblock %}

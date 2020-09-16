@@ -692,7 +692,7 @@ def project_add(request):
             print(check_old_date)
             context = {'client_list': client, 'department_list': department, 'name': name, 'description': description,
                        'selected_client': int(selected_client), 'selected_department': int(selected_department),
-                       'delivery_date': delivery_date_obj}
+                       'delivery_date': delivery_date_obj.strftime("%Y-%m-%d")}
             # Validating the information
             project_add_error_link = 'adminusers/project_add.html'
             if check_old_date.days < 0:
@@ -761,7 +761,7 @@ def project_update(request, project_code):
                    'description': selected_project.description,
                    'selected_client': selected_project.client, 'selected_department': selected_project.department,
                    'delivery_date': selected_project.delivery_date.strftime("%Y-%m-%d"),
-                   'project_code': selected_project.code}
+                   'project_code': selected_project.code, 'project_status': selected_project.status}
         print(type(selected_project.delivery_date), '-------------------------------------')
         print(selected_project.delivery_date.strftime("%Y-%m-%d"), '-------------------------------------')
         if request.method == "POST":
@@ -770,7 +770,8 @@ def project_update(request, project_code):
             selected_department = request.POST['select_department']
             description = request.POST['description']
             delivery_date = request.POST['delivery_date']
-            print(name, selected_client, selected_department, description, delivery_date)
+            project_status = request.POST['project_status']
+            print(name, selected_client, selected_department, description, delivery_date, project_status)
 
             date_obj = datetime.strptime(delivery_date, '%Y-%m-%d')  # converting string date to date obj
             delivery_date_obj = date_obj.date()
@@ -818,7 +819,25 @@ def project_update(request, project_code):
                     selected_project.client = selected_client_obj
                     selected_project.department = selected_department_obj
                     selected_project.delivery_date = delivery_date_obj
+                    if project_status != '':
+                        selected_project.status = int(project_status)
                     selected_project.save()
+
+                    """ SEtting notification as project is assigned to a head """
+                    if int(project_status) == 2:
+                        assigned_head = User.objects.get(department=selected_project.department,
+                                                         role__name__iexact=role_department_head)
+                        assigned_head.notification_count += 1
+                        assigned_head.save()
+                    elif int(project_status) == 1:
+                        assigned_head = User.objects.get(department=selected_project.department,
+                                                         role__name__iexact=role_department_head)
+                        assigned_head.notification_count -= 1
+                        assigned_head.save()
+                        if assigned_head.notification_count < 0:
+                            assigned_head.notification_count = 0
+                            assigned_head.save()
+
                     messages.success(request, f"Project '{name}' updated successfully!")
                     return redirect('project-list')
 
@@ -857,3 +876,33 @@ def project_delete(request, project_code):
             messages.error(request, f"Error: {e}.")
             return redirect('project-list')
 
+
+@login_required
+@has_access(allowed_roles=[role_admin, role_super_user])
+def project_assign(request, project_code):
+    """
+    After clicking on the assign project this funcation will run
+    it will change the status of the project new to assigned
+    """
+    if request.user.is_authenticated:
+        projects = Project.objects.all()
+        context = {'projects': projects}
+        selected_project = get_object_or_404(Project, code=project_code)
+        try:
+            selected_project.status = 2  # project is assigned
+            selected_project.save()
+
+            """ SEtting notification as project is assigned to a head """
+            # dep = selected_project.department.name
+            assigned_head = User.objects.get(department=selected_project.department,
+                                             role__name__iexact=role_department_head)
+            assigned_head.notification_count += 1
+            assigned_head.save()
+            print(assigned_head, '------------------------------------------*********************',
+                  assigned_head.notification_count)
+            messages.success(request, f"{selected_project.name} is assigned to the department head.")
+            return redirect('project-list')
+        except Exception as e:
+            print('error ====', e)
+            messages.error(request, f"Error: {e}")
+            return render(request, 'adminusers/project_list.html', context)

@@ -4,10 +4,10 @@
 
     <div class="card open_task">
         <div class="header">
-            <a href="{% url 'project-add' %}">
-                <button type="button" class="btn btn-success"><i
-                        class="fa fa-plus-square"></i><span> Add New Project</span></button>
-            </a>
+{#            <a href="{% url 'project-add' %}">#}
+{#                <button type="button" class="btn btn-success"><i#}
+{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+{#            </a>#}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4>Project List</h4>
+            <h4>All Project List</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
@@ -43,7 +43,7 @@
                         </thead>
 
                         <tbody>
-                        {% for project in projects %}
+                        {% for project in assigned_projects_to_head %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ project.name }}</td>
@@ -58,10 +58,10 @@
                                                 class="sr-only">Assign Project</span> <i
                                                 class="fa fa-share-square-o"></i></button>
                                     </a>
-                                    <a href="{% url 'project-update' project.code %}">
+                                    <a href="{% url 'department-project-details' project.code %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Edit"><span
-                                                class="sr-only">Edit</span> <i
+                                                class="">Details</span> <i
                                                 class="fa fa-edit"></i></button>
                                     </a>
                                     <a id="confirm-button-url_project" data-project="{{ project.code }}"

@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from datetime import datetime
 from departments.models import Department
 
 
@@ -45,3 +45,34 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True)
 
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+
+
+class Module(models.Model):
+    MODULE_STATUS = (
+        (1, 'New'),
+        (2, 'Assigned'),
+        (3, 'In Progress'),
+        (4, 'Completed')
+    )
+    from teams.models import Team
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    assigned_team = models.ForeignKey(Team, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=MODULE_STATUS, default=1)
+    team_leader_notified = models.BooleanField(default=False)
+    submission_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True)
+    assigned_at = models.DateTimeField(default=None, null=True, blank=True)
+
+    def __str__(self):
+        return self.name

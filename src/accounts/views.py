@@ -6,23 +6,76 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from adminusers.models import Client
+from adminusers.models import Client, Project
 from teams.models import Team
 from .decorators import has_access
 from .models import Department
 from .models import User
 
+# Role Names
+role_super_user = 'Super User'
+role_admin = 'Admin'
+role_department_head = 'Department Head'
+role_team_leader = 'Team Leader'
+role_team_member = 'Team Member'
+role_employee = 'Employee'
+
+default_password = 'test123'  # default pass
+# getting user group
+group_super_user = Group.objects.get(name__iexact=role_super_user)
+group_admin = Group.objects.get(name__iexact=role_admin)
+group_department_head = Group.objects.get(name__iexact=role_department_head)
+group_team_leader = Group.objects.get(name__iexact=role_team_leader)
+group_team_member = Group.objects.get(name__iexact=role_team_member)
+group_employee = Group.objects.get(name__iexact=role_employee)
+
 
 @login_required
 @has_access(allowed_roles=['Super User', 'Admin', 'Employee', 'Department Head', 'Team Leader', 'Team Member'])
 def dashboard(request):
-    total_employee = User.objects.filter(is_active=True).count()
-    total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
-    total_team = Team.objects.exclude(id=10).count()
-    total_client = Client.objects.all().count()
-    context = {'total_employee': total_employee, 'total_department': total_department, 'total_team': total_team,
-               'total_client': total_client}
-    return render(request, 'adminusers/dashboard.html', context)
+    if request.user.is_authenticated:
+        """"""
+        is_super_user_or_admin = request.user.role.name == 'Admin' or request.user.role.name == 'Super User'
+        is_department_head = request.user.role.name == 'Department Head'
+        is_team_leader = request.user.role.name == 'Team Leader'
+        is_team_member = request.user.role.name == 'Team Member'
+        is_employee = request.user.role.name == 'Employee'
+
+        """ ADMIN SUPER USER INFO """
+        total_employee = User.objects.filter(is_active=True).count()
+        total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
+        total_team = Team.objects.exclude(id=10).count()
+        total_client = Client.objects.all().count()
+
+        # """ DEPARTMENT INFO """
+        # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()
+
+        # """ NOTIFICATIONS SETTING """
+        # head_notification_count = Project.objects.filter(department_id=request.user.department.id, status=2).count()  # all projects that are assigned to the head
+
+        """ LIST OF NOTIFICATION ITEMS """
+        assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
+
+        """CHANGE notification_count value"""
+        # project_assigned_dep_head = User.objects.get(department_id=request.user.department.id,
+        #                                              role__name__iexact='Department Head')
+        # # print('444 req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
+        # if request.method == "POST":
+        #     project_assigned_dep_head.notification_count = 0
+            # print('post req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
+
+        context = {'total_employee': total_employee,
+                   'total_department': total_department,
+                   'total_team': total_team,
+                   'total_client': total_client,
+                   'is_super_user_or_admin': is_super_user_or_admin,
+                   'is_department_head': is_department_head,
+                   'is_team_leader': is_team_leader,
+                   'is_employee': is_employee,
+                   'is_team_member': is_team_member,
+                   'assigned_projects_to_head': assigned_projects_to_head}
+
+        return render(request, 'adminusers/dashboard.html', context)
 
 
 def registration_view(request):
