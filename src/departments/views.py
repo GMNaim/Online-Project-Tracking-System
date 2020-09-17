@@ -142,7 +142,7 @@ def department_delete(request, department_name):
 @login_required
 @has_access(allowed_roles=[role_department_head])
 def department_all_project(request):
-    assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
+    assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2)
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
@@ -183,7 +183,12 @@ def department_completed_project(request):
 def department_project_details(request, project_code):
     assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
     selected_project = get_object_or_404(Project, code=project_code)
-    module_list = Module.objects.all()
+    module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
+    print(module_list.count())
+    #  If there is at least one module created then project status will be change to running.
+    if module_list.count() > 0:
+        selected_project.status = 3  # if any module then status will be 3 means running
+        selected_project.save()
     context = {'assigned_projects_to_head': assigned_projects_to_head,
                'selected_project': selected_project,
                'module_list': module_list}
@@ -264,7 +269,12 @@ def module_create(request, project_code):
                                     assigned_team=selected_team_obj,
                                     project=selected_project,
                                     submission_date=submission_date_obj)
-                    module.save()  # saving module
+                    module.save()  # saving new created module
+                    print(module.project.name)
+                    # #  If there is at least one module created then project status will be change to running.
+                    # if selected_project.module_set.all().count() > 0:
+                    #     selected_project.status = 3  # if any module then status will be 3 means nunning
+                    #     selected_project.save()
                     messages.success(request, f"Module '{name}' is created successfully!")
                     return redirect('department-project-details', project_code=selected_project.code)
                 except Exception as e:
@@ -360,28 +370,39 @@ def module_update(request, project_code, module_id):
                     selected_module.assigned_team = selected_team_obj
                     selected_module.project = selected_project
                     selected_module.submission_date = submission_date_obj
-                    if module_status != '':  # '' means not selecting any status
-                        selected_module.status = int(module_status)  # setting the module
-                    selected_module.save()  # saving module
+                    # if module_status != '':  # '' means not selecting any status
+                    #     selected_module.status = int(module_status)  # setting the module
+
 
                     """ Setting notification as module is assigned to a team leader """
                     # getting the team leader
+
                     module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
                                                                    role__name__exact=role_team_leader)
-                    if int(module_status) == 2:  # if status is assigned
-                        module_assigned_team_leader.notification_count += 1  # Then increase the notification count
-                        module_assigned_team_leader.save()
-                        selected_module.assigned_at = datetime.now()  # setting the assigned date
-                        selected_module.save()
-                    elif int(module_status) == 1:  # if status is new or not assigned
-                        module_assigned_team_leader.notification_count -= 1  # then decrease the notification count
-                        module_assigned_team_leader.save()
-                        selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
-                        selected_module.save()
-                        if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
-                            module_assigned_team_leader.notification_count = 0  # then make it 0
+                    print('module_assigned_team_leader=== ', module_assigned_team_leader, selected_module.assigned_team.name)
+                    print(selected_module.status, 'selected module status....', module_status)
+                    if module_status != '':  # means if any status is not selected
+                        if selected_module.status != 2 and int(module_status) == 2:  # if status is assigned
+                            print('here selected module.status is not 2 and user select 2 so count++')
+                            module_assigned_team_leader.notification_count += 1  # Then increase the notification count
                             module_assigned_team_leader.save()
-                    messages.success(request, f"Module '{name}' is created successfully!")
+                            selected_module.assigned_at = datetime.now()  # setting the assigned date
+                            selected_module.save()
+                            print(selected_module.status, 'selected module status....', module_status)
+                        elif selected_module.status == 2 and int(module_status) == 1:  # if status is new or not assigned
+                            print('here selected module.status is 2 and user select 1 so  count--')
+                            module_assigned_team_leader.notification_count -= 1  # then decrease the notification count
+                            module_assigned_team_leader.save()
+                            selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
+                            selected_module.save()
+                            if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
+                                module_assigned_team_leader.notification_count = 0  # then make it 0
+                                module_assigned_team_leader.save()
+                    # setting status here because of notification count. if set up then got wrong notifica. count value
+                    if module_status != '':  # '' means not selecting any status
+                        selected_module.status = int(module_status)  # setting the module
+                    selected_module.save()  # saving module
+                    messages.success(request, f"Module '{name}' is updated successfully!")
                     return redirect('department-project-details', project_code=selected_project.code)
                 except Exception as e:
                     print(e)
@@ -400,6 +421,14 @@ def module_delete(request, project_code, module_id):
 
         try:
             selected_module.delete()
+            """ Setting notification count number as module is deleted """
+            # getting the team leader
+            module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
+                                                           role__name__exact=role_team_leader)
+            # setting the notification count number as module is deleted
+            if selected_module.status == 2:
+                module_assigned_team_leader.notification_count -= 1
+                module_assigned_team_leader.save()
             messages.success(request, f"Module '{selected_module.name}' is deleted!")
             return redirect('department-project-details', project_code=selected_project.code)
 
@@ -431,17 +460,18 @@ def module_assign(request, project_code, module_id):
             selected_module.assigned_at = datetime.now()  # setting the assigned date
             selected_module.save()
 
-            """ Setting notification as module is assigned to a team leader """
+            """ Setting notification count number as module is assigned to a team leader """
             # getting the team leader
             module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
                                                            role__name__exact=role_team_leader)
+            print(module_assigned_team_leader)
             # setting the notification count numger as project is assigned to team leader
             module_assigned_team_leader.notification_count += 1
             module_assigned_team_leader.save()
 
-            messages.success(request, f"{selected_module.name} is assigned to the {module_assigned_team_leader}.")
+            messages.success(request, f"{selected_module.name} is assigned to the {selected_module.assigned_team.name}.")
             return redirect('department-project-details', project_code=selected_project.code)
         except Exception as e:
-            print('error ====', e)
+            print('module assign error ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'departments/department_project_details.html', context)

@@ -35,8 +35,7 @@
                                     </div>
                                 </a>
                             </div>
-                        {% endif %}
-                        {% if is_super_user_or_admin or is_department_head %}
+
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-list' %}">
                                     <div class="dashboard-card-body l-turquoise">
@@ -61,8 +60,7 @@
                                     </div>
                                 </a>
                             </div>
-                        {% endif %}
-                        {% if is_super_user_or_admin %}
+
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'department-list' %}">
                                     <div class="dashboard-card-body l-salmon">
@@ -100,12 +98,9 @@
                                     </div>
                                 </a>
                             </div>
-                        {% endif %}
 
-
-                        {% if is_super_user_or_admin or is_department_head %}
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="{% url 'department-all-project' %}">
+                                <a href="{% url 'project-list' %}">
                                     <div class="dashboard-card-body l-slategray">
                                         <div class="h1 text-light text-right mb-4">
                                             <i class="fa fa-server"></i>
@@ -124,29 +119,6 @@
                                 </a>
                             </div>
 
-
-                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="#">
-                                    <div class="dashboard-card-body l-slategray">
-                                        <div class="h1 text-light text-right mb-4">
-                                            <i class="fa fa-server"></i>
-                                        </div>
-                                        <div>
-                                            <div class="h4 mb-0 text-light">
-                                                <span class="count">972</span>
-                                            </div>
-                                            <small
-                                                    class="text-light text-uppercase font-weight-bold   ">Completed
-                                                Project</small>
-                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
-                                                 style="width: 40%; height: 5px;"></div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-
-                        {% endif %}
-                        {% if is_department_head %}
                         <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                             <a href="#">
                                 <div class="dashboard-card-body l-coral">
@@ -158,7 +130,7 @@
                                             <span class="count">28</span>
                                         </div>
                                         <small
-                                                class="text-light text-uppercase font-weight-bold   ">Running
+                                                class="text-light text-uppercase font-weight-bold   ">Completed
                                             Project</small>
                                         <div class="progress progress-xs mt-3 mb-0 bg-light"
                                              style="width: 40%; height: 5px;"></div>
@@ -166,7 +138,7 @@
                                 </div>
                             </a>
                         </div>
-                            {% endif %}
+
 
                     </div>
 
@@ -176,6 +148,7 @@
                     <p class="text-center">Please wait. An Admin will give you a role or inform an admin.</p>
 
                 {% endif %}
+        {% endif %}
         </div>
     </div>
 

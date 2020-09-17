@@ -1,0 +1,116 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% block main_content %}
+
+    <div class="card open_task" style="padding-bottom: 5px">
+        <div class="body">
+
+
+            <div class=" ">
+                {% ifequal user.groups.all.0 'Sales' %}
+
+                {% endifequal %}
+
+
+                {% if request.user.is_authenticated %}
+                    <div class="dashboard-card-group"
+                         style="width: 100%; display: flex; justify-content: space-around;">
+
+                        {% if is_super_user_or_admin or is_team_leader %}
+                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
+                                <a href="{% url 'team-list' %}">
+                                    <div class="dashboard-card-body l-turquoise">
+                                        <div class="h1 text-right mb-4">
+                                            <i class="fa fa-sitemap text-light"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="h4 mb-0 text-light">
+                                                <span class="count">
+                                                       {{ members_in_team }}
+                                                 </span>
+                                            </div>
+                                            <small
+                                                    class="text-light text-uppercase font-weight-bold">Team Members</small>
+                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                                 style="width: 40%; height: 5px;"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
+                                <a href="{% url 'team-all-module' %}">
+                                    <div class="dashboard-card-body l-slategray">
+                                        <div class="h1 text-light text-right mb-4">
+                                            <i class="fa fa-server"></i>
+                                        </div>
+                                        <div>
+                                            <div class="h4 mb-0 text-light">
+                                                <span class="count">972</span>
+                                            </div>
+                                            <small
+                                                    class="text-light text-uppercase font-weight-bold   ">All
+                                                Module</small>
+                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                                 style="width: 40%; height: 5px;"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
+                                <a href="#">
+                                    <div class="dashboard-card-body l-slategray">
+                                        <div class="h1 text-light text-right mb-4">
+                                            <i class="fa fa-server"></i>
+                                        </div>
+                                        <div>
+                                            <div class="h4 mb-0 text-light">
+                                                <span class="count">972</span>
+                                            </div>
+                                            <small
+                                                    class="text-light text-uppercase font-weight-bold   ">Completed
+                                                Module</small>
+                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                                 style="width: 40%; height: 5px;"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
+                                <a href="#">
+                                    <div class="dashboard-card-body l-coral">
+                                        <div class="h1 text-light text-right mb-4">
+                                            <i class="fa fa-tasks"></i>
+                                        </div>
+                                        <div>
+                                            <div class="h4 mb-0 text-light">
+                                                <span class="count">28</span>
+                                            </div>
+                                            <small
+                                                    class="text-light text-uppercase font-weight-bold   ">Running
+                                                Module</small>
+                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                                 style="width: 40%; height: 5px;"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                    </div>
+
+                {% elif is_employee %}
+                    <p class="text-center">Please wait. An Admin will give you a role or inform an admin.</p>
+
+                {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -89,12 +89,14 @@ def employee_add(request):
         role = Role.objects.get(id=int(request.POST.get('role')))
         department = request.POST.get('department')
         if department == '':
+            department = request.POST.get('department_h')
+        if department == '':
             department = Department.objects.get(id=16)
         else:
             department = Department.objects.get(id=int(department))
 
         print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
-              profile_picture, role, type(role))
+              profile_picture, role, type(role), department)
 
         context = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name, "username": username,
                    'email': email, 'phone': phone, 'password': password, 'address': address, 'gender': gender,
@@ -142,7 +144,7 @@ def employee_add(request):
             messages.warning(request, f"Please Select a role!")
             return render(request, employee_add_error_link, context)
 
-        elif str(department.name) in existence_department_head:
+        elif role == role_department_head and department.name in existence_department_head:
             messages.warning(request, f"{department.name} has a department head.")
             return render(request, employee_add_error_link, context)
 
@@ -274,12 +276,15 @@ def employee_update(request, employee_username):
             role = Role.objects.get(id=int(request.POST.get('role')))
             department = request.POST.get('department')
             if department == '':
+                department = request.POST.get('department_h')
+            if department == '':
                 department = Department.objects.get(id=16)
             else:
                 department = Department.objects.get(id=int(department))
 
             print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
                   profile_picture, department, role)
+            print('existence_department_head', existence_department_head)
 
             context = {'first_name': employee.first_name, 'middle_name': employee.middle_name,
                        'last_name': employee.last_name, "username": employee.username,
@@ -325,7 +330,7 @@ def employee_update(request, employee_username):
                 messages.warning(request, f"Please Select a role!")
                 return render(request, update_error_render_location, context)
 
-            elif employee.department.name != department.name and str(department.name) in existence_department_head:
+            elif (role == role_department_head and department.name in existence_department_head) and employee.department.name != department.name:
                 messages.warning(request, f"{department.name} has a department head.")
                 return render(request, update_error_render_location, context)
             else:

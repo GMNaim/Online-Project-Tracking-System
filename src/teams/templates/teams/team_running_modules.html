@@ -1,0 +1,97 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header">
+{#            <a href="{% url 'project-add' %}">#}
+{#                <button type="button" class="btn btn-success"><i#}
+{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+{#            </a>#}
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <h4>Project List</h4>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
+                           id="datatable-project_list">
+                        <thead>
+                        <tr class="bg-dark" style="color: white;">
+                            <th>#</th>
+                            <th>Project Name</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Client</th>
+                            <th>Assigned Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.department.name }}</td>
+                                <td>{{ project.get_status_display }}</td>
+                                <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
+                                <td>{{ project.created_at|date }}</td>
+                                <td class="actions">
+                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>
+                                        <button type="button"
+                                                class="btn btn-primary" title="Assign Project"><span
+                                                class="sr-only">Assign Project</span> <i
+                                                class="fa fa-share-square-o"></i></button>
+                                    </a>
+                                    <a href="{% url 'project-update' project.code %}">
+                                        <button type="button"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
+                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="team_delete_confirm"
+                                       title="Delete"><span class="sr-only">Delete</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_project_url = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_project_url = "/project/delete/" + $(this).data('project');
+            console.log(delete_project_url);
+        });
+    </script>
+
+
+
+{% endblock %}

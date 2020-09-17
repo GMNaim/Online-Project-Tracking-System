@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from datetime import datetime
+
+from accounts.models import User
 from departments.models import Department
 
 
@@ -53,8 +55,6 @@ class Project(models.Model):
         ordering = ['-created_at']
 
 
-
-
 class Module(models.Model):
     MODULE_STATUS = (
         (1, 'New'),
@@ -66,7 +66,7 @@ class Module(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     assigned_team = models.ForeignKey(Team, on_delete=models.PROTECT)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
     status = models.IntegerField(choices=MODULE_STATUS, default=1)
     team_leader_notified = models.BooleanField(default=False)
     submission_date = models.DateField()
@@ -76,3 +76,32 @@ class Module(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class Task(models.Model):
+    TASK_STATUS = (
+        (1, 'New'),
+        (2, 'Assigned'),
+        (3, 'In Progress'),
+        (4, 'Completed')
+    )
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    assigned_member = models.ForeignKey(User, on_delete=models.PROTECT)
+    module = models.ForeignKey(Module, on_delete=models.PROTECT)
+    status = models.IntegerField(choices=TASK_STATUS, default=1)
+    team_member_notified = models.BooleanField(default=False)
+    submission_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True)
+    assigned_at = models.DateTimeField(default=None, null=True, blank=True)
+    is_send_to_qa_team = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-created_at']

@@ -64,6 +64,9 @@ def dashboard(request):
         #     project_assigned_dep_head.notification_count = 0
             # print('post req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
 
+        # total members in the team
+        members_in_team = User.objects.filter(team_member__id=request.user.team_member.id).count()
+        print('member in the team ', members_in_team)
         context = {'total_employee': total_employee,
                    'total_department': total_department,
                    'total_team': total_team,
@@ -73,9 +76,22 @@ def dashboard(request):
                    'is_team_leader': is_team_leader,
                    'is_employee': is_employee,
                    'is_team_member': is_team_member,
-                   'assigned_projects_to_head': assigned_projects_to_head}
+                   'assigned_projects_to_head': assigned_projects_to_head,
+                   'members_in_team': members_in_team}
 
-        return render(request, 'adminusers/dashboard.html', context)
+        if is_super_user_or_admin:
+            return render(request, 'adminusers/admin_dashboard.html', context)
+        elif is_department_head:
+            return render(request, 'departments/head_dashboard.html', context)
+        elif is_team_leader:
+            return render(request, 'teams/leader_dashboard.html', context)
+        elif is_team_member:
+            return render(request, 'teams/leader_dashboard.html', context)
+        elif is_employee:
+            return render(request, 'teams/leader_dashboard.html', context)
+
+
+
 
 
 def registration_view(request):
