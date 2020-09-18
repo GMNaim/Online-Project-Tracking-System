@@ -104,25 +104,52 @@
                         </ul>
                     </li>
 
-                    {#----------------   for team leader   --------------#}
+                    {#----------------------------------------   for team leader   --------------------------------#}
                 {% elif request.user.role.name == 'Team Leader' %}
-                <li class="{% if '/team' in request.path %} active {% endif %}">
-                    <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>Team</span></a>
+
+                <li class="{% if '/team/list' in request.path %} active {% endif %}">
+                    <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>My Team</span></a>
                     <ul>
                         <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-list' %}">Team List</a></li>
+                                href="{% url 'team-list' %}">Team Members</a></li>
                         <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-add' %}">Team Add</a></li>
+                                href="/">My Member Dashboard</a></li>
                     </ul>
                 </li>
 
-                <li class="{% if '/department/project' in request.path %} active {% endif %}">
-                    <a href="#Department_project" class="has-arrow"><i class="icon-map"></i> <span>Project</span></a>
+                <li class="{% if '/team/module' in request.path %} active {% endif %}">
+                    <a href="#Team_Module" class="has-arrow"><i class="icon-map"></i> <span>Modules</span></a>
                     <ul>
-                        <li class="{% if '/department/project/all' in request.path %} active {% endif %}"><a
-                                href="{% url 'department-all-project' %}">All Project List</a></li>
-                        <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-add' %}">Team Add</a></li>
+                        <li class="{% if '/module/all' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-all-module' %}">All Module</a></li>
+                        <li class="{% if '/module/running' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-running-module' %}">Running Module</a></li>
+                        <li class="{% if '/module/completed' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-completed-module' %}">Completed Module</a></li>
+                    </ul>
+                </li>
+                    {#----------------------------------------   for team member   --------------------------------#}
+                {% elif request.user.role.name == 'Team Member' or request.user.role.name == 'Team Leader' %}
+
+                <li class="{% if '/team/list' in request.path %} active {% endif %}">
+                    <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>My Team</span></a>
+                    <ul>
+                        <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-list' %}">Team Members</a></li>
+{#                        <li class="{% if '/team/add' in request.path %} active {% endif %}"><a#}
+{#                                href="{% url 'team-add' %}">Team Add</a></li>#}
+                    </ul>
+                </li>
+
+                <li class="{% if '/team/module' in request.path %} active {% endif %}">
+                    <a href="#Team_Module" class="has-arrow"><i class="icon-map"></i> <span>Modules</span></a>
+                    <ul>
+                        <li class="{% if '/module/all' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-all-module' %}">All Module</a></li>
+                        <li class="{% if '/module/running' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-running-module' %}">Running Module</a></li>
+                        <li class="{% if '/module/completed' in request.path %} active {% endif %}"><a
+                                href="{% url 'team-completed-module' %}">Completed Module</a></li>
                     </ul>
                 </li>
 

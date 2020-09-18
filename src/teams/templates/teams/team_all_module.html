@@ -34,23 +34,23 @@
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Module Name</th>
-                            <th>Project</th>
+                            <th>Project Name</th>
                             <th>Status</th>
-                            <th>Submission Date</th>
                             <th>Assigned Date</th>
+                            <th>Submission Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for module in assigned_modules_to_leader %}
+                        {% for module in assigned_modules_list_to_leader %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ module.name }}</td>
                                 <td>{{ module.project.name }}</td>
                                 <td>{{ module.get_status_display }}</td>
-                                <td>{{ module.submission_date|date }} :: {{ module.client.company_name }}</td>
-                                <td>{{ module.assigned_at|date }}</td>
+                                <td>{{ module.assigned_at|date }} </td>
+                                <td>{{ module.submission_date }} :: </td>
                                 <td class="actions">
 {#                                    <a {% if module.status == 2 %}{% else %}href="{% url 'task-assign' module.id %}"{% endif %}>#}
 {#                                        <button type="button"#}

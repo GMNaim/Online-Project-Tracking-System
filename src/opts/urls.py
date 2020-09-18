@@ -4,13 +4,15 @@ from django.contrib import admin
 from django.urls import path, include
 
 
+""" IF YOU CHANGE URL MUST CHANGE IN LIST PAGES"""
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('base.urls')),
-    path('', include('adminusers.urls')),
+    path('base/', include('base.urls')),
+    path('coo/', include('adminusers.urls')),  # admin = Chief Operating Officer (COO)
     path('', include('accounts.urls')),
-    path('', include('departments.urls')),
-    path('', include('teams.urls')),
+    path('department/', include('departments.urls')),
+    path('team/', include('teams.urls')),
+    path('member/', include('members.urls')),
 
     
 ]

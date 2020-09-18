@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'accounts',
     'departments.apps.DepartmentsConfig',
     'teams.apps.TeamsConfig',
+    'members.apps.MembersConfig',
 
 ]
 

@@ -1,0 +1,162 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% block title %}
+Task: {{ selected_task.name }}
+{% endblock %}
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header">
+            <h2 style="font-size: 25px; margin-bottom: 10px !important;">Task Information</h2>
+            <div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Task Name: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_task.name }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Module Name: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_task.module.name }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Project Name: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_task.module.project.name }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Task Status: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_task.get_status_display }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;padding-bottom: 5px !important;">Task Description: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_task.description }}</p>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Task Submission Last Date: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_task.submission_date }}  :: {{ selected_task.get_day_left_to_submit }} days left</p>
+                    </div>
+                </div>
+
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <a href="">
+                <button type="button" class="btn btn-success"><i
+                        class="fa fa-paper-plane-o"></i><span> Submit Task to QA Team</span></button>
+            </a>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+{#        <div class="body">#}
+{#            <h5>All Task List</h5>#}
+{#            <div class="body">#}
+{#                <div class="table-responsive">#}
+{#                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"#}
+{#                           id="datatable-project_list">#}
+{#                        <thead>#}
+{#                        <tr class="bg-dark" style="color: white;">#}
+{#                            <th>#</th>#}
+{#                            <th>Task Name</th>#}
+{#                            <th>Member</th>#}
+{#                            <th>Status</th>#}
+{#                            <th>Assigned Date</th>#}
+{#                            <th>Submission Date</th>#}
+{#                            <th>Actions</th>#}
+{#                        </tr>#}
+{#                        </thead>#}
+{##}
+{#                        <tbody>#}
+{#                        {% for task in task_list %}#}
+{#                            <tr>#}
+{#                                <td>{{ forloop.counter }}</td>#}
+{#                                <td>{{ task.name }}</td>#}
+{#                                <td>{{ task.assigned_member }}</td>#}
+{#                                <td>{{ task.get_status_display }}</td>#}
+{#                                <td>{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>#}
+{#                                <td>{{ task.submission_date|date }}</td>#}
+{#                                <td class="actions">#}
+{#                                    {% if task.status >= 2 %}{% else %}#}
+{#                                        <a href="{% url 'task-assign' selected_module.id  task.id %}">#}
+{#                                            <button type="button"#}
+{#                                                    class="btn btn-primary" title="Assign Task"><span#}
+{#                                                    class="sr-only">Assign Task</span> <i#}
+{#                                                    class="fa fa-share-square-o"></i>#}
+{#                                            </button>#}
+{#                                        </a>#}
+{#                                    {% endif %}#}
+{#                                    <a href="{% url 'task-update' selected_module.id task.id %}">#}
+{#                                        <button type="button"#}
+{#                                                class="btn btn-success" title="Edit Task"><span#}
+{#                                                class="sr-only">Edit</span> <i#}
+{#                                                class="fa fa-edit"></i></button>#}
+{#                                    </a>#}
+{#                                    <a id="confirm-button-url_task" data-module="{{ selected_module.id }}"#}
+{#                                       data-task="{{ task.id }}"#}
+{#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
+{#                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"#}
+{#                                       title="Delete Task"><span class="sr-only">Delete Task</span> <i#}
+{#                                            class="fa fa-trash-o text-col-white"></i>#}
+{#                                    </a>#}
+{##}
+{##}
+{##}
+{#                                </td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{##}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+    </div>
+    </div>
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_task_url = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_task_url = "/team/module/" + $(this).data('module') + "/task/delete/" + $(this).data('task');
+            console.log(delete_task_url);
+        });
+    </script>
+
+
+
+{% endblock %}

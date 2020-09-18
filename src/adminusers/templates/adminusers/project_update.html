@@ -96,14 +96,14 @@
                 <div class=" form-group w-100">
                     <label for="single-selection-project_assign">Assign to Department Head</label>
                     <div class="multiselect_div">
-                        <select id="single-selection-project_assign" name="project_status"
+                        <select {% if project_status > 2 %} disabled {% endif %}  id="single-selection-project_assign" name="project_status"
                                 class="multiselect multiselect-custom"
                                 data-parsley-errors-container="#error-singleselect-project_status">
                             <option value="" selected>Select a status</option>
                             <option value="1" >Not Assigned</option>
                             <option value="2" {% if project_status == 2 %} selected{% endif %}>Assigned</option>
-                            <option value="2" {% if project_status == 3 %} selected disabled{% endif %}>Running</option>
-                            <option value="2" {% if project_status == 4 %} selected disabled{% endif %}>Completed</option>
+                            <option value="2" disabled {% if project_status == 3 %} selected class="bg-info" {% endif %}>Running</option>
+                            <option value="2" disabled {% if project_status == 4 %} selected {% endif %}>Completed</option>
                         </select>
                         <p id="error-singleselect-project_status"></p>
                     </div>
@@ -113,7 +113,7 @@
 
                 <br>
                 <button type="submit" id="submit"
-                        class="btn btn-primary font-weight-bold">Submit
+                        class="btn btn-primary font-weight-bold">Update
                 </button>
             </form>
         </div>

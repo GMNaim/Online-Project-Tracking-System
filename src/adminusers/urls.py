@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 
-
+""" IF YOU CHANGE URL MUST CHANGE IN LIST PAGES"""
 urlpatterns = [
     path('client/add', views.client_add, name="client-add"),
     path('client/list', views.client_list, name="client-list"),

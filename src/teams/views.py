@@ -33,7 +33,7 @@ group_team_member = Group.objects.get(name__iexact=role_team_member)
 group_employee = Group.objects.get(name__iexact=role_employee)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_department_head, role_super_user])
 def team_list(request):
     if request.user.is_authenticated:
@@ -85,7 +85,7 @@ def team_list(request):
         return render(request, 'teams/team_list.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(
     allowed_roles=[role_department_head, role_admin, role_super_user])  # for testing role_admin is getting permission
 def team_add(request):
@@ -180,7 +180,7 @@ def team_add(request):
     return render(request, 'teams/team_add.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head, role_admin, role_super_user])
 def team_update(request, team_name):
     if request.user.is_authenticated:
@@ -324,7 +324,7 @@ def team_update(request, team_name):
         return render(request, 'teams/team_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user, role_department_head])
 def team_delete(request, team_name):
     if request.user.is_authenticated:
@@ -388,38 +388,44 @@ def team_delete(request, team_name):
 """ ==============================================  TASK WORK  =============================================="""
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
 def team_all_module(request):
-    # assigned_modules_to_leader2 = Module.objects.filter(
+    # user_notification_item = Module.objects.filter(
     #     assigned_team__team_member_user__username__iexact=request.user.username, status__gte=2)
-    # print(assigned_modules_to_leader2, ' = assigned_modules_to_leader')
-    assigned_modules_to_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).order_by(
-        'status', '-modified_at')
-    print(assigned_modules_to_leader)
+    # print(user_notification_item, ' = user_notification_item')
+    assigned_modules_list_to_leader = Module.objects.filter(assigned_team=request.user.team_member,
+                                                            status__gte=2).order_by(
+        'status', '-assigned_at')
+    print(assigned_modules_list_to_leader)
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
     current_user.save()
 
-    context = {'assigned_modules_to_leader': assigned_modules_to_leader, }
+    """ LIST OF NOTIFICATION ITEMS """
+    user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
+        'status', '-assigned_at')
+    print('user_notification_item: -- ', user_notification_item)
+    if current_user.notification_count == 0:
+        user_notification_item = None
+
+    context = {'assigned_modules_list_to_leader': assigned_modules_list_to_leader,
+               'user_notification_item': user_notification_item}
     return render(request, 'teams/team_all_module.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
 def team_running_modules(request):
-    department = Department.objects.all()
-
-    # for d in department:
-    #     print(d.get_department_info())
-    #     print(d.name, d.get_total_employee(), 'total employee----')
-
-    context = {'department': department, }
+    if request.user.is_authenticated:
+        running_modules = Module.objects.filter(status=3, assigned_team=request.user.team_member).order_by('-assigned_at')  # 3 means running modules
+        context = {'running_modules': running_modules}
+        print()
     return render(request, 'teams/team_running_modules.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
 def team_completed_modules(request):
     department = Department.objects.all()
@@ -432,11 +438,11 @@ def team_completed_modules(request):
     return render(request, 'teams/team_completed_modules.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
 def team_module_details(request, module_id):
     if request.user.is_authenticated:
-        # assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
+        # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
         selected_module = get_object_or_404(Module, id=module_id)
         task_list = Task.objects.filter(module_id=module_id)  # task list of the selected module
         print(task_list.count())
@@ -449,15 +455,15 @@ def team_module_details(request, module_id):
         return render(request, 'teams/team_module_details.html', context)
 
 
-@login_required
-@has_access(allowed_roles=[role_team_leader])
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
 def task_create(request, module_id):
     if request.user.is_authenticated:
         selected_module = get_object_or_404(Module, id=module_id)
         # members_in_team = Team.objects.filter(team_member_user__department_id=request.user.department.id).exclude(
         #     id=10).distinct()  # getting all team of signed in department head's department
         members_in_team = User.objects.filter(team_member__id=request.user.team_member.id)
-        print('member in the team ', members_in_team)
+        # print('member in the team ', members_in_team)
 
         context = {'selected_module': selected_module, 'members_in_team': members_in_team}
 
@@ -466,15 +472,15 @@ def task_create(request, module_id):
             selected_member = request.POST['selected_member']
             description = request.POST['description']
             submission_date = request.POST['submission_date']
-            print('Post data: = ', name, selected_member, description, submission_date)
+            # print('Post data: = ', name, selected_member, description, submission_date)
 
             date_obj = datetime.strptime(submission_date, '%Y-%m-%d')  # converting string date to date obj
             submission_date_obj = date_obj.date()  # datetime obj to save in model
-            print('Date:', submission_date_obj)
+            # print('Date:', submission_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = submission_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
+            # print(check_old_date)
             context = {'members_in_team': members_in_team,
                        'name': name,
                        'description': description,
@@ -519,10 +525,10 @@ def task_create(request, module_id):
 
                     selected_member_obj = User.objects.get(id=int(selected_member))  # getting the member obj.
                     task = Task(name=name,  # creating a new task
-                                  description=description,
-                                  assigned_member=selected_member_obj,
-                                  module=selected_module,
-                                  submission_date=submission_date_obj)
+                                description=description,
+                                assigned_member=selected_member_obj,
+                                module=selected_module,
+                                submission_date=submission_date_obj)
                     task.save()  # saving new created task
                     print(task.module.name)
                     # #  If there is at least one module created then project status will be change to running.
@@ -539,49 +545,45 @@ def task_create(request, module_id):
         return render(request, 'teams/task_add.html', context)
 
 
-@login_required
-@has_access(allowed_roles=[role_team_leader])
-def task_update(request, project_code, module_id):
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
+def task_update(request, module_id, task_id):
     if request.user.is_authenticated:
-        selected_project = get_object_or_404(Project, code=project_code)  # getting the selected project
         selected_module = get_object_or_404(Module, id=module_id)  # getting the selected module
-        team_in_dep = Team.objects.filter(team_member_user__department_id=request.user.department.id).exclude(
-            id=10).distinct()  # getting all team of signed in department head's department
-        print(team_in_dep)
-        print(selected_project.delivery_date, type(selected_project.delivery_date),
-              selected_project.delivery_date.day > 0)
-        context = {'selected_project': selected_project,
-                   'team_in_department': team_in_dep,
+        selected_task = get_object_or_404(Task, id=task_id)
+        members_in_team = User.objects.filter(team_member__id=request.user.team_member.id)
+        print('member in the team ', members_in_team)
+
+        context = {'members_in_team': members_in_team,
                    'selected_module': selected_module,
-                   'name': selected_module.name,
-                   'description': selected_module.description,
-                   'submission_date': selected_module.submission_date.strftime("%Y-%m-%d"),
-                   'module_status': selected_module.status}
+                   'selected_task': selected_task,
+                   'name': selected_task.name,
+                   'description': selected_task.description,
+                   'submission_date': selected_task.submission_date.strftime("%Y-%m-%d"),  # its converting date
+                   'task_status': selected_task.status}
 
         if request.method == "POST":
             name = str(request.POST['name']).strip()
-            selected_team = request.POST['select_team']
+            selected_member = request.POST['selected_member']
             description = request.POST['description']
             submission_date = request.POST['submission_date']
-            module_status = request.POST['module_status']
-            print('Post data: = ', name, selected_team, description, submission_date, module_status)
-            print(Module.objects.filter(name__iexact=name),
-                  Module.objects.filter(name__iexact=name).exclude(name__iexact=selected_module.name), '000')
+            task_status = request.POST['task_status']
+            # print('Post data: = ', name, selected_member, description, submission_date, task_status)
 
             date_obj = datetime.strptime(submission_date, '%Y-%m-%d')  # converting string date to date obj
             submission_date_obj = date_obj.date()  # datetime obj to save in model
-            print('Date:', submission_date_obj)
+            # print('Date:', submission_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = submission_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
-            context = {'team_in_department': team_in_dep,
-                       'name': name,
-                       'description': description,
-                       'selected_team': int(selected_team),
-                       'submission_date': submission_date_obj.strftime("%Y-%m-%d"),
-                       'selected_project': selected_project,
-                       'module_status': module_status}
+            # print(check_old_date)
+            context = {'members_in_team': members_in_team,
+                       'selected_module': selected_module,
+                       'selected_task': selected_task,
+                       'name': selected_task.name,
+                       'description': selected_task.description,
+                       'submission_date': selected_task.submission_date.strftime("%Y-%m-%d"),  # its converting date
+                       'task_status': selected_task.status}
             # Validating the information
             task_update_error_link = 'teams/task_update.html'
             if check_old_date.days < 0:
@@ -589,136 +591,176 @@ def task_update(request, project_code, module_id):
                 return render(request, task_update_error_link, context)
 
             elif name.strip() == "":
-                messages.warning(request, 'Please provide a project name')
-                return render(request, task_update_error_link, context)
-
-            elif Module.objects.filter(name__iexact=name).exclude(name__iexact=selected_module.name).exists():
-                messages.warning(request, 'There is another module with this name. Please change the name.')
+                messages.warning(request, 'Please provide a task name.')
                 return render(request, task_update_error_link, context)
 
             elif description.strip() == "":
-                messages.warning(request, 'Please provide detail description of the module.')
+                messages.warning(request, 'Please provide description of the task.')
                 return render(request, task_update_error_link, context)
 
-            elif selected_team == '':
-                messages.warning(request, f"Please select a team!")
+            elif selected_member == '':
+                messages.warning(request, f"Please select a team member!")
                 return render(request, task_update_error_link, context)
 
             elif submission_date == '':
                 messages.warning(request, f"Please provide submission date!")
                 return render(request, task_update_error_link, context)
 
-            elif submission_date_obj > selected_project.delivery_date:
+            elif submission_date_obj > selected_module.submission_date:
                 messages.warning(request,
-                                 f"Project delivery date is {selected_project.delivery_date}."
-                                 f" But you set submission date {submission_date_obj}!")
+                                 f"Module submission date is {selected_module.submission_date}."
+                                 f" But you set task submission date {submission_date_obj}!")
                 return render(request, task_update_error_link, context)
 
             else:
                 try:
-                    #  Updating data
+                    #  Updating task data
+                    selected_member_obj = User.objects.get(id=int(selected_member))  # getting the team member obj.
+                    print('selected member for task ==', selected_member_obj)
+                    # creating a new task
+                    selected_task.name = name
+                    selected_task.description = description
+                    # selected_task.assigned_member = selected_member_obj  # setting member below as if user set member after assigned another member
+                    selected_task.module = selected_module
+                    selected_task.submission_date = submission_date_obj
 
-                    selected_team_obj = Team.objects.get(id=int(selected_team))  # getting the team obj.
-                    selected_module.name = name  # creating a new module
-                    selected_module.description = description
-                    selected_module.assigned_team = selected_team_obj
-                    selected_module.project = selected_project
-                    selected_module.submission_date = submission_date_obj
-                    if module_status != '':  # '' means not selecting any status
-                        selected_module.status = int(module_status)  # setting the module
-                    selected_module.save()  # saving module
+                    """ Setting notification as task is assigned to a team member """
 
-                    """ Setting notification as module is assigned to a team leader """
-                    # getting the team leader
+                    """ If task is assigned already to a member and then change the member then notification count"""
+                    if selected_member_obj != selected_task.assigned_member and selected_task.status == 2:
+                        selected_task.assigned_member.notification_count -= 1  # decrease previous member notification c
+                        selected_task.assigned_member.save()
+                        if selected_member_obj.notification_count < 0:  # if notification count is < than 0
+                            selected_member_obj.notification_count = 0  # then make it 0
+                            selected_member_obj.save()
 
-                    module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                                                                   role__name__exact=role_team_leader)
-                    print('module_assigned_team_leader=== ', module_assigned_team_leader,
-                          selected_module.assigned_team.name)
-                    if int(module_status) == 2:  # if status is assigned
-                        module_assigned_team_leader.notification_count += 1  # Then increase the notification count
-                        module_assigned_team_leader.save()
-                        selected_module.assigned_at = datetime.now()  # setting the assigned date
-                        selected_module.save()
-                    elif int(module_status) == 1:  # if status is new or not assigned
-                        module_assigned_team_leader.notification_count -= 1  # then decrease the notification count
-                        module_assigned_team_leader.save()
-                        selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
-                        selected_module.save()
-                        if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
-                            module_assigned_team_leader.notification_count = 0  # then make it 0
-                            module_assigned_team_leader.save()
-                    messages.success(request, f"Module '{name}' is updated successfully!")
-                    return redirect('department-project-details', project_code=selected_project.code)
+                        if task_status == '':
+                            selected_task.status = 1  # then change the status of the
+                            selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
+                            selected_task.save()
+
+                    print(task_status, '-------------')
+                    """If task is assigned already to a member and then change the member and 
+                       change the status to assigned at same time """
+                    # if selected_member_obj != selected_task.assigned_member and task_status == 2:
+                    #     selected_task.assigned_member.notification_count -= 1  # decrease previous member notification c
+                    #     print(selected_task.assigned_member.notification_count, selected_task.assigned_member)
+                    #     selected_task.assigned_member.save()
+                    #     selected_task.assigned_member = selected_member_obj
+                    #     print(selected_task.assigned_member, 'after assign new member, without save')
+                    #     selected_task.save()
+                    #     print(selected_task.assigned_member, 'after assign new member, with save')
+                    #     selected_task.assigned_member.notification_count += 1
+                    #     selected_task.assigned_member.save()
+                    #     print(selected_task.assigned_member.notification_count, '648, after assign new member, with save')
+                    #     selected_task.status = 2
+                    #     selected_task.assigned_at = datetime.now()
+                    #     selected_task.save()
+                    #     print(selected_task.status, selected_task.assigned_member, selected_task.assigned_member.notification_count)
+
+
+                    # getting the team member
+
+                    # module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
+                    #                                                role__name__exact=role_team_leader)
+                    # print('module_assigned_team_leader=== ', module_assigned_team_leader,
+                    #                     #       selected_module.assigned_team.name)
+                    print(selected_task.status, 'selected selected_task status....', task_status)
+                    if task_status != '':  # means if any status is not selected
+                        if selected_task.status != 2 and int(task_status) == 2:  # if status is assigned
+                            # if selected project previous status not 2 means not assigned and user select 2 then...
+                            # print('here selected module.status is not 2 and user select 2 so count++')
+                            selected_member_obj.notification_count += 1  # Then increase the notification count
+                            selected_member_obj.save()
+                            selected_task.assigned_at = datetime.now()  # setting the assigned date
+                            selected_task.save()
+                            print('previously selected task status.', selected_task.status, 'task status:', task_status)
+                        elif selected_task.status == 2 and int(task_status) == 1:  # if status is new or not assigned
+                            # if module previous status is 2 and user select 1 then only do --
+                            print('here selected selected_task.status is 2 and user select 1 so  count--')
+                            selected_member_obj.notification_count -= 1  # then decrease the notification count
+                            selected_member_obj.save()
+                            selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
+                            selected_task.save()
+                            if selected_member_obj.notification_count < 0:  # if notification count is < than 0
+                                selected_member_obj.notification_count = 0  # then make it 0
+                                selected_member_obj.save()
+                    # setting status here because of notification count. if set up then got wrong notifica. count value
+                    # setting status here because of notification count.
+                    # if set up then got wrong notification count value cause we checked db value of previous status
+                    # which is updated by doing following thing.
+                    if task_status != '':  # '' means not selecting any status
+                        selected_task.status = int(task_status)  # setting the module
+                    selected_task.assigned_member = selected_member_obj
+                    selected_task.save()  # saving module
+                    messages.success(request, f"Task '{name}' is updated successfully!")
+                    return redirect('team-module-details', module_id=selected_module.id)
+
                 except Exception as e:
-                    print(e)
+                    print("Error in task update: ", e)
                     messages.error(request, e)
                     return render(request, task_update_error_link, context)
 
         return render(request, 'teams/task_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
-def task_delete(request, project_code, module_id):
+def task_delete(request, module_id, task_id):
     if request.user.is_authenticated:
-        selected_project = get_object_or_404(Project, code=project_code)
         selected_module = get_object_or_404(Module, id=module_id)
+        selected_task = get_object_or_404(Task, id=task_id)
 
         try:
-            selected_module.delete()
-            """ Setting notification count number as module is deleted """
-            # getting the team leader
-            module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                                                           role__name__exact=role_team_leader)
+            selected_task.delete()
+            """ Setting notification count number as task is deleted """
+            # getting the team member
+            task_assigned_team_member = selected_task.assigned_member
             # setting the notification count number as module is deleted
-            if selected_module.status == 2:
-                module_assigned_team_leader.notification_count -= 1
-                module_assigned_team_leader.save()
-            messages.success(request, f"Module '{selected_module.name}' is deleted!")
-            return redirect('department-project-details', project_code=selected_project.code)
+            if selected_task.status == 2:
+                task_assigned_team_member.notification_count -= 1
+                task_assigned_team_member.save()
+            messages.success(request, f"Task '{selected_task.name}' is deleted!")
+            return redirect('team-module-details', module_id=selected_module.id)
 
-        except selected_project.DoesNotExist:
-            messages.error(request, 'Module does not exist')
-            return redirect('department-project-details', project_code=selected_project.code)
+        except selected_task.DoesNotExist:
+            messages.error(request, 'Task does not exist')
+            return redirect('team-module-details', module_id=selected_module.id)
 
         except Exception as e:
             messages.error(request, f"Error: {e}.")
-            return redirect('department-project-details', project_code=selected_project.code)
+            return redirect('team-module-details', module_id=selected_module.id)
 
 
-@login_required
-@has_access(allowed_roles=[role_team_leader])
-def task_assign(request, project_code, module_id):
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
+def task_assign(request, module_id, task_id):
     """
-    After clicking on the assign module this function will run
+    After clicking on the assign task button  this function will run
     it will change the status of the module new to assigned
     """
     if request.user.is_authenticated:
-        modules = Module.objects.all()
-
-        selected_project = get_object_or_404(Project, code=project_code)
+        selected_task = get_object_or_404(Task, id=task_id)
         selected_module = get_object_or_404(Module, id=module_id)
-        context = {'selected_project': selected_project,
+        context = {'selected_task': selected_task,
                    'selected_module': selected_module}
         try:
-            selected_module.status = 2  # status == 2 means module is assigned
-            selected_module.assigned_at = datetime.now()  # setting the assigned date
-            selected_module.save()
+            selected_task.status = 2  # status == 2 means task is assigned
+            selected_task.assigned_at = datetime.now()  # setting the assigned date
+            selected_task.save()
 
-            """ Setting notification count number as module is assigned to a team leader """
+            """ Setting notification count number as task is assigned to a team member """
             # getting the team leader
-            module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                                                           role__name__exact=role_team_leader)
-            print(module_assigned_team_leader)
-            # setting the notification count numger as project is assigned to team leader
-            module_assigned_team_leader.notification_count += 1
-            module_assigned_team_leader.save()
+            task_assigned_team_member = selected_task.assigned_member
+            print(task_assigned_team_member)
+            # setting the notification count numger as task is assigned to team member
+            task_assigned_team_member.notification_count += 1
+            task_assigned_team_member.save()
 
             messages.success(request,
-                             f"{selected_module.name} is assigned to the {selected_module.assigned_team.name}.")
-            return redirect('department-project-details', project_code=selected_project.code)
+                             f"{selected_task.name} is assigned to the {selected_task.assigned_member}.")
+            return redirect('team-module-details', module_id=selected_module.id)
         except Exception as e:
-            print('module assign error ====', e)
+            print('task assign error ====', e)
             messages.error(request, f"Error: {e}")
-            return render(request, 'departments/department_project_details.html', context)
+            return render(request, 'teams/team_module_details.html', context)

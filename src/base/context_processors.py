@@ -1,5 +1,5 @@
 from accounts.models import User
-from adminusers.models import Project, Module
+from adminusers.models import Project, Module, Task
 
 
 def left_sidebar_content(request):
@@ -15,26 +15,70 @@ def left_sidebar_content(request):
 def nav_bar_content(request):
     if request.user.is_authenticated:
         if request.user.department.id != 16:
+
+            """ all user role"""
+            is_super_user_or_admin = request.user.role.name == 'Admin' or request.user.role.name == 'Super User'
+            is_department_head = request.user.role.name == 'Department Head'
+            is_team_leader = request.user.role.name == 'Team Leader'
+            is_team_member = request.user.role.name == 'Team Member'
+            is_employee = request.user.role.name == 'Employee'
             """ NOTIFICATIONS SETTING """
-            """HEAD NOTIFICATION COUNT"""
-            head_notification_count = User.objects.get(department_id=request.user.department.id,
-                                                       role__name__iexact='Department Head').notification_count  # all projects that are assigned to the head
-            """ LIST OF NOTIFICATION ITEMS """
-            assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id,
-                                                               status=2).order_by('status', '-modified_at')
+            user_notification_count = User.objects.get(id=request.user.id).notification_count
+            user_notification_item = None  # default notification item None
+            """HEAD NOTIFICATION ITEM"""
+            if is_department_head:
+                # """ LIST OF NOTIFICATION ITEMS """
+                user_notification_item = Project.objects.filter(department_id=request.user.department.id,
+                                                                status=2).order_by('status', '-assigned_at')
+                print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                      user_notification_count)
+                if user_notification_count == 0:
+                    user_notification_item = None
+                    print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                          user_notification_count)
 
-            """ TEAM LEADER NOTIFICATION COUNT"""
-            team_leader_notification_count = User.objects.get(id=request.user.id).notification_count
-            print('Team leader notification count', team_leader_notification_count)
+                return {'user_notification_count': user_notification_count,
+                        'user_notification_item': user_notification_item,
+                        'is_super_user_or_admin': is_super_user_or_admin,
+                        'is_department_head': is_department_head,
+                        'is_team_leader': is_team_leader,
+                        'is_employee': is_employee,
+                        'is_team_member': is_team_member, }
 
-            """ LIST OF NOTIFICATION ITEMS """
-            assigned_modules_to_leader = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by('status', '-modified_at')
-            print('assigned_modules_to_leader: -- ', assigned_modules_to_leader)
-            if team_leader_notification_count == 0:
-                assigned_modules_to_leader = None
-            return {'head_notification_count': head_notification_count,
-                    'assigned_projects_to_head': assigned_projects_to_head,
-                    'team_leader_notification_count': team_leader_notification_count,
-                    'assigned_modules_to_leader': assigned_modules_to_leader}
+            """Leader NOTIFICATION ITEM"""
+            if request.user.team_member.id != 10 and is_team_leader:
+                user_notification_item = Module.objects.filter(assigned_team=request.user.team_member,
+                                                               status=2).order_by('status', '-assigned_at')
+                print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                      user_notification_count)
+                if user_notification_count == 0:
+                    user_notification_item = None
+                    print(user_notification_item, 'user notification count',
+                          user_notification_count)
+                return {'user_notification_count': user_notification_count,
+                        'user_notification_item': user_notification_item,
+                        'is_super_user_or_admin': is_super_user_or_admin,
+                        'is_department_head': is_department_head,
+                        'is_team_leader': is_team_leader,
+                        'is_employee': is_employee,
+                        'is_team_member': is_team_member, }
+
+            if is_team_member:
+                user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
+                    'status', '-assigned_at')
+                print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                      user_notification_count)
+                if user_notification_count == 0:
+                    user_notification_item = None
+                    print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                          user_notification_count)
+                return {'user_notification_count': user_notification_count,
+                        'user_notification_item': user_notification_item,
+                        'is_super_user_or_admin': is_super_user_or_admin,
+                        'is_department_head': is_department_head,
+                        'is_team_leader': is_team_leader,
+                        'is_employee': is_employee,
+                        'is_team_member': is_team_member, }
+        return ''
 
     return ''  # return nothing

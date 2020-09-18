@@ -16,7 +16,7 @@
                     <div class="dashboard-card-group"
                          style="width: 100%; display: flex; justify-content: space-around;">
 
-                        {% if is_super_user_or_admin or is_team_leader %}
+                        {% if is_super_user_or_admin or is_team_member or is_team_leader%}
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-list' %}">
                                     <div class="dashboard-card-body l-turquoise">
@@ -32,7 +32,7 @@
                                                  </span>
                                             </div>
                                             <small
-                                                    class="text-light text-uppercase font-weight-bold">Team Members</small>
+                                                    class="text-light text-uppercase font-weight-bold">My Team</small>
                                             <div class="progress progress-xs mt-3 mb-0 bg-light"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
@@ -41,18 +41,18 @@
                             </div>
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="{% url 'team-all-module' %}">
+                                <a href="{% url 'member-all-task' %}">
                                     <div class="dashboard-card-body l-slategray">
                                         <div class="h1 text-light text-right mb-4">
-                                            <i class="fa fa-server"></i>
+                                            <i class="fa fa-tasks"></i>
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">{{ total_module_of_leader }}</span>
+                                                <span class="count">{{ total_task_of_member }}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">All
-                                                Module</small>
+                                                Task</small>
                                             <div class="progress progress-xs mt-3 mb-0 bg-light"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
@@ -73,7 +73,7 @@
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">Completed
-                                                Module</small>
+                                                Task</small>
                                             <div class="progress progress-xs mt-3 mb-0 bg-light"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
@@ -93,7 +93,7 @@
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">Running
-                                                Module</small>
+                                                Task</small>
                                             <div class="progress progress-xs mt-3 mb-0 bg-light"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>

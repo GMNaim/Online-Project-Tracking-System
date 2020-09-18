@@ -11,6 +11,14 @@ Team: {{ selected_module.assigned_team.name }} - {{ selected_module.name }} - Al
             <div>
                 <div class="row clearfix" style="height: 48px">
                     <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Project Name: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_module.project.name }}</p><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
                         <p style="font-size: 18px;">Module Name: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
@@ -76,7 +84,7 @@ Team: {{ selected_module.assigned_team.name }} - {{ selected_module.name }} - Al
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Task Name</th>
-                            <th>Team</th>
+                            <th>Member</th>
                             <th>Status</th>
                             <th>Assigned Date</th>
                             <th>Submission Date</th>
@@ -89,31 +97,36 @@ Team: {{ selected_module.assigned_team.name }} - {{ selected_module.name }} - Al
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ task.name }}</td>
-                                <td>{{ task.module.assigned_team.name }} :: {{ task.module.assigned_team.get_team_leader }}</td>
+                                <td>{{ task.assigned_member }}</td>
                                 <td>{{ task.get_status_display }}</td>
                                 <td>{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td>{{ task.submission_date|date }}</td>
                                 <td class="actions">
-                                    <a
-     {% if task.status == 2 %}{% else %}href="{% url 'module-assign' selected_module.id  task.id %}"{% endif %}>
+                                    {% if task.status >= 2 %}{% else %}
+                                        <a href="{% url 'task-assign' selected_module.id  task.id %}">
+                                            <button type="button"
+                                                    class="btn btn-primary" title="Assign Task"><span
+                                                    class="sr-only">Assign Task</span> <i
+                                                    class="fa fa-share-square-o"></i>
+                                            </button>
+                                        </a>
+                                    {% endif %}
+                                    <a href="{% url 'task-update' selected_module.id task.id %}">
                                         <button type="button"
-                                                class="btn btn-primary" title="Assign Module"><span
-                                                class="sr-only">Assign Project</span> <i
-                                                class="fa fa-share-square-o"></i></button>
-                                    </a>
-                                    <a href="{% url 'module-update' selected_module.id task.id %}">
-                                        <button type="button"
-                                                class="btn btn-success" title="Edit Module"><span
+                                                class="btn btn-success" title="Edit Task"><span
                                                 class="sr-only">Edit</span> <i
                                                 class="fa fa-edit"></i></button>
                                     </a>
-                                    <a id="confirm-button-url_module" data-module="{{ selected_module.id }}"
+                                    <a id="confirm-button-url_task" data-module="{{ selected_module.id }}"
                                        data-task="{{ task.id }}"
                                        class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="module_delete_confirm"
-                                       title="Delete Module"><span class="sr-only">Delete Module</span> <i
+                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"
+                                       title="Delete Task"><span class="sr-only">Delete Task</span> <i
                                             class="fa fa-trash-o text-col-white"></i>
                                     </a>
+
+
+
                                 </td>
                             </tr>
                         {% endfor %}

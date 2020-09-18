@@ -36,68 +36,112 @@
                                 <a href="javascript:void(0);" class="dropdown-toggle icon-menu"
                                    data-toggle="dropdown">
                                     <i class="icon-bell" style="font-size: 18px"></i>
-                                    {% if head_notification_count %}
+                                    {#                                    {% if is_department_head and user_notification_count %}#}
+                                    {#                                        <span class="notification-dot text-center"#}
+                                    {#                                              style="width: 15px; height: 15px; font-size: 9px; color: #fff">#}
+                                    {#                                        {{ user_notification_count }}</span>#}
+                                    {#                                    {% elif is_team_leader and user_notification_count %}#}
+                                    {#                                        <span class="notification-dot text-center"#}
+                                    {#                                              style="width: 15px; height: 15px; font-size: 9px; color: #fff">#}
+                                    {#                                        {{ user_notification_count }}</span>#}
+                                    {#                                    {% endif %}#}
+                                    {% if user_notification_count %}
                                         <span class="notification-dot text-center"
                                               style="width: 15px; height: 15px; font-size: 9px; color: #fff">
-                                        {{ head_notification_count }}</span>
-                                        {% elif team_leader_notification_count %}
-                                        <span class="notification-dot text-center"
-                                              style="width: 15px; height: 15px; font-size: 9px; color: #fff">
-                                        {{ team_leader_notification_count }}</span>
+                                        {{ user_notification_count }}</span>
                                     {% endif %}
                                 </a>
                                 <ul class="dropdown-menu animated bounceIn notifications">
-                                    {% if request.user.role.name == 'Department Head' %}
-                                        {% if head_notification_count %}
-                                            <li class="header"><strong>You have {{ head_notification_count }} new
-                                                Notification{{ head_notification_count|pluralize }}</strong></li>
-                                        {% else %}
-                                            <li class="header"><strong>You don't have any new Notifications</strong>
-                                            </li>
-                                        {% endif %}
-                                        {% for project in assigned_projects_to_head %}
-                                            <li>
-                                                <a href="{% url 'department-all-project' %}">
-                                                    <div class="media">
-                                                        <div class="media-left">
-                                                            <i class="fa fa-tasks text-warning"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <p class="text">New Project ::
-                                                                <strong>{{ project.name }}</strong></p>
-                                                            <span class="timestamp">Delivery Date: {{ project.delivery_date }}</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        {% endfor %}
-                                    {% elif request.user.role.name == 'Team Leader' %}
-                                        {% if team_leader_notification_count %}
-                                            <li class="header"><strong>You have {{ team_leader_notification_count }} new
-                                                Notification{{ team_leader_notification_count|pluralize }}</strong></li>
-                                        {% else %}
-                                            <li class="header"><strong>You don't have any new Notifications</strong>
-                                            </li>
-                                        {% endif %}
-                                        {% for module in assigned_modules_to_leader %}
-                                            <li>
-                                                <a href="{% url 'team-all-module' %}">
-                                                    <div class="media">
-                                                        <div class="media-left">
-                                                            <i class="fa fa-tasks text-warning"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <p class="text">New Project ::
-                                                                <strong>{{ module.name }}</strong></p>
-                                                            <span class="timestamp">Delivery Date: {{ module.submission_date }}</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        {% endfor %}
+                                    {#                                    {% if is_department_head %}#}
+                                    {#                                        {% if user_notification_count %}#}
+                                    {#                                            <li class="header"><strong>You have {{ user_notification_count }} new#}
+                                    {#                                                Notification{{ user_notification_count|pluralize }}</strong></li>#}
+                                    {#                                        {% else %}#}
+                                    {#                                            <li class="header"><strong>You don't have any new Notifications</strong>#}
+                                    {#                                            </li>#}
+                                    {#                                        {% endif %}#}
+                                    {#                                        {% if user_notification_item is not None %}#}
+                                    {#                                            {% for project in user_notification_item %}#}
+                                    {#                                                <li>#}
+                                    {#                                                    <a href="{% url 'department-all-project' %}">#}
+                                    {#                                                        <div class="media">#}
+                                    {#                                                            <div class="media-left">#}
+                                    {#                                                                <i class="fa fa-tasks text-warning"></i>#}
+                                    {#                                                            </div>#}
+                                    {#                                                            <div class="media-body">#}
+                                    {#                                                                <p class="text">New Project ::#}
+                                    {#                                                                    <strong>{{ project.name }}</strong></p>#}
+                                    {#                                                                <span class="timestamp">Delivery Date: {{ project.delivery_date }}</span>#}
+                                    {#                                                            </div>#}
+                                    {#                                                        </div>#}
+                                    {#                                                    </a>#}
+                                    {#                                                </li>#}
+                                    {#                                            {% endfor %}#}
+                                    {#                                        {% endif %}#}
 
 
+                                    {% if user_notification_count %}
+                                        <li class="header"><strong>You have {{ user_notification_count }} new
+                                            Notification{{ user_notification_count|pluralize }}</strong></li>
+                                    {% else %}
+                                        <li class="header"><strong>You don't have any new Notifications</strong>
+                                        </li>
                                     {% endif %}
+                                    {% if user_notification_item is not None %}
+                                        {% for item in user_notification_item %}
+                                            <li>
+                                                <a href="
+                                                        {% if is_department_head %}
+                                                            {% url 'department-all-project' %}
+                                                        {% elif is_team_leader %}
+                                                            {% url 'team-all-module' %}
+                                                        {% endif %} ">
+                                                    <div class="media">
+                                                        <div class="media-left">
+                                                            <i class="fa fa-tasks text-warning"></i>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <p class="text">New Task ::
+                                                                <strong>{{ item.name }}</strong></p>
+                                                            {% if is_department_head %}
+                                                                <span class="timestamp">Delivery Date: {{ item.delivery_date }}</span>
+                                                            {% endif %}
+                                                            <span class="timestamp">Submission Date: {{ item.submission_date }}</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {#                                    {% elif is_team_leader %}#}
+                                    {#                                    {% if user_notification_count %}#}
+                                    {#                                        <li class="header"><strong>You have {{ user_notification_count }} new#}
+                                    {#                                            Notification{{ user_notification_count|pluralize }}</strong></li>#}
+                                    {#                                    {% else %}#}
+                                    {#                                        <li class="header"><strong>You don't have any new Notifications</strong>#}
+                                    {#                                        </li>#}
+                                    {#                                    {% endif %}#}
+                                    {##}
+                                    {#                                    {% if user_notification_item is not None %}#}
+                                    {#                                        {% for module in user_notification_item %}#}
+                                    {#                                            <li>#}
+                                    {#                                                <a href="{% url 'team-all-module' %}">#}
+                                    {#                                                    <div class="media">#}
+                                    {#                                                        <div class="media-left">#}
+                                    {#                                                            <i class="fa fa-tasks text-warning"></i>#}
+                                    {#                                                        </div>#}
+                                    {#                                                        <div class="media-body">#}
+                                    {#                                                            <p class="text">New Project ::#}
+                                    {#                                                                <strong>{{ module.name }}</strong></p>#}
+                                    {#                                                            <span class="timestamp">Submission Date: {{ module.submission_date }}</span>#}
+                                    {#                                                        </div>#}
+                                    {#                                                    </div>#}
+                                    {#                                                </a>#}
+                                    {#                                            </li>#}
+                                    {#                                        {% endfor %}#}
+                                    {#                                    {% endif %}#}
+
 
                                     {#                                    <li class="footer"><a href="javascript:void(0);" class="more">See all#}
                                     {#                                        notifications</a></li>#}
@@ -106,18 +150,18 @@
                             <li class="dropdown">
                                 <a href="javascript:void(0);" class="dropdown-toggle icon-menu"
                                    data-toggle="dropdown">
-                                    <img class="rounded-circle" src={% static "base/images/user-small.png" %}
-                                            width="30" alt="">
+                                    <img class="rounded-circle" src={{ request.user.profile_picture.url }}
+                                            width="30" height="30" alt="">
                                 </a>
                                 <div class="dropdown-menu animated flipInY user-profile">
                                     <div class="d-flex p-3 align-items-center">
                                         <div class="drop-left m-r-10">
-                                            <img src="{% static "base/images/user-small.png" %} class=" rounded
-                                                 width="50" alt="">
+                                            <img src={{ request.user.profile_picture.url }} class=" rounded
+                                                 width="50" height="50" alt="">
                                         </div>
                                         <div class="drop-right">
-                                            <h4>Samuel Morriss</h4>
-                                            <p class="user-name">samuelmorris@info.com</p>
+                                            <h4>{{ request.user.first_name }} {{ request.user.middle_name }} {{ request.user.last_name }}</h4>
+                                            <p class="user-name">{{ request.user.email }}</p>
                                         </div>
                                     </div>
                                     <div class="m-t-10 p-3 drop-list">

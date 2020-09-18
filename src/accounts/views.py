@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from adminusers.models import Client, Project
+from adminusers.models import Client, Module, Task
 from teams.models import Team
 from .decorators import has_access
 from .models import Department
@@ -30,7 +30,7 @@ group_team_member = Group.objects.get(name__iexact=role_team_member)
 group_employee = Group.objects.get(name__iexact=role_employee)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=['Super User', 'Admin', 'Employee', 'Department Head', 'Team Leader', 'Team Member'])
 def dashboard(request):
     if request.user.is_authenticated:
@@ -46,15 +46,17 @@ def dashboard(request):
         total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
         total_team = Team.objects.exclude(id=10).count()
         total_client = Client.objects.all().count()
+        total_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).count()
+        total_task_of_member = Task.objects.filter(assigned_member=request.user).count()
 
         # """ DEPARTMENT INFO """
         # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()
 
         # """ NOTIFICATIONS SETTING """
-        # head_notification_count = Project.objects.filter(department_id=request.user.department.id, status=2).count()  # all projects that are assigned to the head
+        # user_notification_count = Project.objects.filter(department_id=request.user.department.id, status=2).count()  # all projects that are assigned to the head
 
-        """ LIST OF NOTIFICATION ITEMS """
-        assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
+        # """ LIST OF NOTIFICATION ITEMS """
+        # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
 
         """CHANGE notification_count value"""
         # project_assigned_dep_head = User.objects.get(department_id=request.user.department.id,
@@ -62,7 +64,7 @@ def dashboard(request):
         # # print('444 req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
         # if request.method == "POST":
         #     project_assigned_dep_head.notification_count = 0
-            # print('post req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
+        # print('post req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
 
         # total members in the team
         members_in_team = User.objects.filter(team_member__id=request.user.team_member.id).count()
@@ -76,8 +78,9 @@ def dashboard(request):
                    'is_team_leader': is_team_leader,
                    'is_employee': is_employee,
                    'is_team_member': is_team_member,
-                   'assigned_projects_to_head': assigned_projects_to_head,
-                   'members_in_team': members_in_team}
+                   'members_in_team': members_in_team,
+                   'total_module_of_leader': total_module_of_leader,
+                   'total_task_of_member': total_task_of_member}
 
         if is_super_user_or_admin:
             return render(request, 'adminusers/admin_dashboard.html', context)
@@ -85,13 +88,10 @@ def dashboard(request):
             return render(request, 'departments/head_dashboard.html', context)
         elif is_team_leader:
             return render(request, 'teams/leader_dashboard.html', context)
-        elif is_team_member:
-            return render(request, 'teams/leader_dashboard.html', context)
+        elif is_team_member or is_team_leader:
+            return render(request, 'members/member_dashboard.html', context)
         elif is_employee:
             return render(request, 'teams/leader_dashboard.html', context)
-
-
-
 
 
 def registration_view(request):

@@ -29,8 +29,8 @@ group_team_member = Group.objects.get(name__iexact=role_team_member)
 group_employee = Group.objects.get(name__iexact=role_employee)
 
 
-@login_required
-@has_access(allowed_roles=['Admin', 'Super User'])
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_admin, role_super_user])
 def department_list(request):
     department = Department.objects.all()
 
@@ -42,8 +42,8 @@ def department_list(request):
     return render(request, 'departments/department_list.html', context)
 
 
-@login_required
-@has_access(allowed_roles=['Admin', 'Super User'])
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_admin, role_super_user])
 def department_add(request):
     if request.user.is_authenticated:
 
@@ -81,8 +81,8 @@ def department_add(request):
         return render(request, 'departments/department_add.html', context)
 
 
-@login_required
-@has_access(allowed_roles=['Admin', 'Super User'])
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_admin, role_super_user])
 def department_update(request, department_name):
     if request.user.is_authenticated:
         selected_department = get_object_or_404(Department, name=department_name)
@@ -119,8 +119,8 @@ def department_update(request, department_name):
         return render(request, 'departments/department_update.html', context)
 
 
-@login_required
-@has_access(allowed_roles=['Admin', 'Super User'])
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_admin, role_super_user])
 def department_delete(request, department_name):
     if request.user.is_authenticated:
         department = Department.objects.all()
@@ -139,20 +139,30 @@ def department_delete(request, department_name):
         return render(request, 'departments/department_list.html', context)
 
 
-@login_required
+
+"""=======================================   DEPARTMENT HEAD PART    ============================================="""
+
+
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_all_project(request):
-    assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2)
+    assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2).order_by('status')
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
     current_user.save()
+    """ LIST OF NOTIFICATION ITEMS """
+    user_notification_item = Project.objects.filter(department_id=request.user.department.id,
+                                                       status=2).order_by('status', '-assigned_at')
+    if current_user.notification_count == 0:  # if notification count zero then notification items none.
+        user_notification_item = None
 
-    context = {'assigned_projects_to_head': assigned_projects_to_head, }
+    context = {'assigned_projects_list_to_head': assigned_projects_list_to_head,
+               'user_notification_item':user_notification_item }
     return render(request, 'departments/department_all_project.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_running_project(request):
     department = Department.objects.all()
@@ -165,7 +175,7 @@ def department_running_project(request):
     return render(request, 'departments/department_running_project.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_completed_project(request):
     department = Department.objects.all()
@@ -178,10 +188,10 @@ def department_completed_project(request):
     return render(request, 'departments/department_completed_project.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_project_details(request, project_code):
-    assigned_projects_to_head = Project.objects.filter(department_id=request.user.department.id, status=2)
+    # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
     selected_project = get_object_or_404(Project, code=project_code)
     module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
     print(module_list.count())
@@ -189,13 +199,12 @@ def department_project_details(request, project_code):
     if module_list.count() > 0:
         selected_project.status = 3  # if any module then status will be 3 means running
         selected_project.save()
-    context = {'assigned_projects_to_head': assigned_projects_to_head,
-               'selected_project': selected_project,
+    context = {'selected_project': selected_project,
                'module_list': module_list}
     return render(request, 'departments/department_project_details.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def module_create(request, project_code):
     if request.user.is_authenticated:
@@ -285,7 +294,7 @@ def module_create(request, project_code):
         return render(request, 'departments/module_add.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def module_update(request, project_code, module_id):
     if request.user.is_authenticated:
@@ -335,7 +344,7 @@ def module_update(request, project_code, module_id):
                 return render(request, module_update_error_link, context)
 
             elif name.strip() == "":
-                messages.warning(request, 'Please provide a project name')
+                messages.warning(request, 'Please provide a module name')
                 return render(request, module_update_error_link, context)
 
             elif Module.objects.filter(name__iexact=name).exclude(name__iexact=selected_module.name).exists():
@@ -383,13 +392,15 @@ def module_update(request, project_code, module_id):
                     print(selected_module.status, 'selected module status....', module_status)
                     if module_status != '':  # means if any status is not selected
                         if selected_module.status != 2 and int(module_status) == 2:  # if status is assigned
-                            print('here selected module.status is not 2 and user select 2 so count++')
+                            # if selected project previous status not 2 means not assigned and user select 2 then...
+                            # print('here selected module.status is not 2 and user select 2 so count++')
                             module_assigned_team_leader.notification_count += 1  # Then increase the notification count
                             module_assigned_team_leader.save()
                             selected_module.assigned_at = datetime.now()  # setting the assigned date
                             selected_module.save()
                             print(selected_module.status, 'selected module status....', module_status)
                         elif selected_module.status == 2 and int(module_status) == 1:  # if status is new or not assigned
+                            # if module previous status is 2 and user select 1 then only do --
                             print('here selected module.status is 2 and user select 1 so  count--')
                             module_assigned_team_leader.notification_count -= 1  # then decrease the notification count
                             module_assigned_team_leader.save()
@@ -399,20 +410,24 @@ def module_update(request, project_code, module_id):
                                 module_assigned_team_leader.notification_count = 0  # then make it 0
                                 module_assigned_team_leader.save()
                     # setting status here because of notification count. if set up then got wrong notifica. count value
+                    # setting status here because of notification count.
+                    # if set up then got wrong notification count value cause we checked db value of previous status
+                    # which is updated by doing following thing.
                     if module_status != '':  # '' means not selecting any status
                         selected_module.status = int(module_status)  # setting the module
                     selected_module.save()  # saving module
                     messages.success(request, f"Module '{name}' is updated successfully!")
                     return redirect('department-project-details', project_code=selected_project.code)
+
                 except Exception as e:
-                    print(e)
+                    print("Error in module update: ", e)
                     messages.error(request, e)
                     return render(request, 'departments/module_update.html', context)
 
         return render(request, 'departments/module_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def module_delete(request, project_code, module_id):
     if request.user.is_authenticated:
@@ -441,7 +456,7 @@ def module_delete(request, project_code, module_id):
             return redirect('department-project-details', project_code=selected_project.code)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def module_assign(request, project_code, module_id):
     """

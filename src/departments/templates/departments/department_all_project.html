@@ -38,38 +38,38 @@
                             <th>Status</th>
                             <th>Client</th>
                             <th>Assigned Date</th>
-                            <th>Actions</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for project in assigned_projects_to_head %}
+                        {% for project in assigned_projects_list_to_head %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ project.name }}</td>
                                 <td>{{ project.department.name }}</td>
                                 <td>{{ project.get_status_display }}</td>
                                 <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
-                                <td>{{ project.created_at|date }}</td>
+                                <td>{{ project.assigned_at|date }}</td>
                                 <td class="actions">
-                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>
-                                        <button type="button"
-                                                class="btn btn-primary" title="Assign Project"><span
-                                                class="sr-only">Assign Project</span> <i
-                                                class="fa fa-share-square-o"></i></button>
-                                    </a>
+{#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
+{#                                        <button type="button"#}
+{#                                                class="btn btn-primary" title="Assign Project"><span#}
+{#                                                class="sr-only">Assign Project</span> <i#}
+{#                                                class="fa fa-share-square-o"></i></button>#}
+{#                                    </a>#}
                                     <a href="{% url 'department-project-details' project.code %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Edit"><span
                                                 class="">Details</span> <i
                                                 class="fa fa-edit"></i></button>
                                     </a>
-                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"
-                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="team_delete_confirm"
-                                       title="Delete"><span class="sr-only">Delete</span> <i
-                                            class="fa fa-trash-o text-col-white"></i>
-                                    </a>
+{#                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"#}
+{#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
+{#                                       data-type="team_delete_confirm"#}
+{#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
+{#                                            class="fa fa-trash-o text-col-white"></i>#}
+{#                                    </a>#}
                                 </td>
                             </tr>
                         {% endfor %}

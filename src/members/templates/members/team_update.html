@@ -1,0 +1,95 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="card open_task">
+        <div class="header text-center">
+            <h2>Update Team :: {{ team_name }} </h2>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn"
+                        x-placement="bottom-end"
+                        style="position: absolute; transform: translate3d(31px, 31px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <form id="basic-form" action="{% url 'team-update' team_name %}" method="POST" novalidate=""
+                  style="padding: 0 167px;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input id="name" name="name" type="text" value="{{ team_name }}" class="form-control " required="">
+                </div>
+
+
+                <div class="form-group w-100">
+                    <label for="multiselect-team-member">Select Team Member</label>
+                    <div class="multiselect_div">
+                        <select id="multiselect-team-member" name="team_member"
+                                class="multiselect multiselect-custom" data-parsley-required
+                                data-parsley-trigger-after-failure="change"
+                                data-parsley-errors-container="#error-singleselect2"
+                                multiple="multiple">
+                            {% for employee in free_employee_in_department %}
+                                <option value="{{ employee.id }}"{% for team_member in team_member_list %}
+                                    {% if team_member.username == employee.username %} selected
+                                    {% endif %} {% endfor %}>{{ employee.username }}</option>
+
+                            {% endfor %}
+                        </select>
+                        <p id="error-singleselect2"></p>
+                    </div>
+                </div>
+
+                <div class=" form-group w-100">
+                    <label for="single-selection-team-leader">Team Leader</label>
+                    <div class="multiselect_div">
+                        <select id="single-selection-team-leader" name="team_leader"
+                                class="multiselect multiselect-custom" data-parsley-required
+                                data-parsley-trigger-after-failure="change"
+                                data-parsley-errors-container="#error-singleselect-team-leader">
+                            <option value="">Select a team leader</option>
+                            {% for employee in free_employee_in_department %}
+
+                                <option value="{{ employee.id }}"
+                                        {% if team_leader.username == employee.username %}selected {% endif %}>{{ employee.username }}</option>
+
+                            {% endfor %}
+                        </select>
+                        <p id="error-singleselect-team-leader"></p>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control " rows="3"
+                              cols="30">{{ description }}</textarea>
+                </div>
+
+
+                <br>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById("radio-gender" + "{{ employee.gender }}").checked = true;
+
+    </script>
+
+{% endblock %}

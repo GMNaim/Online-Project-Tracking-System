@@ -4,10 +4,10 @@
 
     <div class="card open_task">
         <div class="header">
-            {#            <a href="{% url 'project-add' %}">#}
-            {#                <button type="button" class="btn btn-success"><i#}
-            {#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
-            {#            </a>#}
+{#            <a href="{% url 'project-add' %}">#}
+{#                <button type="button" class="btn btn-success"><i#}
+{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+{#            </a>#}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4> Running Module List</h4>
+            <h4>Project List</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
@@ -33,44 +33,43 @@
                         <thead>
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
-                            <th>Module Name</th>
                             <th>Project Name</th>
+                            <th>Department</th>
                             <th>Status</th>
+                            <th>Client</th>
                             <th>Assigned Date</th>
-                            <th>Submission Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for module in running_modules %}
+                        {% for project in projects %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ module.name }}</td>
-                                <td>{{ module.project.name }}</td>
-                                <td>{{ module.get_status_display }}</td>
-                                <td>{{ module.assigned_at }}</td>
-                                <td {% if module.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ module.submission_date|date }} <br>
-                                    {{ module.get_day_left_to_submit }} days left</td>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.department.name }}</td>
+                                <td>{{ project.get_status_display }}</td>
+                                <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
+                                <td>{{ project.created_at|date }}</td>
                                 <td class="actions">
-                                    {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
-                                    {#                                        <button type="button"#}
-                                    {#                                                class="btn btn-primary" title="Assign Project"><span#}
-                                    {#                                                class="sr-only">Assign Project</span> <i#}
-                                    {#                                                class="fa fa-share-square-o"></i></button>#}
-                                    {#                                    </a>#}
-                                    <a href="{% url 'team-running-module' %}">
+                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>
                                         <button type="button"
-                                                class="btn btn-success" title="Details"><span
-                                                class="">Details</span> <i
+                                                class="btn btn-primary" title="Assign Project"><span
+                                                class="sr-only">Assign Project</span> <i
+                                                class="fa fa-share-square-o"></i></button>
+                                    </a>
+                                    <a href="{% url 'project-update' project.code %}">
+                                        <button type="button"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
                                                 class="fa fa-edit"></i></button>
                                     </a>
-                                    {#                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"#}
-                                    {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
-                                    {#                                       data-type="team_delete_confirm"#}
-                                    {#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
-                                    {#                                            class="fa fa-trash-o text-col-white"></i>#}
-                                    {#                                    </a>#}
+                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="team_delete_confirm"
+                                       title="Delete"><span class="sr-only">Delete</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

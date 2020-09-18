@@ -50,14 +50,17 @@
                                 <td>{{ project.department.name }}</td>
                                 <td>{{ project.get_status_display }}</td>
                                 <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
-                                <td>{{ project.created_at|date }}</td>
+                                <td>{{ project.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td class="actions">
-                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>
+                                    {% if project.status >= 2 %}
+                                    {% else %}
+                                    <a href="{% url 'project-assign' project.code %}">
                                         <button type="button"
                                                 class="btn btn-primary" title="Assign Project"><span
                                                 class="sr-only">Assign Project</span> <i
                                                 class="fa fa-share-square-o"></i></button>
                                     </a>
+                                    {% endif %}
                                     <a href="{% url 'project-update' project.code %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Edit"><span
@@ -66,7 +69,12 @@
                                     </a>
                                     <a id="confirm-button-url_project" data-project="{{ project.code }}"
                                        class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="team_delete_confirm"
+                                       data-status="{% if project.status == 2 %}
+                                                       assigned
+                                                    {% elif project.status == 3 %}
+                                                        running
+                                                    {% endif %}"
+                                       data-type="{% if project.status >= 2 %}with-title{% else %}team_delete_confirm{% endif %}"
                                        title="Delete"><span class="sr-only">Delete</span> <i
                                             class="fa fa-trash-o text-col-white"></i>
                                     </a>
@@ -85,11 +93,15 @@
     <script>
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
         let delete_project_url = null;
+        let state = null;
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
-            delete_project_url = "/project/delete/" + $(this).data('project');
+            delete_project_url = "/coo/project/delete/" + $(this).data('project');
             console.log(delete_project_url);
+            status = $('.delete-confirm').data('status')
         });
+        {#let running = 'Running';#}
+
     </script>
 
 

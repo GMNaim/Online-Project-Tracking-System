@@ -1,14 +1,12 @@
-
-
 $(function () {
     $('.js-sweetalert').on('click', function () {
         let type = $(this).data('type');
         // if (type === 'basic') {
         //     showBasicMessage();
         // }
-        // else if (type === 'with-title') {
-        //     showWithTitleMessage();
-        // }
+         if (type === 'with-title') {
+            showWithTitleMessage();
+        }
         // else if (type === 'success') {
         //     showSuccessMessage();
         // }
@@ -33,6 +31,13 @@ $(function () {
         else if(type === 'module_delete_confirm'){
             showModuleDeleteConfirmMessage();
         }
+        else if(type === 'task_delete_confirm'){
+            showTaskDeleteConfirmMessage();
+        }
+
+
+
+
 
         else if (type === 'cancel') {
             showCancelMessage();
@@ -60,9 +65,9 @@ $(function () {
 //     swal("Here's a message!");
 // }
 //
-// function showWithTitleMessage() {
-//     swal("Here's a message!", "It's pretty, isn't it?");
-// }
+function showWithTitleMessage() {
+    swal("STOP!", "It is already assigned. You can't delete it.");
+}
 //
 // function showSuccessMessage() {
 //     swal("Good job!", "You clicked the button!", "success");
@@ -160,9 +165,32 @@ function showModuleDeleteConfirmMessage() {
     });
 }
 
+function showTaskDeleteConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: "Task will be deleted permanently. All information and progress of the task will be deleted.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_task_url;
+        swal("Deleted!", "Task has been deleted.", "success");
+    });
+}
 
 
 
+
+//
+// function showWithCustomIconMessage() {
+//     swal({
+//         title: "STOP!",
+//         text: "Task is already assigned. You can't delete it.",
+//         imageUrl: "../assets/images/sm/avatar2.jpg"
+//     });
+// }
 
 //
 // function showCancelMessage() {
@@ -185,13 +213,7 @@ function showModuleDeleteConfirmMessage() {
 //     });
 // }
 //
-// function showWithCustomIconMessage() {
-//     swal({
-//         title: "Sweet!",
-//         text: "Here's a custom image.",
-//         imageUrl: "../assets/images/sm/avatar2.jpg"
-//     });
-// }
+
 //
 // function showHtmlMessage() {
 //     swal({

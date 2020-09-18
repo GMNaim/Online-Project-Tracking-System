@@ -1,0 +1,132 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+    <div class="col-lg-12 col-md-12">
+        <div class="card open_task">
+            <div class="header">
+                {% if request.user.role.name == 'Department Head' %}
+                    <a href="{% url 'team-add' %}">
+                        <button type="button" class="btn btn-success"><i
+                                class="fa fa-plus-square"></i><span>  Add Team</span></button>
+                    </a>
+                {% endif %}
+                <ul class="header-dropdown">
+                    <li><a href="javascript:void(0);" data-toggle="cardloading"
+                           data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                    <li><a href="javascript:void(0);" class="full-screen"><i
+                            class="icon-size-fullscreen"></i></a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="false"></a>
+                        <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                            <li><a href="javascript:void(0);">Action</a></li>
+                            <li><a href="javascript:void(0);">Another Action</a></li>
+                            <li><a href="javascript:void(0);">Something else</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <h4>Team List</h4>
+                <div class="body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped dataTable"
+                               id="datatable-client_list">
+                            <thead>
+                            <tr class="bg-dark" style="color: white;">
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Team Leader</th>
+                                <th>Team Members</th>
+                                <th>Department</th>
+                                <th>Total Projects</th>
+                                <th>Actions</th>
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if request.user.role.name == 'Admin' or request.user.role.name == 'Super User' %}
+                                {% for all_team_name, all_team_leader, all_team_members, all_member_count, all_team_dep  in all_team_zipped %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ all_team_name }}</td>
+                                        <td>{{ all_team_leader|default_if_none:'' }}</td>
+                                        <td>{{ all_team_members }} ({{ all_member_count }})</td>
+                                        <td>{{ all_team_dep }}</td>
+                                        <td></td>
+                                        <td class="actions">
+                                            {% if request.user.role.name == 'Department Head' %}
+                                            <a href="{% url 'team-update' all_team_name %}">
+                                                <button type="button"
+                                                        class="btn btn-success" title="Edit"><span
+                                                        class="sr-only">Edit</span> <i
+                                                        class="fa fa-edit"></i></button>
+                                            </a>
+
+                                            <a id="confirm-button-url_team"
+                                               data-team="{{ all_team_name }}"
+                                               class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
+                                               data-type="confirm_team_delete_type"
+                                               title="Delete"><span class="sr-only">Delete</span> <i
+                                                    class="fa fa-trash-o text-col-white"></i>
+                                            </a>
+                                                {% else %}
+                                                <p style="text-align: center; font-size: 20px;">-</p>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+
+                            {% for team_name, team_leader, team_member, member_count, department in team_zipped %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ team_name }}</td>
+                                    <td>{{ team_leader|default_if_none:'' }}</td>
+                                    <td>{{ team_member }} ({{ member_count }})</td>
+                                    <td>{{ department }}</td>
+                                    <td></td>
+                                    <td class="actions">
+                                        <a href="{% url 'team-update' team_name %}">
+                                            <button type="button"
+                                                    class="btn btn-success" title="Edit"><span
+                                                    class="sr-only">Edit</span> <i
+                                                    class="fa fa-edit"></i></button>
+                                        </a>
+
+                                        <a id="confirm-button-url_team"
+                                           data-team="{{ team_name }}"
+                                           class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
+                                           data-type="confirm_team_delete_type"
+                                           title="Delete"><span class="sr-only">Delete</span> <i
+                                                class="fa fa-trash-o text-col-white"></i>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let delete_team_url = null;
+        // after change here change in base/js/pages/ui/dialogs.js
+        $('.delete-confirm').on('click', function (event) {
+            let name = "Team " + $(this).data('team');
+            console.log(name);
+            event.preventDefault();
+
+            delete_team_url = "/team/delete/" + $(this).data('team');
+            console.log(delete_team_url);
+        });
+    </script>
+
+{% endblock %}

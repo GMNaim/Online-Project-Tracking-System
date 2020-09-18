@@ -47,7 +47,7 @@ def sidebar_department_name(request):
         return sidebar_department_name
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def employee_add(request):
     sidebar_department_name(request)
@@ -62,15 +62,15 @@ def employee_add(request):
     for dep in department_list:
         if dep.name not in existence_department_head:
             not_assigned_dep_head.append(dep)
-    print(not_assigned_dep_head, '*********************************')
-    for n in not_assigned_dep_head:
-        print(n.name, n.id)
+    # print(not_assigned_dep_head, '*********************************')
+    # for n in not_assigned_dep_head:
+    #     print(n.name, n.id)
     # free_department_head = User.objects.filter(
     #     role__name__in=['Admin', 'Super User', 'Team Leader', 'Team Member', 'Employee']).values_list('department__name', flat=True)
     # print(free_department_head, '---------------------------------------------------------- free department')
     all_department = [{'id': department.id, 'name': department.name} for department in department_list]
     # print(all_department, '=======================df=df=df')
-    print('existence department', existence_department_head)
+    # print('existence department', existence_department_head)
     context = {'role_list': role_list, 'department_list': department_list, 'default_password': default_password,
                'existence_department_head': existence_department_head, 'free_department_head': not_assigned_dep_head,
                'all_department': json.dumps(all_department),
@@ -95,8 +95,8 @@ def employee_add(request):
         else:
             department = Department.objects.get(id=int(department))
 
-        print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
-              profile_picture, role, type(role), department)
+        # print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
+        #       profile_picture, role, type(role), department)
 
         context = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name, "username": username,
                    'email': email, 'phone': phone, 'password': password, 'address': address, 'gender': gender,
@@ -177,7 +177,7 @@ def employee_add(request):
                         if profile_picture.size < 1000000:
                             # checking the size is less than 1 mb
                             user.profile_picture = profile_picture_name
-                            print('------------- saving data')
+                            # print('------------- saving data')
                             user.save()
 
                             """============ Adding group to the new users ============"""
@@ -195,21 +195,21 @@ def employee_add(request):
                             elif str(role) == role_employee:
                                 group_employee.user_set.add(user)
 
-                            print(f"{username}' is successfully added to the database.")
+                            # print(f"{username}' is successfully added to the database.")
                             messages.success(request, f"{username} is added to the database.")
                             return redirect('employee-list')
                         else:
-                            print('image is grater than 1 mb', profile_picture.size)
+                            # print('image is grater than 1 mb', profile_picture.size)
                             messages.error(request, 'Image size is greater than 1 mb')
                             file_system_obj.delete(profile_picture_name)
                             return render(request, 'adminusers/employee_add.html', context)
                     else:
-                        print('this is not image', profile_picture.content_type)
+                        # print('this is not image', profile_picture.content_type)
                         messages.error(request, 'Please upload an image')
                         file_system_obj.delete(profile_picture_name)
                         return render(request, 'adminusers/employee_add.html', context)
                 else:
-                    print('------------- saving data without image')
+                    # print('------------- saving data without image')
                     user.save()
 
                     """ Adding group to the new users"""
@@ -227,11 +227,11 @@ def employee_add(request):
                     elif str(role) == role_employee:
                         group_team_member.user_set.add(user)
 
-                    print(f"{username}'s information is successfully saved.")
+                    # print(f"{username}'s information is successfully saved.")
                     messages.success(request, f"{username} is added.")
                     return redirect('employee-list')
             except Exception as e:
-                print(e, 'exception -----------=========================================!!!!!!!!!!!!!!!!!!!')
+                print(e, 'exception -----at empoyee add !!!')
                 messages.error(request, f"Error: {e}")
                 return render(request, 'adminusers/employee_add.html')
             #     return redirect('employee-list')
@@ -239,11 +239,11 @@ def employee_add(request):
     return render(request, 'adminusers/employee_add.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def employee_update(request, employee_username):
     if request.user.is_authenticated:
-        print('employee is authenticated ---------')
+        # print('employee is authenticated ---------')
         employee = get_object_or_404(User, username=employee_username)
         role_list = Role.objects.exclude(name__iexact=role_super_user)
         department_list = Department.objects.all()
@@ -254,9 +254,9 @@ def employee_update(request, employee_username):
         for dep in department_list:
             if dep.name not in existence_department_head:
                 not_assigned_dep_head.append(dep)
-        print(not_assigned_dep_head, '*********************************')
-        for n in not_assigned_dep_head:
-            print(n.name, n.id)
+        # print(not_assigned_dep_head, '*********************************')
+        # for n in not_assigned_dep_head:
+        #     print(n.name, n.id)
 
         context = {'role_list': role_list, 'department_list': department_list, 'employee': employee,
                    'default_password': default_password,
@@ -282,9 +282,9 @@ def employee_update(request, employee_username):
             else:
                 department = Department.objects.get(id=int(department))
 
-            print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
-                  profile_picture, department, role)
-            print('existence_department_head', existence_department_head)
+            # print(type(first_name), middle_name, last_name, username, email, phone, password, address, gender,
+            #       profile_picture, department, role)
+            # print('existence_department_head', existence_department_head)
 
             context = {'first_name': employee.first_name, 'middle_name': employee.middle_name,
                        'last_name': employee.last_name, "username": employee.username,
@@ -363,7 +363,7 @@ def employee_update(request, employee_username):
                             if profile_picture.size < 1000000:
                                 # checking the size is less than 1 mb
                                 employee.profile_picture = profile_picture_name
-                                print('------------- saving data with image')
+                                # print('------------- saving data with image')
                                 employee.save()
 
                                 """ Adding group to the new users"""
@@ -383,21 +383,21 @@ def employee_update(request, employee_username):
                                 elif str(role) == role_employee:
                                     group_team_member.user_set.add(employee)
 
-                                print(f"{employee.username}'s information is successfully updated.")
+                                # print(f"{employee.username}'s information is successfully updated.")
                                 messages.success(request, f"{employee.username}'s information is updated.")
                                 return redirect('employee-list')
                             else:
-                                print('image is grater than 1 mb', profile_picture.size)
+                                # print('image is grater than 1 mb', profile_picture.size)
                                 messages.error(request, 'Image size is greater than 1 mb')
                                 file_system_obj.delete(profile_picture_name)
                                 return render(request, 'adminusers/employee_update.html', context)
                         else:
-                            print('this is not image', profile_picture.content_type)
+                            # print('this is not image', profile_picture.content_type)
                             messages.error(request, 'Please upload an image')
                             file_system_obj.delete(profile_picture_name)
                             return render(request, 'adminusers/employee_update.html', context)
                     else:
-                        print('------------- saving data without image')
+                        # print('------------- saving data without image')
                         employee.save()
                         """ Adding group to the new users"""
                         employee.groups.clear()  # clearing all groups form the employee
@@ -416,11 +416,11 @@ def employee_update(request, employee_username):
                         elif str(role) == role_employee:
                             group_team_member.user_set.add(employee)
 
-                        print(f"{employee.username}'s information is successfully updated.")
+                        # print(f"{employee.username}'s information is successfully updated.")
                         messages.success(request, f"{employee.username}'s information is updated.")
                         return redirect('employee-list')
                 except Exception as e:
-                    print(e, 'exception -----------=========================================!!!!!!!!!!!!!!!!!!!')
+                    print(e, 'exception ---at empoyee update !!!!!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, 'adminusers/employee_update.html')
                 #     return redirect('employee-list')
@@ -428,7 +428,7 @@ def employee_update(request, employee_username):
         return render(request, 'adminusers/employee_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def employee_delete(request, employee_username):
     if request.user.is_authenticated:
@@ -448,7 +448,7 @@ def employee_delete(request, employee_username):
         return render(request, 'adminusers/employee_list.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def employee_list(request):
     user = User.objects.exclude(role__name__iexact='Super Admin')
@@ -457,7 +457,10 @@ def employee_list(request):
     return render(request, 'adminusers/employee_list.html', context)
 
 
-@login_required
+"""=======================================     CLIENT WORK    ==========================================="""
+
+
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def client_list(request):
     if request.user.is_authenticated:
@@ -466,7 +469,7 @@ def client_list(request):
         return render(request, 'adminusers/client_list.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def client_add(request):
     if request.user.is_authenticated:
@@ -480,8 +483,8 @@ def client_add(request):
             address = request.POST['address']
             comment = request.POST['comment']
             profile_picture = request.FILES.get('profile_picture')
-            print(name, phone, company_name, address, email, comment,
-                  profile_picture)
+            # print(name, phone, company_name, address, email, comment,
+            #       profile_picture)
 
             context = {'name': name, 'email': email, 'phone': phone,
                        'company_name': company_name,
@@ -507,7 +510,6 @@ def client_add(request):
             else:
                 try:
                     #  Creating random client id
-
                     ran_num = random.randint(1000, 99999)
                     client_random_id = "client" + str(ran_num)
                     for client in all_client:
@@ -530,37 +532,37 @@ def client_add(request):
                             if profile_picture.size < 1000000:
                                 # checking the size is less than 1 mb
                                 client.profile_picture = profile_picture_name
-                                print('------------- saving data')
+                                # print('------------- saving data')
                                 client.save()
-                                print(f"{client}' is successfully added to the database.")
+                                # print(f"{client}' is successfully added to the database.")
                                 messages.success(request, f"{client} is added to the database.")
                                 return redirect('client-list')
                             else:
-                                print('image is grater than 1 mb', profile_picture.size)
+                                # print('image is grater than 1 mb', profile_picture.size)
                                 messages.error(request, 'Image size is greater than 1 mb')
                                 file_system_obj.delete(profile_picture_name)
                                 return render(request, 'adminusers/client_add.html')
                         else:
-                            print('this is not image', profile_picture.content_type)
+                            # print('this is not image', profile_picture.content_type)
                             messages.error(request, 'Please upload an image')
                             file_system_obj.delete(profile_picture_name)
                             return render(request, 'adminusers/client_add.html')
                     else:
-                        print('------------- saving data without image')
+                        # print('------------- saving data without image')
                         client.save()
-                        print(f"Client {name}'s information is successfully saved.")
+                        # print(f"Client {name}'s information is successfully saved.")
                         messages.success(request, f"Client '{name}' is added to the database.")
                         return redirect('client-list')
 
                 except Exception as e:
-                    print(e, 'exception -----------=========================================!!!!!!!!!!!!!!!!!!!')
+                    print(e, 'exception --at client add!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, 'adminusers/client_add.html')
 
         return render(request, 'adminusers/client_add.html')
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def client_update(request, client_id):
     if request.user.is_authenticated:
@@ -579,8 +581,8 @@ def client_update(request, client_id):
             address = request.POST['address']
             comment = request.POST['comment']
             profile_picture = request.FILES.get('profile_picture')
-            print(name, client_id, phone, company_name, address, email, comment,
-                  profile_picture)
+            # print(name, client_id, phone, company_name, address, email, comment,
+            #       profile_picture)
 
             # Validating the information
             client_update_error_link = 'adminusers/client_update.html'
@@ -622,38 +624,38 @@ def client_update(request, client_id):
                             if profile_picture.size < 1000000:
                                 # checking the size is less than 1 mb
                                 selected_client.profile_picture = profile_picture_name
-                                print('------------- saving data')
+                                # print('------------- saving data')
                                 selected_client.save()
-                                print(f"{selected_client.name}' is successfully added to the database.")
+                                # print(f"{selected_client.name}' is successfully added to the database.")
                                 messages.success(request,
                                                  f"Client {selected_client.name}'s information is successfully updated.")
                                 return redirect('client-list')
                             else:
-                                print('image is grater than 1 mb', profile_picture.size)
+                                # print('image is grater than 1 mb', profile_picture.size)
                                 messages.error(request, 'Image size is greater than 1 mb')
                                 file_system_obj.delete(profile_picture_name)
                                 return render(request, client_update_error_link, context)
                         else:
-                            print('this is not image', profile_picture.content_type)
+                            # print('this is not image', profile_picture.content_type)
                             messages.error(request, 'Please upload an image')
                             file_system_obj.delete(profile_picture_name)
                             return render(request, client_update_error_link, context)
                     else:
-                        print('------------- saving data without image')
+                        # print('------------- saving data without image')
                         selected_client.save()
-                        print(f"Client {selected_client.name}'s information is successfully updated.")
+                        # print(f"Client {selected_client.name}'s information is successfully updated.")
                         messages.success(request, f"Client '{name}' is added to the database.")
                         return redirect('client-list')
 
                 except Exception as e:
-                    print(e, 'exception -----------=========================================!!!!!!!!!!!!!!!!!!!')
+                    print(e, 'exception --at client update!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, client_update_error_link, context)
 
         return render(request, 'adminusers/client_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_super_user, role_admin])
 def client_delete(request, client_id):
     if request.user.is_authenticated:
@@ -671,7 +673,10 @@ def client_delete(request, client_id):
             return redirect('client-list')
 
 
-@login_required
+"""=======================================     PROJECT WORK    ==========================================="""
+
+
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def project_add(request):
     if request.user.is_authenticated:
@@ -686,15 +691,15 @@ def project_add(request):
             selected_department = request.POST['select_department']
             description = request.POST['description']
             delivery_date = request.POST['delivery_date']
-            print(name, selected_client, selected_department, description, delivery_date)
+            # print(name, selected_client, selected_department, description, delivery_date)
 
             date_obj = datetime.strptime(delivery_date, '%Y-%m-%d')  # converting string date to date obj
             delivery_date_obj = date_obj.date()
-            print('Date:', delivery_date_obj)
+            # print('Date:', delivery_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = delivery_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
+            # print(check_old_date)
             context = {'client_list': client, 'department_list': department, 'name': name, 'description': description,
                        'selected_client': int(selected_client), 'selected_department': int(selected_department),
                        'delivery_date': delivery_date_obj.strftime("%Y-%m-%d")}
@@ -737,7 +742,7 @@ def project_add(request):
 
                     selected_client_obj = client.get(id=int(selected_client))
                     selected_department_obj = department.get(id=int(selected_department))
-                    print(selected_client_obj, selected_department_obj)
+                    # print(selected_client_obj, selected_department_obj)
                     project = Project(name=name,
                                       code=project_random_code,
                                       description=description,
@@ -748,14 +753,14 @@ def project_add(request):
                     messages.success(request, f"Project '{name}' is created successfully!")
                     return redirect('project-list')
                 except Exception as e:
-                    print(e)
+                    print("Error at project add===:", e)
                     messages.error(request, e)
                     return render(request, project_add_error_link, context)
 
         return render(request, 'adminusers/project_add.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def project_update(request, project_code):
     if request.user.is_authenticated:
@@ -767,8 +772,8 @@ def project_update(request, project_code):
                    'selected_client': selected_project.client, 'selected_department': selected_project.department,
                    'delivery_date': selected_project.delivery_date.strftime("%Y-%m-%d"),
                    'project_code': selected_project.code, 'project_status': selected_project.status}
-        print(type(selected_project.delivery_date), '-------------------------------------')
-        print(selected_project.delivery_date.strftime("%Y-%m-%d"), '-------------------------------------')
+        # print(type(selected_project.delivery_date), '-------------------------------------')
+        # print(selected_project.delivery_date.strftime("%Y-%m-%d"), '-------------------------------------')
         if request.method == "POST":
             name = str(request.POST['name']).strip()
             selected_client = request.POST['select_client']
@@ -780,11 +785,11 @@ def project_update(request, project_code):
 
             date_obj = datetime.strptime(delivery_date, '%Y-%m-%d')  # converting string date to date obj
             delivery_date_obj = date_obj.date()
-            print('Date:', delivery_date_obj)
+            # print('Date:', delivery_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = delivery_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
+            # print(check_old_date)
 
             # Validating the information
             project_update_error_link = 'adminusers/project_update.html'
@@ -817,52 +822,64 @@ def project_update(request, project_code):
                     #  Updating data to database
                     selected_client_obj = client.get(id=int(selected_client))
                     selected_department_obj = department.get(id=int(selected_department))
-                    print(selected_client_obj, selected_department_obj)
+                    # print(selected_client_obj, selected_department_obj)
 
                     selected_project.name = name
                     selected_project.description = description
                     selected_project.client = selected_client_obj
                     selected_project.department = selected_department_obj
                     selected_project.delivery_date = delivery_date_obj
-                    if project_status != '':
+                    # if project_status != '':
+                    #     selected_project.status = int(project_status)
+                    # selected_project.save()
+
+                    """ Setting notification as project is assigned to a head """
+                    # Getting the dep head
+                    assigned_head = User.objects.get(department=selected_project.department,
+                                                    role__name__iexact=role_department_head)
+                    print(assigned_head, 'if change dep....')
+                    if project_status != '':   # means if any status is not selected
+                        if selected_project.status != 2 and int(project_status) == 2:
+                            # if selected project previous status not 2 means not assigned and user select 2 then...
+                            assigned_head.notification_count += 1  # Then increase the notification count
+                            selected_project.assigned_at = datetime.now()   # after assigning the project setting date.
+                            selected_project.save()
+                            assigned_head.save()
+                        elif selected_project.status == 2 and int(project_status) == 1:
+                            # if module previous status is 2 and user select 1 then only do --
+                            assigned_head.notification_count -= 1   # then decrease the notification count
+                            assigned_head.save()
+                            selected_project.assigned_at = None  # setting NOne as the status is set new or not assigned
+                            selected_project.save()
+                            if assigned_head.notification_count < 0:  # if notification count is < than 0
+                                assigned_head.notification_count = 0  # then n.c. is 0
+                                assigned_head.save()
+                    # setting status here because of notification count.
+                    # if set up then got wrong notification count value cause we checked db value of previous status
+                    # which is updated by doing following thing.
+                    if project_status != '':  # '' means not select any status.
                         selected_project.status = int(project_status)
                     selected_project.save()
-
-                    """ SEtting notification as project is assigned to a head """
-                    if int(project_status) == 2:
-                        assigned_head = User.objects.get(department=selected_project.department,
-                                                         role__name__iexact=role_department_head)
-                        assigned_head.notification_count += 1
-                        assigned_head.save()
-                    elif int(project_status) == 1:
-                        assigned_head = User.objects.get(department=selected_project.department,
-                                                         role__name__iexact=role_department_head)
-                        assigned_head.notification_count -= 1
-                        assigned_head.save()
-                        if assigned_head.notification_count < 0:
-                            assigned_head.notification_count = 0
-                            assigned_head.save()
-
                     messages.success(request, f"Project '{name}' updated successfully!")
                     return redirect('project-list')
 
                 except Exception as e:
-                    print(e)
+                    print("Error at project update===", e)
                     messages.error(request, e)
                     return render(request, project_update_error_link, context)
 
         return render(request, 'adminusers/project_update.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def project_list(request):
-    projects = Project.objects.all()
+    projects = Project.objects.all().order_by('-created_at')
     context = {'projects': projects}
     return render(request, 'adminusers/project_list.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_super_user, role_admin])
 def project_delete(request, project_code):
     if request.user.is_authenticated:
@@ -882,7 +899,7 @@ def project_delete(request, project_code):
             return redirect('project-list')
 
 
-@login_required
+@login_required(login_url='login')
 @has_access(allowed_roles=[role_admin, role_super_user])
 def project_assign(request, project_code):
     """
@@ -897,17 +914,19 @@ def project_assign(request, project_code):
             selected_project.status = 2  # project is assigned
             selected_project.save()
 
-            """ SEtting notification as project is assigned to a head """
+            """ Setting notification as project is assigned to a head """
             # dep = selected_project.department.name
             assigned_head = User.objects.get(department=selected_project.department,
                                              role__name__iexact=role_department_head)
             assigned_head.notification_count += 1
             assigned_head.save()
-            print(assigned_head, '------------------------------------------*********************',
-                  assigned_head.notification_count)
+            selected_project.assigned_at = datetime.now()  # setting the assigned time
+            selected_project.save()
+            # print(assigned_head, '------------------------------------------*********************',
+            #       assigned_head.notification_count)
             messages.success(request, f"{selected_project.name} is assigned to the department head.")
             return redirect('project-list')
         except Exception as e:
-            print('error ====', e)
+            print('error at assign project ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'adminusers/project_list.html', context)

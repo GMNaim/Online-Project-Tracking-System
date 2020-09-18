@@ -46,10 +46,16 @@ class Project(models.Model):
     delivery_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True)
+    assigned_at = models.DateTimeField(default=None, null=True, blank=True)
 
 
     def __str__(self):
         return self.name
+
+    def get_day_left_to_submit(self):
+        # date_obj = datetime.strptime(self.submission_date, '%Y-%m-%d')  # converting string date to date obj
+        # submission_date_obj = date_obj.date()  # datetime obj to save in model
+        return (self.delivery_date - datetime.today().date()).days
 
     class Meta:
         ordering = ['-created_at']
@@ -59,7 +65,7 @@ class Module(models.Model):
     MODULE_STATUS = (
         (1, 'New'),
         (2, 'Assigned'),
-        (3, 'In Progress'),
+        (3, 'Running'),
         (4, 'Completed')
     )
     from teams.models import Team
@@ -77,6 +83,13 @@ class Module(models.Model):
     def __str__(self):
         return self.name
 
+    def get_day_left_to_submit(self):
+        # date_obj = datetime.strptime(self.submission_date, '%Y-%m-%d')  # converting string date to date obj
+        # submission_date_obj = date_obj.date()  # datetime obj to save in model
+        return (self.submission_date - datetime.today().date()).days
+
+
+
     class Meta:
         ordering = ['-created_at']
 
@@ -85,7 +98,7 @@ class Task(models.Model):
     TASK_STATUS = (
         (1, 'New'),
         (2, 'Assigned'),
-        (3, 'In Progress'),
+        (3, 'Running'),
         (4, 'Completed')
     )
     name = models.CharField(max_length=100)
@@ -102,6 +115,11 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_day_left_to_submit(self):
+        # date_obj = datetime.strptime(self.submission_date, '%Y-%m-%d')  # converting string date to date obj
+        # submission_date_obj = date_obj.date()  # datetime obj to save in model
+        return (self.submission_date - datetime.today().date()).days
 
     class Meta:
         ordering = ['-created_at']
