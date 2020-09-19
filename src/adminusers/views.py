@@ -26,6 +26,7 @@ role_department_head = 'Department Head'
 role_team_leader = 'Team Leader'
 role_team_member = 'Team Member'
 role_employee = 'Employee'
+role_tester = 'Tester'
 
 default_password = 'test123'  # default pass
 # getting user group
@@ -35,6 +36,7 @@ group_department_head = Group.objects.get(name__iexact=role_department_head)
 group_team_leader = Group.objects.get(name__iexact=role_team_leader)
 group_team_member = Group.objects.get(name__iexact=role_team_member)
 group_employee = Group.objects.get(name__iexact=role_employee)
+group_tester = Group.objects.get(name__iexact=role_tester)
 
 # for unique random number
 random.seed(datetime.now())
@@ -162,7 +164,12 @@ def employee_add(request):
                 user.gender = gender
                 user.role = role
                 user.department = department
-                user.set_password(default_password)
+                if password == "":
+                    user.set_password(default_password)
+                else:
+                    user.set_password(password)
+                if str(role) == role_tester:
+                    user.is_tester = True
 
                 file_system_obj = FileSystemStorage()
                 if profile_picture is not None:
@@ -194,6 +201,8 @@ def employee_add(request):
                                 group_team_member.user_set.add(user)
                             elif str(role) == role_employee:
                                 group_employee.user_set.add(user)
+                            elif str(role) == role_tester:
+                                group_tester.user_set.add(user)
 
                             # print(f"{username}' is successfully added to the database.")
                             messages.success(request, f"{username} is added to the database.")
@@ -225,7 +234,9 @@ def employee_add(request):
                     elif str(role) == role_team_member:
                         group_team_member.user_set.add(user)
                     elif str(role) == role_employee:
-                        group_team_member.user_set.add(user)
+                        group_employee.user_set.add(user)
+                    elif str(role) == role_tester:
+                        group_tester.user_set.add(user)
 
                     # print(f"{username}'s information is successfully saved.")
                     messages.success(request, f"{username} is added.")
@@ -330,7 +341,8 @@ def employee_update(request, employee_username):
                 messages.warning(request, f"Please Select a role!")
                 return render(request, update_error_render_location, context)
 
-            elif (role == role_department_head and department.name in existence_department_head) and employee.department.name != department.name:
+            elif (
+                    role == role_department_head and department.name in existence_department_head) and employee.department.name != department.name:
                 messages.warning(request, f"{department.name} has a department head.")
                 return render(request, update_error_render_location, context)
             else:
@@ -350,6 +362,10 @@ def employee_update(request, employee_username):
                         employee.set_password(default_password)
                     else:
                         employee.set_password(password)
+                    if str(role) == role_tester:
+                        employee.is_tester = True
+                    elif str(role) != role_tester:
+                        employee.is_tester = False
                     # FileSystemStorage for save the file (image)
                     file_system_obj = FileSystemStorage()
                     if profile_picture is not None:
@@ -381,7 +397,9 @@ def employee_update(request, employee_username):
                                 elif str(role) == role_team_member:
                                     group_team_member.user_set.add(employee)
                                 elif str(role) == role_employee:
-                                    group_team_member.user_set.add(employee)
+                                    group_employee.user_set.add(employee)
+                                elif str(role) == role_tester:
+                                    group_tester.user_set.add(employee)
 
                                 # print(f"{employee.username}'s information is successfully updated.")
                                 messages.success(request, f"{employee.username}'s information is updated.")
@@ -415,6 +433,8 @@ def employee_update(request, employee_username):
                             group_team_member.user_set.add(employee)
                         elif str(role) == role_employee:
                             group_team_member.user_set.add(employee)
+                        elif str(role) == role_tester:
+                            group_tester.user_set.add(employee)
 
                         # print(f"{employee.username}'s information is successfully updated.")
                         messages.success(request, f"{employee.username}'s information is updated.")
@@ -775,13 +795,13 @@ def project_update(request, project_code):
         # print(type(selected_project.delivery_date), '-------------------------------------')
         # print(selected_project.delivery_date.strftime("%Y-%m-%d"), '-------------------------------------')
         if request.method == "POST":
-            name = str(request.POST['name']).strip()
-            selected_client = request.POST['select_client']
-            selected_department = request.POST['select_department']
-            description = request.POST['description']
-            delivery_date = request.POST['delivery_date']
-            project_status = request.POST['project_status']
-            print(name, selected_client, selected_department, description, delivery_date, project_status)
+            name = str(request.POST.get('name', '')).strip()
+            selected_client = request.POST.get('select_client', '')
+            selected_department = request.POST.get('select_department', '')
+            description = request.POST.get('description', '')
+            delivery_date = request.POST.get('delivery_date', '')
+            project_status = request.POST.get('project_status', '')
+            print(name, selected_client, selected_department, description, delivery_date, project_status, '===')
 
             date_obj = datetime.strptime(delivery_date, '%Y-%m-%d')  # converting string date to date obj
             delivery_date_obj = date_obj.date()
@@ -827,38 +847,79 @@ def project_update(request, project_code):
                     selected_project.name = name
                     selected_project.description = description
                     selected_project.client = selected_client_obj
-                    selected_project.department = selected_department_obj
+                    # selected_project.department = selected_department_obj   # setting below...
                     selected_project.delivery_date = delivery_date_obj
                     # if project_status != '':
                     #     selected_project.status = int(project_status)
                     # selected_project.save()
 
                     """ Setting notification as project is assigned to a head """
-                    # Getting the dep head
-                    assigned_head = User.objects.get(department=selected_project.department,
-                                                    role__name__iexact=role_department_head)
-                    print(assigned_head, 'if change dep....')
-                    if project_status != '':   # means if any status is not selected
+                    # Getting the assigned dep head
+                    previously_assigned_head = User.objects.get(department=selected_project.department,
+                                                                role__name__iexact=role_department_head)
+
+                    """ If project is assigned already to a dep and then change the dep then notification count"""
+
+                    if selected_department_obj != selected_project.department and selected_project.status == 2:
+                        previously_assigned_head.notification_count -= 1  # decrease previous head notification count
+                        previously_assigned_head.save()
+                        if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
+                            previously_assigned_head.notification_count = 0  # then make it 0
+                            previously_assigned_head.save()
+
+                        if project_status == '':
+                            selected_project.status = 1  # then change the status of the project to new
+                            selected_project.assigned_at = None  # setting NOne as the status is new or not assigned
+                            selected_project.save()
+
+
+                    """If project is assigned already to a dep and then change the dep and 
+                       change the status to assigned at same time """
+                    if project_status != '':
+                        if selected_department_obj != selected_project.department and int(project_status) == 2:
+                            print('enter into same time change')
+                            previously_assigned_head.notification_count -= 1  # decrease previous member notification c
+                            print(previously_assigned_head.notification_count, previously_assigned_head)
+                            previously_assigned_head.save()
+                            if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
+                                previously_assigned_head.notification_count = 0  # then make it 0
+                                previously_assigned_head.save()
+
+                            selected_project.department = selected_department_obj
+                            selected_project.save()
+                            new_dep_head_with_assigned_project_same_time = selected_project.department.employee_department.get(
+                                role__name__iexact=role_department_head)
+                            new_dep_head_with_assigned_project_same_time.notification_count += 1
+                            new_dep_head_with_assigned_project_same_time.save()
+                            selected_project.status = 2
+                            selected_project.assigned_at = datetime.now()
+                            selected_project.save()
+                            # print(selected_project.status, selected_project.assigned_member,
+                            #       selected_project.assigned_member.notification_count)
+
+                    print(previously_assigned_head, 'if change dep....')
+                    if project_status != '':  # means if any status is not selected
                         if selected_project.status != 2 and int(project_status) == 2:
                             # if selected project previous status not 2 means not assigned and user select 2 then...
-                            assigned_head.notification_count += 1  # Then increase the notification count
-                            selected_project.assigned_at = datetime.now()   # after assigning the project setting date.
+                            previously_assigned_head.notification_count += 1  # Then increase the notification count
+                            selected_project.assigned_at = datetime.now()  # after assigning the project setting date.
                             selected_project.save()
-                            assigned_head.save()
+                            previously_assigned_head.save()
                         elif selected_project.status == 2 and int(project_status) == 1:
                             # if module previous status is 2 and user select 1 then only do --
-                            assigned_head.notification_count -= 1   # then decrease the notification count
-                            assigned_head.save()
+                            previously_assigned_head.notification_count -= 1  # then decrease the notification count
+                            previously_assigned_head.save()
                             selected_project.assigned_at = None  # setting NOne as the status is set new or not assigned
                             selected_project.save()
-                            if assigned_head.notification_count < 0:  # if notification count is < than 0
-                                assigned_head.notification_count = 0  # then n.c. is 0
-                                assigned_head.save()
-                    # setting status here because of notification count.
+                            if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
+                                previously_assigned_head.notification_count = 0  # then n.c. is 0
+                                previously_assigned_head.save()
+                    # setting status, department here because of notification count.
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if project_status != '':  # '' means not select any status.
                         selected_project.status = int(project_status)
+                    selected_project.department = selected_department_obj  # if change dep after assigned to a dep thats why setting here not top
                     selected_project.save()
                     messages.success(request, f"Project '{name}' updated successfully!")
                     return redirect('project-list')

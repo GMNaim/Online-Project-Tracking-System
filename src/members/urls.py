@@ -13,8 +13,18 @@ urlpatterns = [
 
     path('task/all/', views.member_all_task, name="member-all-task"),
     path('task/<int:task_id>/', views.member_task_details, name="member-task-details"),
-    # path('module/completed/', views.team_completed_modules, name="team-completed-module"),
-    # path('module/running/', views.team_running_modules, name="team-running-module"),
+    path('task/completed/', views.member_completed_tasks, name="member-completed-task"),
+    path('task/running/', views.member_running_tasks, name="member-running-task"),
+    path('task/submitted/', views.member_submitted_tasks, name="member-submitted-task"),
+    path('task/submit-to-qa/<int:task_id>', views.submit_task_to_qa, name="submit-task"),
+
+    # """ --------------      TESTER        ========================"""
+    path('tester/task/all/', views.tester_all_task, name="tester-all-task"),
+    path('tester/task/<int:task_id>/', views.tester_task_details, name="tester-task-details"),
+    path('tester/task/completed/', views.tester_completed_tasks, name="tester-completed-task"),
+    path('tester/task/running/', views.tester_running_tasks, name="tester-running-task"),
+    # path('tester/task/submitted/', views.tester_submitted_tasks, name="tester-submitted-task"),
+
     # # TASK URLS
     # path('module/<int:module_id>/module/add/', views.task_create, name='task-create'),
     # path('module/<int:module_id>/task/update/<int:task_id>/', views.task_update,

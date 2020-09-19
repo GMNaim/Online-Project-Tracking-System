@@ -31,21 +31,27 @@ Department: {{ selected_project.department.name }} - {{ selected_project.name }}
                     <div class="col-lg-4 col-md-12">
                         <p style="font-size: 18px;padding-bottom: 5px !important;">Project
                             Description: </p>
-
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_project.description }}</p>
+                        <p class="" style="font-size: 18px;">{{ selected_project.description|linebreaks }}</p>
                     </div>
                 </div>
 
                 <div class="row clearfix">
                     <div class="col-lg-4 col-md-12">
-                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Project Submission
-                            Date: </p>
-
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Project Assigned Date: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_project.delivery_date }}</p>
+                        <p class="" style="font-size: 18px;">{{ selected_project.assigned_at }}</p>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Project Submission Date: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_project.delivery_date }} <span
+                                style="color: #fa6418; background-color: black;padding: 5px; border-radius: 3px;"> {{ selected_project.get_day_left_to_submit }} days left to submit</span></p>
                     </div>
                 </div>
 
@@ -101,13 +107,13 @@ Department: {{ selected_project.department.name }} - {{ selected_project.name }}
                                 <td>{{ module.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td>{{ module.submission_date|date }}</td>
                                 <td class="actions">
-                                    <a
-     {% if module.status == 2 %}{% else %}href="{% url 'module-assign' selected_project.code  module.id %}"{% endif %}>
+                                    {% if module.status == 2 %}{% else %} <a
+    href="{% url 'module-assign' selected_project.code  module.id %}">
                                         <button type="button"
                                                 class="btn btn-primary" title="Assign Module"><span
                                                 class="sr-only">Assign Project</span> <i
                                                 class="fa fa-share-square-o"></i></button>
-                                    </a>
+                                    </a>{% endif %}
                                     <a href="{% url 'module-update' selected_project.code module.id %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Edit Module"><span

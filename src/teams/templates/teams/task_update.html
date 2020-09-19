@@ -79,14 +79,15 @@
                 <div class=" form-group w-100">
                     <label for="single-selection-project_assign">Assign to Department Head</label>
                     <div class="multiselect_div">
-                        <select id="single-selection-project_assign" name="task_status"
+                        <select {% if selected_task.status > 2 %}disabled{% endif %} id="single-selection-project_assign" name="task_status"
                                 class="multiselect multiselect-custom"
                                 data-parsley-errors-container="#error-singleselect-project_status">
                             <option value="" selected>Select a status</option>
-                            <option value="1">Not Assigned</option>
-                            <option value="2" {% if module_status == 2 %} selected{% endif %}>Assigned</option>
-                            <option value="3" disabled {% if module_status == 3 %} selected {% endif %}>In Progress</option>
-                            <option value="4" disabled {% if module_status == 4 %} selected {% endif %}>Completed
+                            <option value="1"  >Not Assigned</option>
+                            <option value="2"{% if selected_task.status == 2 %} selected{% endif %}>Assigned</option>
+                            <option value="3" disabled {% if selected_task.status == 3 %} selected {% endif %}>Running</option>
+                            <option value="4" disabled {% if selected_task.status == 4 %} selected {% endif %}>Send to QA Team</option>
+                            <option value="5" disabled {% if selected_task.status == 5 %} selected {% endif %}>Completed
                             </option>
                         </select>
                         <p id="error-singleselect-project_status"></p>

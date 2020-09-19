@@ -14,7 +14,7 @@ Task: {{ selected_task.name }}
                         <p style="font-size: 18px;">Task Name: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p style="font-size: 18px;">{{ selected_task.name }}</p><br/>
+                        <p style="font-size: 18px;">{{ selected_task.task.name }}</p><br/>
                     </div>
                 </div>
                 <div class="row clearfix" style="height: 48px">
@@ -22,7 +22,7 @@ Task: {{ selected_task.name }}
                         <p style="font-size: 18px;">Module Name: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p style="font-size: 18px;">{{ selected_task.module.name }}</p><br/>
+                        <p style="font-size: 18px;">{{ selected_task.task.module.name }}</p><br/>
                     </div>
                 </div>
                 <div class="row clearfix" style="height: 48px">
@@ -30,7 +30,7 @@ Task: {{ selected_task.name }}
                         <p style="font-size: 18px;">Project Name: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p style="font-size: 18px;">{{ selected_task.module.project.name }}</p><br/>
+                        <p style="font-size: 18px;">{{ selected_task.task.module.project.name }}</p><br/>
                     </div>
                 </div>
                 <div class="row clearfix" style="height: 48px">
@@ -46,15 +46,23 @@ Task: {{ selected_task.name }}
                         <p style="font-size: 18px;padding-bottom: 5px !important;">Task Description: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_task.description }}</p>
+                        <p class="" style="font-size: 18px;">{{ selected_task.task.description }}</p>
                     </div>
                 </div>
                 <div class="row clearfix">
                     <div class="col-lg-4 col-md-12">
-                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Task Submission Last Date: </p>
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer Task Submission Last Date: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_task.submission_date }}  :: {{ selected_task.get_day_left_to_submit }} days left</p>
+                        <p class="" style="font-size: 18px;">{{ selected_task.task.submission_date }}  :: {{ selected_task.task.get_day_left_to_submit }} days left</p>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Attached Files: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="" style="font-size: 18px;">{{ selected_task.task.submission_date }}  :: {{ selected_task.task.get_day_left_to_submit }} days left</p>
                     </div>
                 </div>
 

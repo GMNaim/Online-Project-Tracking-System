@@ -395,17 +395,17 @@ def team_all_module(request):
     #     assigned_team__team_member_user__username__iexact=request.user.username, status__gte=2)
     # print(user_notification_item, ' = user_notification_item')
     assigned_modules_list_to_leader = Module.objects.filter(assigned_team=request.user.team_member,
-                                                            status__gte=2).order_by(
-        'status', '-assigned_at')
+                                                            status__gte=2).order_by('-assigned_at', 'status')
     print(assigned_modules_list_to_leader)
-    """ CHANGING THE NOTIFICATION COUNT TO ZERO """
+
+    """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
     current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
     user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
-        'status', '-assigned_at')
+         '-assigned_at', 'status')
     print('user_notification_item: -- ', user_notification_item)
     if current_user.notification_count == 0:
         user_notification_item = None
@@ -419,23 +419,20 @@ def team_all_module(request):
 @has_access(allowed_roles=[role_team_leader])
 def team_running_modules(request):
     if request.user.is_authenticated:
-        running_modules = Module.objects.filter(status=3, assigned_team=request.user.team_member).order_by('-assigned_at')  # 3 means running modules
+        running_modules = Module.objects.filter(status=3, assigned_team=request.user.team_member).order_by(
+            '-assigned_at')  # 3 means running modules
         context = {'running_modules': running_modules}
-        print()
-    return render(request, 'teams/team_running_modules.html', context)
+        return render(request, 'teams/team_running_modules.html', context)
 
 
 @login_required(login_url='login')
 @has_access(allowed_roles=[role_team_leader])
 def team_completed_modules(request):
-    department = Department.objects.all()
-
-    # for d in department:
-    #     print(d.get_department_info())
-    #     print(d.name, d.get_total_employee(), 'total employee----')
-
-    context = {'department': department, }
-    return render(request, 'teams/team_completed_modules.html', context)
+    if request.user.is_authenticated:
+        completed_modules = Module.objects.filter(status=4, assigned_team=request.user.team_member).order_by(
+            '-assigned_at')  # 4 means completed modules
+        context = {'completed_modules': completed_modules}
+        return render(request, 'teams/team_completed_modules.html', context)
 
 
 @login_required(login_url='login')
@@ -444,14 +441,30 @@ def team_module_details(request, module_id):
     if request.user.is_authenticated:
         # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
         selected_module = get_object_or_404(Module, id=module_id)
+        selected_module.team_leader_notified = True  # as leader visit detail page so he is notified
+        selected_module.save()
         task_list = Task.objects.filter(module_id=module_id)  # task list of the selected module
         print(task_list.count())
+
+        """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
+        current_user = User.objects.get(id=request.user.id)
+        current_user.notification_count = 0
+        current_user.save()
+
+        """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
+        user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
+            '-assigned_at', 'status')
+        print('user_notification_item: -- ', user_notification_item)
+        if current_user.notification_count == 0:
+            user_notification_item = None
+
         #  If there is at least one task created then module status will be change to running.
         if task_list.count() > 0:
             selected_module.status = 3  # if any task then status will be 3 means running
             selected_module.save()
         context = {'selected_module': selected_module,
-                   'task_list': task_list}
+                   'task_list': task_list,
+                   'user_notification_item': user_notification_item}
         return render(request, 'teams/team_module_details.html', context)
 
 
@@ -565,9 +578,9 @@ def task_update(request, module_id, task_id):
         if request.method == "POST":
             name = str(request.POST['name']).strip()
             selected_member = request.POST['selected_member']
-            description = request.POST['description']
-            submission_date = request.POST['submission_date']
-            task_status = request.POST['task_status']
+            description = request.POST.get('description')
+            submission_date = request.POST.get('submission_date')
+            task_status = request.POST.get('task_status', '')
             # print('Post data: = ', name, selected_member, description, submission_date, task_status)
 
             date_obj = datetime.strptime(submission_date, '%Y-%m-%d')  # converting string date to date obj
@@ -657,7 +670,6 @@ def task_update(request, module_id, task_id):
                     #     selected_task.assigned_at = datetime.now()
                     #     selected_task.save()
                     #     print(selected_task.status, selected_task.assigned_member, selected_task.assigned_member.notification_count)
-
 
                     # getting the team member
 
@@ -764,3 +776,8 @@ def task_assign(request, module_id, task_id):
             print('task assign error ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'teams/team_module_details.html', context)
+
+
+"""==============================================   QA TEAM TASK   ==============================================="""
+
+

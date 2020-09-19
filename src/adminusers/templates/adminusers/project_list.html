@@ -46,11 +46,11 @@
                         {% for project in projects %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ project.name }}</td>
+                                <td>{{ project.name|slice:":22" }}{% if project.name|length > 22 %}...{% endif %}</td>
                                 <td>{{ project.department.name }}</td>
                                 <td>{{ project.get_status_display }}</td>
-                                <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
-                                <td>{{ project.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
+                                <td>{{ project.client.company_name|slice:":10" }}{% if project.client.company_name|length > 10 %}...{% endif %} </td>
+                                <td>{{ project.assigned_at|default:'Not Assigned Yet' }}</td>
                                 <td class="actions">
                                     {% if project.status >= 2 %}
                                     {% else %}

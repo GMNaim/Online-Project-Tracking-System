@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from adminusers.models import Client, Module, Task
+from adminusers.models import Client, Module, Task, SubmittedToQATask
 from teams.models import Team
 from .decorators import has_access
 from .models import Department
@@ -19,6 +19,7 @@ role_department_head = 'Department Head'
 role_team_leader = 'Team Leader'
 role_team_member = 'Team Member'
 role_employee = 'Employee'
+role_tester = 'Tester'
 
 default_password = 'test123'  # default pass
 # getting user group
@@ -28,18 +29,20 @@ group_department_head = Group.objects.get(name__iexact=role_department_head)
 group_team_leader = Group.objects.get(name__iexact=role_team_leader)
 group_team_member = Group.objects.get(name__iexact=role_team_member)
 group_employee = Group.objects.get(name__iexact=role_employee)
+group_tester = Group.objects.get(name__iexact=role_tester)
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=['Super User', 'Admin', 'Employee', 'Department Head', 'Team Leader', 'Team Member'])
+@has_access(allowed_roles=[role_super_user, role_admin, role_team_leader, role_team_member, role_tester, role_employee])
 def dashboard(request):
     if request.user.is_authenticated:
         """"""
-        is_super_user_or_admin = request.user.role.name == 'Admin' or request.user.role.name == 'Super User'
-        is_department_head = request.user.role.name == 'Department Head'
-        is_team_leader = request.user.role.name == 'Team Leader'
-        is_team_member = request.user.role.name == 'Team Member'
-        is_employee = request.user.role.name == 'Employee'
+        is_super_user_or_admin = request.user.role.name == role_admin or request.user.role.name == role_super_user
+        is_department_head = request.user.role.name == role_department_head
+        is_team_leader = request.user.role.name == role_team_leader
+        is_team_member = request.user.role.name == role_team_member
+        is_employee = request.user.role.name == role_employee
+        is_tester = request.user.role.name == role_tester
 
         """ ADMIN SUPER USER INFO """
         total_employee = User.objects.filter(is_active=True).count()
@@ -48,6 +51,7 @@ def dashboard(request):
         total_client = Client.objects.all().count()
         total_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).count()
         total_task_of_member = Task.objects.filter(assigned_member=request.user).count()
+        total_task_of_tester = SubmittedToQATask.objects.filter(tester=request.user).count()
 
         # """ DEPARTMENT INFO """
         # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()
@@ -78,9 +82,11 @@ def dashboard(request):
                    'is_team_leader': is_team_leader,
                    'is_employee': is_employee,
                    'is_team_member': is_team_member,
+                   'is_tester': is_tester,
                    'members_in_team': members_in_team,
                    'total_module_of_leader': total_module_of_leader,
-                   'total_task_of_member': total_task_of_member}
+                   'total_task_of_member': total_task_of_member,
+                   'total_task_of_tester': total_task_of_tester}
 
         if is_super_user_or_admin:
             return render(request, 'adminusers/admin_dashboard.html', context)
@@ -90,6 +96,8 @@ def dashboard(request):
             return render(request, 'teams/leader_dashboard.html', context)
         elif is_team_member or is_team_leader:
             return render(request, 'members/member_dashboard.html', context)
+        elif is_tester:
+            return render(request, 'members/tester_dashboard.html', context)
         elif is_employee:
             return render(request, 'teams/leader_dashboard.html', context)
 

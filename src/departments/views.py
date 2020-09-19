@@ -146,19 +146,19 @@ def department_delete(request, department_name):
 @login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_all_project(request):
-    assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2).order_by('status')
+    assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2).order_by('-assigned_at')
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
     current_user.save()
     """ LIST OF NOTIFICATION ITEMS """
     user_notification_item = Project.objects.filter(department_id=request.user.department.id,
-                                                       status=2).order_by('status', '-assigned_at')
+                                                       status=2).order_by('-assigned_at', 'status')
     if current_user.notification_count == 0:  # if notification count zero then notification items none.
         user_notification_item = None
 
     context = {'assigned_projects_list_to_head': assigned_projects_list_to_head,
-               'user_notification_item':user_notification_item }
+               'user_notification_item': user_notification_item }
     return render(request, 'departments/department_all_project.html', context)
 
 
@@ -193,14 +193,29 @@ def department_completed_project(request):
 def department_project_details(request, project_code):
     # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
     selected_project = get_object_or_404(Project, code=project_code)
+    selected_project.department_head_notified = True  # if head visit project detail page that means he is notified.
+    selected_project.save()
     module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
     print(module_list.count())
     #  If there is at least one module created then project status will be change to running.
     if module_list.count() > 0:
         selected_project.status = 3  # if any module then status will be 3 means running
         selected_project.save()
+
+    """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
+    current_user = User.objects.get(id=request.user.id)
+    current_user.notification_count = 0
+    current_user.save()
+
+    """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
+    user_notification_item = Project.objects.filter(department_id=request.user.department.id,
+                                                    status=2).order_by('-assigned_at', 'status')
+    if current_user.notification_count == 0:  # if notification count zero then notification items none.
+        user_notification_item = None
+
     context = {'selected_project': selected_project,
-               'module_list': module_list}
+               'module_list': module_list,
+               'user_notification_item': user_notification_item}
     return render(request, 'departments/department_project_details.html', context)
 
 

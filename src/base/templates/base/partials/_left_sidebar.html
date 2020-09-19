@@ -141,15 +141,17 @@
                     </ul>
                 </li>
 
-                <li class="{% if '/team/module' in request.path %} active {% endif %}">
-                    <a href="#Team_Module" class="has-arrow"><i class="icon-map"></i> <span>Modules</span></a>
+                <li class="{% if '/member/task' in request.path %} active {% endif %}">
+                    <a href="{% url 'member-all-task' %}" class="has-arrow"><i class="icon-map"></i> <span>Task</span></a>
                     <ul>
-                        <li class="{% if '/module/all' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-all-module' %}">All Module</a></li>
-                        <li class="{% if '/module/running' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-running-module' %}">Running Module</a></li>
-                        <li class="{% if '/module/completed' in request.path %} active {% endif %}"><a
-                                href="{% url 'team-completed-module' %}">Completed Module</a></li>
+                        <li class="{% if '/task/all' in request.path %} active {% endif %}"><a
+                                href="{% url 'member-all-task' %}">All Task</a></li>
+                        <li class="{% if '/task/running' in request.path %} active {% endif %}"><a
+                                href="{% url 'member-running-task' %}">Running Task</a></li>
+                        <li class="{% if '/task/completed' in request.path %} active {% endif %}"><a
+                                href="{% url 'member-completed-task' %}">Completed Task</a></li>
+                        <li class="{% if '/task/submitted' in request.path %} active {% endif %}"><a
+                                href="{% url 'member-submitted-task' %}">Submitted to QA Task</a></li>
                     </ul>
                 </li>
 

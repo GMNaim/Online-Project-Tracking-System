@@ -4,6 +4,7 @@ from datetime import datetime
 
 from accounts.models import User
 from departments.models import Department
+from teams.models import Team
 
 
 class Client(models.Model):
@@ -47,7 +48,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True)
     assigned_at = models.DateTimeField(default=None, null=True, blank=True)
-
+    completed_at = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -79,6 +80,7 @@ class Module(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True)
     assigned_at = models.DateTimeField(default=None, null=True, blank=True)
+    completed_at = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -87,8 +89,6 @@ class Module(models.Model):
         # date_obj = datetime.strptime(self.submission_date, '%Y-%m-%d')  # converting string date to date obj
         # submission_date_obj = date_obj.date()  # datetime obj to save in model
         return (self.submission_date - datetime.today().date()).days
-
-
 
     class Meta:
         ordering = ['-created_at']
@@ -99,7 +99,8 @@ class Task(models.Model):
         (1, 'New'),
         (2, 'Assigned'),
         (3, 'Running'),
-        (4, 'Completed')
+        (4, 'Submitted to QA'),
+        (5, 'Completed')
     )
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -111,7 +112,9 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     modified_at = models.DateTimeField(auto_now=True)
     assigned_at = models.DateTimeField(default=None, null=True, blank=True)
-    is_send_to_qa_team = models.BooleanField(default=False)
+    is_send_tester = models.BooleanField(default=False)
+    submitted_to_tester_at = models.DateTimeField(default=None, null=True, blank=True)
+    completed_at = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -123,3 +126,37 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+def user_directory_path(instance, filename):
+    """To save the file under each user folder"""
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'submitted_task_files/user_{0}/{1}'.format(instance, filename)
+
+
+class SubmittedToQATask(models.Model):
+    TASK_STATUS = (
+        (1, 'New'),
+        (2, 'Running'),
+        (3, 'Verified'),
+    )
+    task = models.ForeignKey(Task, on_delete=models.PROTECT)
+    description = models.TextField()
+    submitted_file = models.FileField(upload_to=user_directory_path, null=True, blank=True)
+    tester_notified = models.BooleanField(default=False)
+    tester = models.ForeignKey(User, on_delete=models.PROTECT)
+    bug = models.TextField(default='No Bug')
+    has_bug = models.BooleanField(default=False)
+    status = models.IntegerField(choices=TASK_STATUS, default=1)
+    submitted_at = models.DateField(default=datetime.now())
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True)
+    assigned_at = models.DateTimeField(null=True, blank=True)
+    verified_at = models.DateTimeField(default=None, null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.task.name
+
+    class Meta:
+        ordering = ['-submitted_at']

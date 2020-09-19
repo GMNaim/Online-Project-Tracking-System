@@ -46,6 +46,7 @@ class User(AbstractUser):
                                     null=True, default=10)
     is_team_leader = models.BooleanField(default=False)
     notification_count = models.IntegerField(default=0)
+    is_tester = models.BooleanField(default=False)
 
     def get_full_name(self):
         if self.first_name is None:

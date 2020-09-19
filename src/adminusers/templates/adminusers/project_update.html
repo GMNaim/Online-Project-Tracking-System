@@ -102,8 +102,8 @@
                             <option value="" selected>Select a status</option>
                             <option value="1" >Not Assigned</option>
                             <option value="2" {% if project_status == 2 %} selected{% endif %}>Assigned</option>
-                            <option value="2" disabled {% if project_status == 3 %} selected class="bg-info" {% endif %}>Running</option>
-                            <option value="2" disabled {% if project_status == 4 %} selected {% endif %}>Completed</option>
+                            <option value="3" disabled {% if project_status == 3 %} selected class="bg-info" {% endif %}>Running</option>
+                            <option value="4" disabled {% if project_status == 4 %} selected {% endif %}>Completed</option>
                         </select>
                         <p id="error-singleselect-project_status"></p>
                     </div>

@@ -92,9 +92,13 @@
                                             <li>
                                                 <a href="
                                                         {% if is_department_head %}
-                                                            {% url 'department-all-project' %}
+                                                            {% url 'department-project-details' item.code %}
                                                         {% elif is_team_leader %}
-                                                            {% url 'team-all-module' %}
+                                                            {% url 'team-module-details' item.id %}
+                                                        {% elif is_team_member %}
+                                                            {% url 'member-task-details' item.id %}
+                                                        {% elif is_tester %}
+                                                            {% url 'tester-task-details' item.id %}
                                                         {% endif %} ">
                                                     <div class="media">
                                                         <div class="media-left">
@@ -105,13 +109,27 @@
                                                                 <strong>{{ item.name }}</strong></p>
                                                             {% if is_department_head %}
                                                                 <span class="timestamp">Delivery Date: {{ item.delivery_date }}</span>
+                                                            {% else %}
+                                                                <span class="timestamp">Submission Date: {{ item.submission_date }}</span>
                                                             {% endif %}
-                                                            <span class="timestamp">Submission Date: {{ item.submission_date }}</span>
+
                                                         </div>
                                                     </div>
                                                 </a>
                                             </li>
+
                                         {% endfor %}
+                                        <li class="footer"><a href="
+                                                            {% if is_department_head %}
+                                                            {% url 'department-all-project' %}
+                                                            {% elif is_team_leader %}
+                                                            {% url 'team-all-module' %}
+                                                            {% elif is_team_member %}
+                                                            {% url 'member-all-task'%}
+                                                            {% elif is_tester %}
+                                                            {% url 'tester-all-task'%}
+                                                            {% endif %}" class="more">See all
+                                            notifications</a></li>
                                     {% endif %}
 
                                     {#                                    {% elif is_team_leader %}#}
@@ -143,8 +161,8 @@
                                     {#                                    {% endif %}#}
 
 
-                                    {#                                    <li class="footer"><a href="javascript:void(0);" class="more">See all#}
-                                    {#                                        notifications</a></li>#}
+{#                                                                        <li class="footer"><a href="javascript:void(0);" class="more">See all#}
+{#                                                                            notifications</a></li>#}
                                 </ul>
                             </li>
                             <li class="dropdown">

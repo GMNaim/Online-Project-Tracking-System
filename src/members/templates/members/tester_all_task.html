@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4>All Module List</h4>
+            <h4>All Task to Test</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
@@ -33,24 +33,26 @@
                         <thead>
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
-                            <th>Module Name</th>
-                            <th>Project Name</th>
+                            <th>Task Name</th>
+                            <th>Developer</th>
                             <th>Status</th>
                             <th>Assigned Date</th>
-                            <th>Submission Date</th>
+                            <th>Dev. Sub. Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for module in assigned_modules_list_to_leader %}
-                            <tr>
+
+                        {% for task in tasks_list_of_tester %}
+
+                            <tr {% if task.tester_notified == False %}style="background-color: #ffd587" {% endif %}>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ module.name|slice:":20" }}{% if module.name|length > 20 %}...{% endif %}</td>
-                                <td>{{ module.project.name|slice:":20" }}{% if module.project.name|length > 20 %}...{% endif %}</td>
-                                <td>{{ module.get_status_display }}</td>
-                                <td>{{ module.assigned_at|date }}</td>
-                                <td {% if module.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ module.submission_date }}<br/>{{ module.get_day_left_to_submit}} days left</td>
+                                <td>{{ task.task.name }}</td>
+                                <td>{{ task.task.assigned_member }}</td>
+                                <td>{{ task.get_status_display }}</td>
+                                <td>{{ task.created_at|date }} </td>
+                                <td>{{ task.task.submission_date }} </td>
                                 <td class="actions">
 {#                                    <a {% if module.status == 2 %}{% else %}href="{% url 'task-assign' module.id %}"{% endif %}>#}
 {#                                        <button type="button"#}
@@ -58,11 +60,11 @@
 {#                                                class="sr-only">Assign Module</span> <i#}
 {#                                                class="fa fa-share-square-o"></i></button>#}
 {#                                    </a>#}
-                                    <a href="{% url 'team-module-details' module.id %}">
+                                    <a href="{% url 'tester-task-details' task.id %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Edit"><span
                                                 class="">Details</span> <i
-                                                class="fa fa-edit"></i></button>
+                                                class="fa fa-eye"></i></button>
                                     </a>
 {#                                    <a id="confirm-button-url_project" data-project="{{ module.id }}"#}
 {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
@@ -72,6 +74,7 @@
 {#                                    </a>#}
                                 </td>
                             </tr>
+
                         {% endfor %}
 
                         </tbody>

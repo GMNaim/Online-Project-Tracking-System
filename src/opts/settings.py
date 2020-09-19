@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # for file upload
                 'base.context_processors.left_sidebar_content',  # custom left sidebar context
                 'base.context_processors.nav_bar_content',  # custom nav bar context
             ],

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Client, Project, Module, Task
+from .models import Client, Project, Module, Task, SubmittedToQATask
 
 # Register your models here.
 
@@ -46,7 +46,19 @@ class TaskAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'modified_at')  # to show read only fields
 
 
+class SubmittedToQATaskAdmin(admin.ModelAdmin):
+    list_display = ('id', 'task', 'tester_notified', 'submitted_at', 'verified_at')
+    list_display_links = ('id', 'task')
+    list_editable = ('tester_notified', 'submitted_at', 'verified_at')
+
+    ordering = ('id',)
+    search_fields = ('task',)
+    list_per_page = 30
+    readonly_fields = ('created_at', 'modified_at')  # to show read only fields
+
+
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(Task, TaskAdmin)
+admin.site.register(SubmittedToQATask, SubmittedToQATaskAdmin)

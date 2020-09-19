@@ -1,5 +1,5 @@
 from accounts.models import User
-from adminusers.models import Project, Module, Task
+from adminusers.models import Project, Module, Task, SubmittedToQATask
 
 
 def left_sidebar_content(request):
@@ -22,6 +22,7 @@ def nav_bar_content(request):
             is_team_leader = request.user.role.name == 'Team Leader'
             is_team_member = request.user.role.name == 'Team Member'
             is_employee = request.user.role.name == 'Employee'
+            is_tester = request.user.role.name == 'Tester'
             """ NOTIFICATIONS SETTING """
             user_notification_count = User.objects.get(id=request.user.id).notification_count
             user_notification_item = None  # default notification item None
@@ -43,7 +44,8 @@ def nav_bar_content(request):
                         'is_department_head': is_department_head,
                         'is_team_leader': is_team_leader,
                         'is_employee': is_employee,
-                        'is_team_member': is_team_member, }
+                        'is_team_member': is_team_member,
+                        'is_tester': is_tester}
 
             """Leader NOTIFICATION ITEM"""
             if request.user.team_member.id != 10 and is_team_leader:
@@ -61,7 +63,8 @@ def nav_bar_content(request):
                         'is_department_head': is_department_head,
                         'is_team_leader': is_team_leader,
                         'is_employee': is_employee,
-                        'is_team_member': is_team_member, }
+                        'is_team_member': is_team_member,
+                        'is_tester': is_tester }
 
             if is_team_member:
                 user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
@@ -78,7 +81,26 @@ def nav_bar_content(request):
                         'is_department_head': is_department_head,
                         'is_team_leader': is_team_leader,
                         'is_employee': is_employee,
-                        'is_team_member': is_team_member, }
+                        'is_team_member': is_team_member,
+                        'is_tester': is_tester}
+
+            if is_tester:
+                user_notification_item = SubmittedToQATask.objects.filter(tester=request.user, status=3).order_by(
+                    '-submitted_at')
+                print('user_notification_item: -- ', user_notification_item, 'user notification count====',
+                      user_notification_count)
+                if user_notification_count == 0:
+                    user_notification_item = None
+                    print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                          user_notification_count)
+                return {'user_notification_count': user_notification_count,
+                        'user_notification_item': user_notification_item,
+                        'is_super_user_or_admin': is_super_user_or_admin,
+                        'is_department_head': is_department_head,
+                        'is_team_leader': is_team_leader,
+                        'is_employee': is_employee,
+                        'is_team_member': is_team_member,
+                        'is_tester': is_tester}
         return ''
 
     return ''  # return nothing

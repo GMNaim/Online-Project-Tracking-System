@@ -4,10 +4,10 @@
 
     <div class="card open_task">
         <div class="header">
-{#            <a href="{% url 'project-add' %}">#}
-{#                <button type="button" class="btn btn-success"><i#}
-{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
-{#            </a>#}
+            {#            <a href="{% url 'project-add' %}">#}
+            {#                <button type="button" class="btn btn-success"><i#}
+            {#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+            {#            </a>#}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4>All Module List</h4>
+            <h4> Submitted Task List</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
@@ -33,43 +33,44 @@
                         <thead>
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
+                            <th>Task Name</th>
                             <th>Module Name</th>
-                            <th>Project Name</th>
                             <th>Status</th>
-                            <th>Assigned Date</th>
+                            <th>Submit to QA Date</th>
                             <th>Submission Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for module in assigned_modules_list_to_leader %}
+                        {% for task in submitted_to_qa_task %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ module.name|slice:":20" }}{% if module.name|length > 20 %}...{% endif %}</td>
-                                <td>{{ module.project.name|slice:":20" }}{% if module.project.name|length > 20 %}...{% endif %}</td>
-                                <td>{{ module.get_status_display }}</td>
-                                <td>{{ module.assigned_at|date }}</td>
-                                <td {% if module.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ module.submission_date }}<br/>{{ module.get_day_left_to_submit}} days left</td>
+                                <td>{{ task.name }}</td>
+                                <td>{{ task.module.name }}</td>
+                                <td>{{ task.get_status_display }}</td>
+                                <td>{{ task.submitted_to_qa_at }}</td>
+                                <td {% if task.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ task.submission_date|date }} <br>
+                                    {{ task.get_day_left_to_submit }} days left</td>
                                 <td class="actions">
-{#                                    <a {% if module.status == 2 %}{% else %}href="{% url 'task-assign' module.id %}"{% endif %}>#}
-{#                                        <button type="button"#}
-{#                                                class="btn btn-primary" title="Assign Module"><span#}
-{#                                                class="sr-only">Assign Module</span> <i#}
-{#                                                class="fa fa-share-square-o"></i></button>#}
-{#                                    </a>#}
-                                    <a href="{% url 'team-module-details' module.id %}">
+                                    {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
+                                    {#                                        <button type="button"#}
+                                    {#                                                class="btn btn-primary" title="Assign Project"><span#}
+                                    {#                                                class="sr-only">Assign Project</span> <i#}
+                                    {#                                                class="fa fa-share-square-o"></i></button>#}
+                                    {#                                    </a>#}
+                                    <a href="{% url 'member-task-details' task.id %}">
                                         <button type="button"
-                                                class="btn btn-success" title="Edit"><span
+                                                class="btn btn-success" title="Details"><span
                                                 class="">Details</span> <i
                                                 class="fa fa-edit"></i></button>
                                     </a>
-{#                                    <a id="confirm-button-url_project" data-project="{{ module.id }}"#}
-{#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
-{#                                       data-type="team_delete_confirm"#}
-{#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
-{#                                            class="fa fa-trash-o text-col-white"></i>#}
-{#                                    </a>#}
+                                    {#                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"#}
+                                    {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
+                                    {#                                       data-type="team_delete_confirm"#}
+                                    {#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
+                                    {#                                            class="fa fa-trash-o text-col-white"></i>#}
+                                    {#                                    </a>#}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -80,7 +81,7 @@
             </div>
         </div>
     </div>
-    </div>
+
 
     <script>
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
