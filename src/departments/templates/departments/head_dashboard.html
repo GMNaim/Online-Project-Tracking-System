@@ -16,7 +16,7 @@
                     <div class="dashboard-card-group"
                          style="width: 100%; display: flex; justify-content: space-around;">
 
-                        {% if is_super_user_or_admin or is_department_head %}
+                        {% if is_super_user_or_pm or is_department_head %}
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-list' %}">
                                     <div class="dashboard-card-body l-turquoise">
@@ -106,7 +106,7 @@
                     </div>
 
                 {% elif is_employee %}
-                    <p class="text-center">Please wait. An Admin will give you a role or inform an admin.</p>
+                    <p class="text-center">Please wait. A Project Manager will give you a role or inform a Project Manager.</p>
 
                 {% endif %}
         </div>

@@ -1,0 +1,97 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block main_content %}
+
+<div class="col-lg-12 col-md-12">
+    <div class="card open_task">
+        <div class="header">
+            <a href="{% url 'client-add' %}"
+            >
+                <button type="button" class="btn btn-success"><i
+                        class="fa fa-plus-square"></i><span> Add New Client</span></button>
+            </a>
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <h4>Client List</h4>
+            <div class="body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped dataTable" id="datatable-client_list">
+                        <thead>
+                        <tr class="bg-dark" style="color: white;">
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Client ID</th>
+                            <th>Phone</th>
+                            <th>Company Name</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for client in client_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.client_id }}</td>
+                                <td>{{ client.phone }}</td>
+                                <td>{{ client.company_name }}</td>
+                                <td>{{ client.date_added|date }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'client-update' client.client_id %}">
+                                        <button type="button" data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
+
+                                    <a id="confirm-button-url" data-client_id="{{ client.client_id }}"
+                                       data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-type="confirm"
+                                       title="Delete"><span class="sr-only">Delete</span> <i
+                                            class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_url = null;
+        let title = 'Client';
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_url = "/project-manager/client/delete/" + $(this).data('client_id');
+            console.log(delete_url);
+        });
+    </script>
+
+{% endblock %}

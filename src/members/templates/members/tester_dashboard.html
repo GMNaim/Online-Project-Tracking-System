@@ -16,7 +16,7 @@
                     <div class="dashboard-card-group"
                          style="width: 100%; display: flex; justify-content: space-around;">
 
-                        {% if is_super_user_or_admin or is_tester %}
+                        {% if is_super_user_or_pm or is_tester %}
 {#                            <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">#}
 {#                                <a href="{% url 'team-list' %}">#}
 {#                                    <div class="dashboard-card-body l-turquoise">#}
@@ -48,7 +48,7 @@
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">{{ total_task_of_member }}</span>
+                                                <span class="count">{{ total_task_of_tester }}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">All
@@ -69,7 +69,7 @@
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">972</span>
+                                                <span class="count">{{ completed_tasks_count_of_tester }}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">Completed
@@ -89,7 +89,7 @@
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">28</span>
+                                                <span class="count">{{ running_tasks_count_of_tester }}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">Running
@@ -107,7 +107,7 @@
                     </div>
 
                 {% elif is_employee %}
-                    <p class="text-center">Please wait. An Admin will give you a role or inform an admin.</p>
+                    <p class="text-center">Please wait. Project Manager will give you a role or inform a Project Manager.</p>
 
                 {% endif %}
         </div>

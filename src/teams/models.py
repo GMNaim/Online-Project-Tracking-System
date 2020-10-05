@@ -4,8 +4,8 @@ from departments.models import Department
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=100, blank=True, null=True, default='')
-    department = models.ForeignKey(Department, on_delete=models.PROTECT, blank=False)
+    name = models.CharField(max_length=100, blank=True, null=True, unique=True, default='')
+    department = models.ForeignKey(Department, on_delete=models.SET_DEFAULT, blank=False, default=16)
     description = models.TextField(null=True, blank=True)
     is_qa_team = models.BooleanField(default=False)
 

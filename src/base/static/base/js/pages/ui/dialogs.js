@@ -10,8 +10,11 @@ $(function () {
         // else if (type === 'success') {
         //     showSuccessMessage();
         // }
+        // if (type === 'confirm') {
+        //     showConfirmMessage();
+        // }
         if (type === 'confirm') {
-            showConfirmMessage();
+            showCommonConfirmMessage();
         }
         else if(type === 'confirm_team_delete_type'){
             showTeamDeleteConfirmMessage();
@@ -66,14 +69,29 @@ $(function () {
 // }
 //
 function showWithTitleMessage() {
-    swal("STOP!", "It is already assigned. You can't delete it.");
+    swal("STOP!", title+" is already "+status+". You can't delete it.");
 }
 //
 // function showSuccessMessage() {
 //     swal("Good job!", "You clicked the button!", "success");
 // }
+function showCommonConfirmMessage() {
+    swal({
+        title: "Are you sure?",
+        text: title+" will be delete permanently.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+        window.location.href = delete_url;
+        swal("Deleted!", title+" has been deleted.", "success");
+    });
+}
 
-function showConfirmMessage() {
+
+function showConfirmMessage(employ) {
     swal({
         title: "Are you sure?",
         text: "Employee will be delete permanently.",

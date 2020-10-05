@@ -1,0 +1,134 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+{% block main_content %}
+
+
+
+    <div class="card open_task">
+        <div class="header">
+            <a href="{% url 'project-add' %}">
+                <button type="button" class="btn btn-success"><i
+                        class="fa fa-plus-square"></i><span> Add New Project</span></button>
+            </a>
+
+
+
+
+            <ul class="header-dropdown">
+                <li><a href="javascript:void(0);" data-toggle="cardloading"
+                       data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
+                <li><a href="javascript:void(0);" class="full-screen"><i
+                        class="icon-size-fullscreen"></i></a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false"></a>
+                    <ul class="dropdown-menu dropdown-menu-right animated bounceIn">
+                        <li><a href="javascript:void(0);">Action</a></li>
+                        <li><a href="javascript:void(0);">Another Action</a></li>
+                        <li><a href="javascript:void(0);">Something else</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="body">
+            <h4>Project List</h4>
+            <div class="body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped dataTable "
+                           id="datatable-pm-project_list" style="font-size: 13px;">
+                        <thead>
+                        <tr class="bg-dark" style="color: white;">
+                            <th class="td-padding">#</th>
+                            <th class="td-padding">Project Name</th>
+                            <th class="td-padding">Department</th>
+                            <th class="td-padding">Status</th>
+                            <th class="td-padding">Client</th>
+                            <th class="td-padding">Progress</th>
+                            <th class="td-padding">Assigned Date</th>
+                            <th class="td-padding">Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for project in projects %}
+                            <tr style="background-color: white;">
+                                <td class="td-padding" style="padding: 10px 5px;">{{ forloop.counter }}</td>
+                                <td class="td-padding">{{ project.name|slice:":22" }}{% if project.name|length > 22 %}...{% endif %}</td>
+                                <td class="td-padding">{{ project.department.name }}</td>
+                                <td class="td-padding"><span class="badge {% if project.status == 1 %}
+                                                                 badge-default
+                                                             {% elif project.status == 2 %}
+                                                                 badge-info
+                                                             {% elif project.status == 3 %}
+                                                                 badge-primary
+                                                             {% elif project.status == 4 %}
+                                                                 badge-success
+                                                             {% endif %}">{{ project.get_status_display }}</span>
+                                </td>
+
+                                <td class="td-padding">{{ project.client.company_name|slice:":10" }}{% if project.client.company_name|length > 10 %}...{% endif %} </td>
+                                <td class="td-padding">
+                                    <div class="progress progress-xs">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="29" aria-valuemin="0"
+                                         aria-valuemax="100" style="width: 29%; "></div>
+                                    </div>
+                                    <small>Completion with: 29%</small>
+                                </td>
+                                <td class="p-1">{{ project.assigned_at|default:'Not Assigned Yet' }}</td>
+                                <td class="actions td-padding">
+                                    {% if project.status >= 2 %}
+                                    {% else %}
+                                    <a href="{% url 'project-assign' project.code %}">
+                                        <button type="button" data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-primary"title="Assign Project"><span
+                                                class="sr-only">Assign Project</span> <i
+                                                class="fa fa-share-square-o"></i></button>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'project-update' project.code %}">
+                                        <button type="button" style="padding:3px 7px;"  data-toggle="tooltip" data-placement="top"
+                                                class="btn btn-success" title="Edit"><span
+                                                class="sr-only">Edit</span> <i
+                                                class="fa fa-edit"></i></button>
+                                    </a>
+                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"  style="padding:3px 7px;"
+                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
+                                       data-toggle="tooltip" data-placement="top"
+                                       data-status="{% if project.status == 3 %}running{% elif project.status == 2 %}assigned{% endif %}"
+                                       data-type="{% if project.status >= 2 %}with-title{% else %}team_delete_confirm{% endif %}"
+                                       title="Delete"><span class="sr-only">Delete</span>
+                                        <i class="fa fa-trash-o text-col-white"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+
+
+    <script>
+        // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
+        let delete_project_url = null;
+        let status = null;
+        $('.delete-confirm').on('click', function (event) {
+            event.preventDefault();
+            delete_project_url = "/project-manager/project/delete/" + $(this).data('project');
+            console.log(delete_project_url);
+            status = $('.delete-confirm').data('status')
+        });
+        {#let running = 'Running';#}
+
+    </script>
+
+
+
+{% endblock %}

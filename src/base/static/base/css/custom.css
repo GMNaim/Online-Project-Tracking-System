@@ -107,3 +107,31 @@ select{
     select:focus ~ .select-icon svg.icon {
       fill: #495057;
     }
+
+
+/*table padding decrease...............*/
+.td-padding {
+    padding: 10px 5px;
+}
+
+
+
+
+/*table#datatable-pm-project_list.dataTable tbody tr:hover {*/
+/*    background-color: #ffa;*/
+/*}*/
+
+/*table#datatable-pm-project_list.dataTable tbody tr:hover > .sorting_1 {*/
+/*    background-color: #ffa;*/
+/*}*/
+
+/*table#datatable-pm-project_list.dataTable thead:hover {*/
+/*    background-color: #ffa;*/
+/*}*/
+
+
+
+table.dataTable tbody tr:hover {
+    background-color: #5abbed !important;
+    color: white;
+}

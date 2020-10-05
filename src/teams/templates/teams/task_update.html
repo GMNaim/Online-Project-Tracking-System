@@ -86,8 +86,10 @@
                             <option value="1"  >Not Assigned</option>
                             <option value="2"{% if selected_task.status == 2 %} selected{% endif %}>Assigned</option>
                             <option value="3" disabled {% if selected_task.status == 3 %} selected {% endif %}>Running</option>
-                            <option value="4" disabled {% if selected_task.status == 4 %} selected {% endif %}>Send to QA Team</option>
-                            <option value="5" disabled {% if selected_task.status == 5 %} selected {% endif %}>Completed
+                            <option value="4" disabled {% if selected_task.status == 4 %} selected {% endif %}>Submitted to Tester</option>
+                            <option value="5" disabled {% if selected_task.status == 5 %} selected {% endif %}>Need Modification
+                            <option value="6" disabled {% if selected_task.status == 6 %} selected {% endif %}>Test Passed
+                            <option value="7" disabled {% if selected_task.status == 7 %} selected {% endif %}>Completed
                             </option>
                         </select>
                         <p id="error-singleselect-project_status"></p>

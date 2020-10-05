@@ -6,15 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from adminusers.models import Client, Module, Task, SubmittedToQATask
+from projectmanager.models import Client, Module, Task, SubmittedToQATask
 from teams.models import Team
-from .decorators import has_access
+from .decorators import has_access, has_access_dashboard
 from .models import Department
 from .models import User
 
 # Role Names
 role_super_user = 'Super User'
-role_admin = 'Admin'
+role_pm = 'Project Manager'
 role_department_head = 'Department Head'
 role_team_leader = 'Team Leader'
 role_team_member = 'Team Member'
@@ -24,7 +24,7 @@ role_tester = 'Tester'
 default_password = 'test123'  # default pass
 # getting user group
 group_super_user = Group.objects.get(name__iexact=role_super_user)
-group_admin = Group.objects.get(name__iexact=role_admin)
+group_pm = Group.objects.get(name__iexact=role_pm)
 group_department_head = Group.objects.get(name__iexact=role_department_head)
 group_team_leader = Group.objects.get(name__iexact=role_team_leader)
 group_team_member = Group.objects.get(name__iexact=role_team_member)
@@ -33,25 +33,35 @@ group_tester = Group.objects.get(name__iexact=role_tester)
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_super_user, role_admin, role_team_leader, role_team_member, role_tester, role_employee])
+@has_access_dashboard(
+    allowed_roles=[role_super_user, role_pm, role_team_leader, role_team_member, role_tester, role_employee,
+                   role_department_head])
 def dashboard(request):
     if request.user.is_authenticated:
         """"""
-        is_super_user_or_admin = request.user.role.name == role_admin or request.user.role.name == role_super_user
+        is_super_user_or_pm = request.user.role.name == role_pm or request.user.role.name == role_super_user
         is_department_head = request.user.role.name == role_department_head
         is_team_leader = request.user.role.name == role_team_leader
         is_team_member = request.user.role.name == role_team_member
         is_employee = request.user.role.name == role_employee
         is_tester = request.user.role.name == role_tester
-
-        """ ADMIN SUPER USER INFO """
+        print('dashboard testing================')
+        """ Project Manager SUPER USER INFO """
         total_employee = User.objects.filter(is_active=True).count()
         total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
         total_team = Team.objects.exclude(id=10).count()
         total_client = Client.objects.all().count()
         total_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).count()
+        running_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=3).count()
+        completed_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=4).count()
+        # task count of member
         total_task_of_member = Task.objects.filter(assigned_member=request.user).count()
-        total_task_of_tester = SubmittedToQATask.objects.filter(tester=request.user).count()
+        completed_task_of_member = Task.objects.filter(assigned_member=request.user, status=7).count()
+        # Task count of tester
+        total_task_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user).count()
+        print(total_task_of_tester, 'ddddddddd')
+        running_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user, status=2).count()
+        completed_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user,status=4).count()
 
         # """ DEPARTMENT INFO """
         # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()
@@ -77,19 +87,27 @@ def dashboard(request):
                    'total_department': total_department,
                    'total_team': total_team,
                    'total_client': total_client,
-                   'is_super_user_or_admin': is_super_user_or_admin,
+                   'is_super_user_or_pm': is_super_user_or_pm,
                    'is_department_head': is_department_head,
                    'is_team_leader': is_team_leader,
                    'is_employee': is_employee,
                    'is_team_member': is_team_member,
                    'is_tester': is_tester,
+
                    'members_in_team': members_in_team,
                    'total_module_of_leader': total_module_of_leader,
-                   'total_task_of_member': total_task_of_member,
-                   'total_task_of_tester': total_task_of_tester}
 
-        if is_super_user_or_admin:
-            return render(request, 'adminusers/admin_dashboard.html', context)
+                   'total_task_of_member': total_task_of_member,
+                   'completed_task_of_member': completed_task_of_member,
+
+                   'total_task_of_tester': total_task_of_tester,
+                   'running_tasks_count_of_tester': running_tasks_count_of_tester,
+                   'completed_tasks_count_of_tester': completed_tasks_count_of_tester,
+                   'completed_module_of_leader': completed_module_of_leader,
+                   'running_module_of_leader': running_module_of_leader}
+
+        if is_super_user_or_pm:
+            return render(request, 'projectmanager/pm_dashboard.html', context)
         elif is_department_head:
             return render(request, 'departments/head_dashboard.html', context)
         elif is_team_leader:
@@ -184,6 +202,7 @@ def login_view(request):
         user = authenticate(username=employee_username,
                             password=password)  # If user is valid then authenticte otherwise not
         if user is not None:
+            print('testing-------------------------')
             login(request, user)  # If valid user then login
             return redirect('dashboard')
         else:  # If username / password is wrong
@@ -196,7 +215,8 @@ def login_view(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=['Super User', 'Admin', 'Employee', 'Department Head', 'Team Leader', 'Team Member'])
+@has_access(
+    allowed_roles=[role_pm, role_employee, role_department_head, role_team_member, role_team_leader, role_tester, role_super_user])
 def logout_view(request):
     """ Logout for all users """
     logout(request)

@@ -48,7 +48,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% if request.user.role.name == 'Admin' or request.user.role.name == 'Super User' %}
+                            {% if is_super_user_or_pm %}
                                 {% for all_team_name, all_team_leader, all_team_members, all_member_count, all_team_dep  in all_team_zipped %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>

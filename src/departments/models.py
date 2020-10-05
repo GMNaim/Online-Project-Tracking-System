@@ -47,7 +47,7 @@ class Department(models.Model):
         return total_team
 
     def get_total_project(self):
-        from adminusers.models import Project
+        from projectmanager.models import Project
         total_project = 0
         try:
             total_project = Project.objects.filter(department_id=self.id).count()

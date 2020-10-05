@@ -34,24 +34,23 @@
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Task Name</th>
-                            <th>Module Name</th>
+                            <th>Developer</th>
                             <th>Status</th>
                             <th>Assigned Date</th>
-                            <th>Submission Date</th>
+                            <th>Dev. Sub. Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for task in running_task %}
-                            <tr>
+                        {% for task in running_tasks_list_of_tester %}
+                            <tr {% if task.tester_notified == False %}style="background-color: #ffd587" {% endif %}>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ task.name }}</td>
-                                <td>{{ task.module.name }}</td>
+                                <td>{{ task.task.name }}</td>
+                                <td>{{ task.task.assigned_member }}</td>
                                 <td>{{ task.get_status_display }}</td>
-                                <td>{{ task.assigned_at }}</td>
-                                <td {% if task.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ task.submission_date|date }} <br>
-                                    {{ task.get_day_left_to_submit }} days left</td>
+                                <td>{{ task.created_at|date }} </td>
+                                <td>{{ task.task.submission_date }} </td>
                                 <td class="actions">
                                     {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
                                     {#                                        <button type="button"#}
@@ -59,7 +58,7 @@
                                     {#                                                class="sr-only">Assign Project</span> <i#}
                                     {#                                                class="fa fa-share-square-o"></i></button>#}
                                     {#                                    </a>#}
-                                    <a href="{% url 'member-task-details' task.id %}">
+                                    <a href="{% url 'tester-task-details' task.id %}">
                                         <button type="button"
                                                 class="btn btn-success" title="Details"><span
                                                 class="">Details</span> <i

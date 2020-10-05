@@ -2,22 +2,24 @@
 
 
 # Create your views here.
+import json
 from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.decorators import has_access
 from accounts.models import User, Role
-from adminusers.models import Module, Task
+from projectmanager.models import Module, Task, TaskHistory
 from departments.models import Department
 from teams.models import Team
 
 # Role Names
 role_super_user = 'Super User'
-role_admin = 'Admin'
+role_pm = 'Project Manager'
 role_department_head = 'Department Head'
 role_team_leader = 'Team Leader'
 role_team_member = 'Team Member'
@@ -26,7 +28,7 @@ role_employee = 'Employee'
 default_password = 'test123'  # default pass
 # getting user group
 group_super_user = Group.objects.get(name__iexact=role_super_user)
-group_admin = Group.objects.get(name__iexact=role_admin)
+group_pm = Group.objects.get(name__iexact=role_pm)
 group_department_head = Group.objects.get(name__iexact=role_department_head)
 group_team_leader = Group.objects.get(name__iexact=role_team_leader)
 group_team_member = Group.objects.get(name__iexact=role_team_member)
@@ -34,7 +36,7 @@ group_employee = Group.objects.get(name__iexact=role_employee)
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_admin, role_department_head, role_super_user])
+@has_access(allowed_roles=[role_pm, role_department_head, role_super_user])
 def team_list(request):
     if request.user.is_authenticated:
 
@@ -87,7 +89,7 @@ def team_list(request):
 
 @login_required(login_url='login')
 @has_access(
-    allowed_roles=[role_department_head, role_admin, role_super_user])  # for testing role_admin is getting permission
+    allowed_roles=[role_department_head, role_pm, role_super_user])  # for testing role_pm is getting permission
 def team_add(request):
     if request.user.is_authenticated:
         # requested users department
@@ -181,7 +183,7 @@ def team_add(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_department_head, role_admin, role_super_user])
+@has_access(allowed_roles=[role_department_head, role_pm, role_super_user])
 def team_update(request, team_name):
     if request.user.is_authenticated:
         # get the team
@@ -325,7 +327,7 @@ def team_update(request, team_name):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_admin, role_super_user, role_department_head])
+@has_access(allowed_roles=[role_pm, role_super_user, role_department_head])
 def team_delete(request, team_name):
     if request.user.is_authenticated:
         # get the team
@@ -396,7 +398,7 @@ def team_all_module(request):
     # print(user_notification_item, ' = user_notification_item')
     assigned_modules_list_to_leader = Module.objects.filter(assigned_team=request.user.team_member,
                                                             status__gte=2).order_by('-assigned_at', 'status')
-    print(assigned_modules_list_to_leader)
+    print(assigned_modules_list_to_leader, '--------------', assigned_modules_list_to_leader[0].status)
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
     current_user = User.objects.get(id=request.user.id)
@@ -443,6 +445,7 @@ def team_module_details(request, module_id):
         selected_module = get_object_or_404(Module, id=module_id)
         selected_module.team_leader_notified = True  # as leader visit detail page so he is notified
         selected_module.save()
+        print(selected_module.status, '---------------')
         task_list = Task.objects.filter(module_id=module_id)  # task list of the selected module
         print(task_list.count())
 
@@ -459,9 +462,36 @@ def team_module_details(request, module_id):
             user_notification_item = None
 
         #  If there is at least one task created then module status will be change to running.
-        if task_list.count() > 0:
+        if selected_module.status != 4 and task_list.count() > 0:
             selected_module.status = 3  # if any task then status will be 3 means running
             selected_module.save()
+
+        #
+        # """ ============= Module completed ============="""
+        # all_task = task_list.count()
+        # task_complete_counter = 0
+        # print(task_list, type(task_list), all_task)
+        #
+        # for task in task_list:
+        #     print(task.get_status_display())
+        #     if task.status == 7:
+        #         task_complete_counter += 1  # if task is completed then increment then compare it with total task.
+        #
+        # if all_task == task_complete_counter:
+        #     selected_module.status = 4
+        #     selected_module.is_completed = True
+        #     selected_module.completed_at = datetime.now()
+        #     selected_module.save()
+        # else:
+        #     selected_module.is_completed = False
+        #     selected_module.status = 3
+        #     selected_module.completed_at = None
+        #     selected_module.save()
+
+
+
+
+
         context = {'selected_module': selected_module,
                    'task_list': task_list,
                    'user_notification_item': user_notification_item}
@@ -469,7 +499,7 @@ def team_module_details(request, module_id):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_pm])
 def task_create(request, module_id):
     if request.user.is_authenticated:
         selected_module = get_object_or_404(Module, id=module_id)
@@ -559,7 +589,7 @@ def task_create(request, module_id):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_pm])
 def task_update(request, module_id, task_id):
     if request.user.is_authenticated:
         selected_module = get_object_or_404(Module, id=module_id)  # getting the selected module
@@ -641,11 +671,18 @@ def task_update(request, module_id, task_id):
 
                     """ If task is assigned already to a member and then change the member then notification count"""
                     if selected_member_obj != selected_task.assigned_member and selected_task.status == 2:
-                        selected_task.assigned_member.notification_count -= 1  # decrease previous member notification c
+                        selected_task.assigned_member.notification_count += 1  # decrease previous member notification c
                         selected_task.assigned_member.save()
-                        if selected_member_obj.notification_count < 0:  # if notification count is < than 0
-                            selected_member_obj.notification_count = 0  # then make it 0
-                            selected_member_obj.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.task = selected_task
+                        task_history.description = (model_to_dict(selected_task))
+                        task_history.status = 'Task Removed'
+                        task_history.save()
+                        # if selected_member_obj.notification_count < 0:  # if notification count is < than 0
+                        #     selected_member_obj.notification_count = 0  # then make it 0
+                        #     selected_member_obj.save()
+
 
                         if task_status == '':
                             selected_task.status = 1  # then change the status of the
@@ -686,17 +723,29 @@ def task_update(request, module_id, task_id):
                             selected_member_obj.save()
                             selected_task.assigned_at = datetime.now()  # setting the assigned date
                             selected_task.save()
+                            # create new task history object
+                            task_history = TaskHistory()
+                            task_history.task = selected_task
+                            task_history.description = (model_to_dict(selected_task))
+                            task_history.status = 'New Task'
+                            task_history.save()
                             print('previously selected task status.', selected_task.status, 'task status:', task_status)
                         elif selected_task.status == 2 and int(task_status) == 1:  # if status is new or not assigned
                             # if module previous status is 2 and user select 1 then only do --
                             print('here selected selected_task.status is 2 and user select 1 so  count--')
-                            selected_member_obj.notification_count -= 1  # then decrease the notification count
+                            selected_member_obj.notification_count += 1  # then decrease the notification count
                             selected_member_obj.save()
                             selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
                             selected_task.save()
-                            if selected_member_obj.notification_count < 0:  # if notification count is < than 0
-                                selected_member_obj.notification_count = 0  # then make it 0
-                                selected_member_obj.save()
+                            # create new task history object
+                            task_history = TaskHistory()
+                            task_history.task = selected_task
+                            task_history.description = (model_to_dict(selected_task))
+                            task_history.status = 'Task Removed'
+                            task_history.save()
+                            # if selected_member_obj.notification_count < 0:  # if notification count is < than 0
+                            #     selected_member_obj.notification_count = 0  # then make it 0
+                            #     selected_member_obj.save()
                     # setting status here because of notification count. if set up then got wrong notifica. count value
                     # setting status here because of notification count.
                     # if set up then got wrong notification count value cause we checked db value of previous status
@@ -745,7 +794,7 @@ def task_delete(request, module_id, task_id):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_leader, role_super_user, role_admin])
+@has_access(allowed_roles=[role_team_leader, role_super_user, role_pm])
 def task_assign(request, module_id, task_id):
     """
     After clicking on the assign task button  this function will run
@@ -760,6 +809,12 @@ def task_assign(request, module_id, task_id):
             selected_task.status = 2  # status == 2 means task is assigned
             selected_task.assigned_at = datetime.now()  # setting the assigned date
             selected_task.save()
+            # create new task history object
+            task_history = TaskHistory()
+            task_history.task = selected_task
+            task_history.description = (model_to_dict(selected_task))
+            task_history.status = 'New Task'
+            task_history.save()
 
             """ Setting notification count number as task is assigned to a team member """
             # getting the team leader

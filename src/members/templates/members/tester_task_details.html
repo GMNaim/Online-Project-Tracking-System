@@ -1,13 +1,20 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
 {% block title %}
-Task: {{ selected_task.name }}
+    Task: {{ selected_task.name }}
 {% endblock %}
 {% block main_content %}
 
     <div class="card open_task">
         <div class="header">
-            <h2 style="font-size: 25px; margin-bottom: 10px !important;">Task Information</h2>
+            <h2 style="font-size: 25px; margin-bottom: 10px !important;">Task Information
+                {% if selected_task.status == 4 %}
+                    <span style="margin-left: 147px;
+                     background-color: lawngreen;
+                      padding: 5px; font-size: 20px;
+                       border-radius: 4px"
+                    >Task Completed</span>
+                {% endif %}</h2>
             <div>
                 <div class="row clearfix" style="height: 48px">
                     <div class="col-lg-4 col-md-12">
@@ -38,7 +45,24 @@ Task: {{ selected_task.name }}
                         <p style="font-size: 18px;">Task Status: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p style="font-size: 18px;">{{ selected_task.get_status_display }}</p><br/>
+                            <span style="font-size: 16px; font-weight: bolder" class="badge {% if selected_task.status == 1 %}
+                                                                 badge-default
+                                                             {% elif selected_task.status == 2 %}
+                                                                 badge-primary
+                                                             {% elif selected_task.status == 3 %}
+                                                                 badge-danger
+                                                             {% elif selected_task.status == 4 %}
+                                                                 badge-success
+                                                             {% endif %}">
+                                        {{ selected_task.get_status_display }}</span><br/>
+                    </div>
+                </div>
+                <div class="row clearfix" style="height: 48px">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;">Developer: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p style="font-size: 18px;">{{ selected_task.task.assigned_member }}</p><br/>
                     </div>
                 </div>
                 <div class="row clearfix">
@@ -51,29 +75,121 @@ Task: {{ selected_task.name }}
                 </div>
                 <div class="row clearfix">
                     <div class="col-lg-4 col-md-12">
-                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer Task Submission Last Date: </p>
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer Task
+                            Submission Last Date: </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_task.task.submission_date }}  :: {{ selected_task.task.get_day_left_to_submit }} days left</p>
+                        <p class="" style="font-size: 18px;">{{ selected_task.task.submission_date }}
+                            :: {{ selected_task.task.get_day_left_to_submit }} days left</p>
                     </div>
                 </div>
                 <div class="row clearfix">
                     <div class="col-lg-4 col-md-12">
-                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Attached Files: </p>
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer
+                            Note </p>
                     </div>
                     <div class="col-lg-8 col-md-12">
-                        <p class="" style="font-size: 18px;">{{ selected_task.task.submission_date }}  :: {{ selected_task.task.get_day_left_to_submit }} days left</p>
+                        <p class="" style="font-size: 18px;">{{ selected_task.description }}</p>
                     </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-4 col-md-12">
+                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer Attached
+                            Files: </p>
+                    </div>
+                    {#                    <div class="col-lg-3 col-md-4 col-sm-12">#}
+                    {#                        <div class="card">#}
+                    {#                            <div class="file">#}
+                    {#                                <div class="hover">#}
+                    {#                                    <button type="button" class="btn btn-icon btn-danger">#}
+                    {#                                        <i class="fa fa-trash"></i>#}
+                    {#                                    </button>#}
+                    {#                                </div>#}
+                    {#                                <a href="javascript:void(0);">#}
+                    {#                                    <div class="icon">#}
+                    {#                                        <i class="fa fa-file text-success"></i>#}
+                    {#                                    </div>#}
+                    {#                                    <div class="file-name">#}
+                    {#                                        <p class="m-b-5 text-muted">asdf  hhkj.pdf</p>#}
+                    {#                                        <small>Size: 3MB <span class="date text-muted">Aug 18, 2017</span></small>#}
+                    {#                                    </div>#}
+                    {#                                </a>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    </div>#}
                 </div>
 
             </div>
             <br/>
             <br/>
             <br/>
-            <a href="{% url 'submit-task' selected_task.id %}">
-                <button type="button" class="btn btn-success"><i
-                        class="fa fa-paper-plane-o"></i><span> Submit Task to QA Team</span></button>
-            </a>
+            {% if selected_task.status == 4 or selected_task.status == 3 %}
+                {#   that means task is send for modification or task is completed, nothing to send...... #}
+            {% else %}
+
+
+                <form id="basic-form" action="{% url 'tester-task-details' selected_task.id %}" method="POST"
+                      novalidate=""
+                      style="padding: 0 167px;" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {#                <div class="form-group">#}
+                    {#                    <label for="name">Name</label>#}
+                    {#                    <input id="name" name="name" type="text" value="{{ name }}" class="form-control " required="">#}
+                    {#                </div>#}
+
+
+                    {#                <div class=" form-group w-100">#}
+                    {#                    <label for="single-selection-department">Tester</label>#}
+                    {#                    <div class="multiselect_div">#}
+                    {#                        <select id="single-selection-department" name="select_tester"#}
+                    {#                                class="multiselect multiselect-custom"#}
+                    {#                                data-parsley-required data-parsley-trigger-after-failure="change"#}
+                    {#                                data-parsley-errors-container="#error-singleselect-dep">#}
+                    {#                            <option value="">Select a tester</option>#}
+                    {#                            {% for tester in testers %}#}
+                    {#                                <option value="{{ tester.id }}">{{ tester.username }}</option>#}
+                    {#                            {% endfor %}#}
+                    {##}
+                    {#                        </select>#}
+                    {#                        <p id="error-singleselect-dep"></p>#}
+                    {#                    </div>#}
+                    {#                </div>#}
+
+                    {##}
+                    {#                <div class=" form-group w-100">#}
+                    {#                    <div class="card">#}
+                    {#                        <div class="header">#}
+                    {#                            <h2>Upload your file here <small>try to upload zip, rar, png, jpg, pdf files</small></h2>#}
+                    {#                        </div>#}
+                    {#                        <div class="body">#}
+                    {#                            <input name="submitted_task_file" type="file"   class="dropify" data-allowed-file-extensions="zip rar png jpg pdf"  id="dropify-event">#}
+                    {#                        </div>#}
+                    {#                        <p id="dropify-event"></p>#}
+                    {#                    </div>   </div>#}
+
+
+                    <div class="form-group">
+                        <label for="description">Suggestion or Bug (if any)</label>
+                        <textarea id="description" name="bug_suggestion" class="form-control " rows="3"
+                                  cols="30">{{ suggestion }}</textarea>
+                    </div>
+
+
+                    <br>
+                    <button style="margin-right: 10px;" type="submit" name="submit_okay" class="btn btn-success">
+                        <i class="fa fa-check"></i> Submit as Okay
+                    </button>
+                    {#                <a href="">#}
+                    {#                    <button type="button" class="btn btn-success"><i#}
+                    {#                            class="fa fa-paper-plane-o"></i><span> Submit Task to QA Team</span></button>#}
+                    {#                </a>#}
+                    <button type="submit" name="submit_bug" class="btn btn-warning" style="color: black !important;"><i
+                            class="fa fa-bug"></i><span> Need to Fix bug</span></button>
+
+                </form>
+
+            {% endif %}
+
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -90,69 +206,68 @@ Task: {{ selected_task.name }}
                 </li>
             </ul>
         </div>
-{#        <div class="body">#}
-{#            <h5>All Task List</h5>#}
-{#            <div class="body">#}
-{#                <div class="table-responsive">#}
-{#                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"#}
-{#                           id="datatable-project_list">#}
-{#                        <thead>#}
-{#                        <tr class="bg-dark" style="color: white;">#}
-{#                            <th>#</th>#}
-{#                            <th>Task Name</th>#}
-{#                            <th>Member</th>#}
-{#                            <th>Status</th>#}
-{#                            <th>Assigned Date</th>#}
-{#                            <th>Submission Date</th>#}
-{#                            <th>Actions</th>#}
-{#                        </tr>#}
-{#                        </thead>#}
-{##}
-{#                        <tbody>#}
-{#                        {% for task in task_list %}#}
-{#                            <tr>#}
-{#                                <td>{{ forloop.counter }}</td>#}
-{#                                <td>{{ task.name }}</td>#}
-{#                                <td>{{ task.assigned_member }}</td>#}
-{#                                <td>{{ task.get_status_display }}</td>#}
-{#                                <td>{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>#}
-{#                                <td>{{ task.submission_date|date }}</td>#}
-{#                                <td class="actions">#}
-{#                                    {% if task.status >= 2 %}{% else %}#}
-{#                                        <a href="{% url 'task-assign' selected_module.id  task.id %}">#}
-{#                                            <button type="button"#}
-{#                                                    class="btn btn-primary" title="Assign Task"><span#}
-{#                                                    class="sr-only">Assign Task</span> <i#}
-{#                                                    class="fa fa-share-square-o"></i>#}
-{#                                            </button>#}
-{#                                        </a>#}
-{#                                    {% endif %}#}
-{#                                    <a href="{% url 'task-update' selected_module.id task.id %}">#}
-{#                                        <button type="button"#}
-{#                                                class="btn btn-success" title="Edit Task"><span#}
-{#                                                class="sr-only">Edit</span> <i#}
-{#                                                class="fa fa-edit"></i></button>#}
-{#                                    </a>#}
-{#                                    <a id="confirm-button-url_task" data-module="{{ selected_module.id }}"#}
-{#                                       data-task="{{ task.id }}"#}
-{#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
-{#                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"#}
-{#                                       title="Delete Task"><span class="sr-only">Delete Task</span> <i#}
-{#                                            class="fa fa-trash-o text-col-white"></i>#}
-{#                                    </a>#}
-{##}
-{##}
-{##}
-{#                                </td>#}
-{#                            </tr>#}
-{#                        {% endfor %}#}
-{##}
-{#                        </tbody>#}
-{#                    </table>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-    </div>
+        {#        <div class="body">#}
+        {#            <h5>All Task List</h5>#}
+        {#            <div class="body">#}
+        {#                <div class="table-responsive">#}
+        {#                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"#}
+        {#                           id="datatable-project_list">#}
+        {#                        <thead>#}
+        {#                        <tr class="bg-dark" style="color: white;">#}
+        {#                            <th>#</th>#}
+        {#                            <th>Task Name</th>#}
+        {#                            <th>Member</th>#}
+        {#                            <th>Status</th>#}
+        {#                            <th>Assigned Date</th>#}
+        {#                            <th>Submission Date</th>#}
+        {#                            <th>Actions</th>#}
+        {#                        </tr>#}
+        {#                        </thead>#}
+        {##}
+        {#                        <tbody>#}
+        {#                        {% for task in task_list %}#}
+        {#                            <tr>#}
+        {#                                <td>{{ forloop.counter }}</td>#}
+        {#                                <td>{{ task.name }}</td>#}
+        {#                                <td>{{ task.assigned_member }}</td>#}
+        {#                                <td>{{ task.get_status_display }}</td>#}
+        {#                                <td>{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>#}
+        {#                                <td>{{ task.submission_date|date }}</td>#}
+        {#                                <td class="actions">#}
+        {#                                    {% if task.status >= 2 %}{% else %}#}
+        {#                                        <a href="{% url 'task-assign' selected_module.id  task.id %}">#}
+        {#                                            <button type="button"#}
+        {#                                                    class="btn btn-primary" title="Assign Task"><span#}
+        {#                                                    class="sr-only">Assign Task</span> <i#}
+        {#                                                    class="fa fa-share-square-o"></i>#}
+        {#                                            </button>#}
+        {#                                        </a>#}
+        {#                                    {% endif %}#}
+        {#                                    <a href="{% url 'task-update' selected_module.id task.id %}">#}
+        {#                                        <button type="button"#}
+        {#                                                class="btn btn-success" title="Edit Task"><span#}
+        {#                                                class="sr-only">Edit</span> <i#}
+        {#                                                class="fa fa-edit"></i></button>#}
+        {#                                    </a>#}
+        {#                                    <a id="confirm-button-url_task" data-module="{{ selected_module.id }}"#}
+        {#                                       data-task="{{ task.id }}"#}
+        {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
+        {#                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"#}
+        {#                                       title="Delete Task"><span class="sr-only">Delete Task</span> <i#}
+        {#                                            class="fa fa-trash-o text-col-white"></i>#}
+        {#                                    </a>#}
+        {##}
+        {##}
+        {##}
+        {#                                </td>#}
+        {#                            </tr>#}
+        {#                        {% endfor %}#}
+        {##}
+        {#                        </tbody>#}
+        {#                    </table>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
     </div>
 
     <script>

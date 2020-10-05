@@ -9,7 +9,7 @@ $(function () {
         }]
     });
 
-    // $('#datatable-project_list').DataTable({
+    // $('#datatable-pm-project_list').DataTable({
     //     "order": [[0, "asc"]], // default order will be by first column
     //     "lengthMenu": [[5, 10, 20, 50, 100, -1], [5, 10, 20, 50, 100, "All"]], // number of rows to show
     //     "columnDefs": [{
@@ -17,6 +17,21 @@ $(function () {
     //         "orderable": false
     //     }]
     // });
+    //
+
+
+  $('#datatable-pm-project_list').DataTable({
+      dom: 'Bfrtip',
+      buttons: [
+          'copy', 'csv', 'excel', 'pdf', 'print'
+      ],
+      "order": [[0, "asc"]], // default order will be by first column
+      // "lengthMenu": [[5, 10, 20, 50, 100, -1], [5, 10, 20, 50, 100, "All"]],
+      "columnDefs": [{
+          "targets": [7], // column index
+          "orderable": false
+      }]
+  });
 
 
 

@@ -26,10 +26,10 @@
         </div>
         <div class="body">
             <h4> Completed Task List</h4>
-            <div class="body">
+            <div class="body p-0">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
-                           id="datatable-project_list">
+                           id="datatable-project_list" style="font-size: 13px">
                         <thead>
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
@@ -47,10 +47,27 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ task.name }}</td>
-                                <td>{{ task.project.name }}</td>
-                                <td>{{ task.get_status_display }}</td>
+                                <td>{{ task.module.name }}</td>
+                                <td>
+                                 <span style="font-weight: bolder"  class="badge
+                                                            {% if task.status == 1 %}
+                                                                 badge-default
+                                                             {% elif task.status == 2 %}
+                                                                 badge-info
+                                                             {% elif task.status == 3 %}
+                                                                 badge-primary
+                                                             {% elif task.status == 4 %}
+                                                                 badge-warning
+                                                             {% elif task.status == 5 %}
+                                                                 badge-danger
+                                                             {% elif task.status == 6 %}
+                                                                 badge-success
+                                                             {% elif task.status == 7 %}
+                                                                 badge-success
+                                                             {% endif %}">{{ task.get_status_display }}</span>
+                                </td>
                                 <td>{{ task.assigned_at }}</td>
-                                <td>{{ task.completed_at|default_if_none:'Not completed yet' }}</td>
+                                <td>{{ task.completed_at}}</td>
                                 <td class="actions">
                                     {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
                                     {#                                        <button type="button"#}

@@ -30,9 +30,9 @@ class User(AbstractUser):
                                     message='Username contains alphanumeric, underscore and period(.). Length: 4 to 50'
                                 )])
     role = models.ForeignKey(
-        Role, on_delete=models.PROTECT, null=False, blank=False, related_name='user_role',
+        Role, on_delete=models.SET_DEFAULT, null=False, blank=False, related_name='user_role',
         default=6)  # default id of role is 6 =  employee
-    department = models.ForeignKey(Department, on_delete=models.PROTECT, null=True, blank=True,
+    department = models.ForeignKey(Department, on_delete=models.SET_DEFAULT, null=True, blank=True,
                                    related_name='employee_department',
                                    default=16)  # default id of department is 16 = not assigned
     mobile_number = models.CharField(max_length=12, blank=True, null=True, default='')

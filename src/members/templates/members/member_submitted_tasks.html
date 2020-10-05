@@ -34,9 +34,9 @@
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Task Name</th>
-                            <th>Module Name</th>
+                            <th>Tester Name</th>
                             <th>Status</th>
-                            <th>Submit to QA Date</th>
+                            <th>Submit to Tester Date</th>
                             <th>Submission Date</th>
                             <th>Actions</th>
                         </tr>
@@ -47,9 +47,10 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ task.name }}</td>
-                                <td>{{ task.module.name }}</td>
+                                <td>{{ task.get_tester_of_the_task }}</td>
                                 <td>{{ task.get_status_display }}</td>
-                                <td>{{ task.submitted_to_qa_at }}</td>
+                                {% comment %} <td>{{ task.submitted_to_qa_at|date }}</td> {% endcomment %}
+                                <td>{{ task.created_at }}</td>
                                 <td {% if task.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ task.submission_date|date }} <br>
                                     {{ task.get_day_left_to_submit }} days left</td>
                                 <td class="actions">

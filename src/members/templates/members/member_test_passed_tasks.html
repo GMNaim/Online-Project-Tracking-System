@@ -25,7 +25,7 @@
             </ul>
         </div>
         <div class="body">
-            <h4>All Task List</h4>
+            <h4> Test Passed Task List</h4>
             <div class="body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
@@ -37,62 +37,34 @@
                             <th>Module Name</th>
                             <th>Status</th>
                             <th>Assigned Date</th>
-                            <th>Submission Date</th>
+                            <th>Completed Date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
 
                         <tbody>
-
-                        {% for task in assigned_tasks_list_to_member %}
-
+                        {% for task in completed_task %}
                             <tr {% if task.team_member_notified == False %}style="background-color: #ffd587" {% endif %}>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ task.name|slice:":20" }}{% if task.name|length > 20 %}...{% endif %}</td>
-                                <td>{{ task.module.name|slice:":20" }}{% if task.module.name|length > 20 %}
-                                    ...{% endif %}</td>
-                                <td>
-                                    <span style="font-weight: bolder"  class="badge
-                                                            {% if task.status == 1 %}
-                                                                 badge-default
-                                                             {% elif task.status == 2 %}
-                                                                 badge-info
-                                                             {% elif task.status == 3 %}
-                                                                 badge-primary
-                                                             {% elif task.status == 4 %}
-                                                                 badge-warning
-                                                             {% elif task.status == 5 %}
-                                                                 badge-danger
-                                                             {% elif task.status == 6 %}
-                                                                 badge-success
-                                                             {% elif task.status == 7 %}
-                                                                 badge-success
-                                                             {% endif %}">{{ task.get_status_display }}</span>
-                                </td>
-                                <td>{{ task.assigned_at|date }} </td>
-                                <td {% if task.get_day_left_to_submit < 10 %}style="color: red" {% endif %}>{{ task.submission_date|date }}<br/>{{ task.get_day_left_to_submit }}
-                                    days left
-                                </td>
+                                <td>{{ task.name }}</td>
+                                <td>{{ task.module.name }}</td>
+                                <td>{{ task.get_status_display }}</td>
+                                <td>{{ task.assigned_at }}</td>
+                                <td>{{ task.completed_at|date}}</td>
                                 <td class="actions">
-
+                                    {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
+                                    {#                                        <button type="button"#}
+                                    {#                                                class="btn btn-primary" title="Assign Project"><span#}
+                                    {#                                                class="sr-only">Assign Project</span> <i#}
+                                    {#                                                class="fa fa-share-square-o"></i></button>#}
+                                    {#                                    </a>#}
                                     <a href="{% url 'member-task-details' task.id %}">
                                         <button type="button"
-                                                class="btn btn-success" title="Edit"><span
+                                                class="btn btn-success" title="Details"><span
                                                 class="">Details</span> <i
-                                                class="fa fa-eye"></i></button>
+                                                class="fa fa-edit"></i></button>
                                     </a>
-
-                                    {#                                    {% if task.status == 6 %}#}
-                                    {#                                        <a#}
-                                    {#                                                {% if module.status == 2 %}{% else %}href=""{% endif %}>#}
-                                    {#                                            <button type="button"#}
-                                    {#                                                    class="btn btn-primary" title="Send to Leader"><span#}
-                                    {#                                                    class="sr-only">Send Leader</span> <i#}
-                                    {#                                                    class="fa fa-share-square-o"></i></button>#}
-                                    {#                                        </a>#}
-                                    {#                                    {% endif %}#}
-
-                                    {#                                    <a id="confirm-button-url_project" data-project="{{ module.id }}"#}
+                                    {#                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"#}
                                     {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
                                     {#                                       data-type="team_delete_confirm"#}
                                     {#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
@@ -100,7 +72,6 @@
                                     {#                                    </a>#}
                                 </td>
                             </tr>
-
                         {% endfor %}
 
                         </tbody>
@@ -109,7 +80,7 @@
             </div>
         </div>
     </div>
-    </div>
+
 
     <script>
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js

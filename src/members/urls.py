@@ -13,10 +13,13 @@ urlpatterns = [
 
     path('task/all/', views.member_all_task, name="member-all-task"),
     path('task/<int:task_id>/', views.member_task_details, name="member-task-details"),
+    path('task/test-passed/', views.member_test_passed_tasks, name="member-test-passed-task"),
     path('task/completed/', views.member_completed_tasks, name="member-completed-task"),
     path('task/running/', views.member_running_tasks, name="member-running-task"),
     path('task/submitted/', views.member_submitted_tasks, name="member-submitted-task"),
-    path('task/submit-to-qa/<int:task_id>', views.submit_task_to_qa, name="submit-task"),
+    path('task/submit_to_tester/<int:task_id>', views.submit_task_to_tester, name="submit-task"),
+    path('task/need-modification/', views.member_need_modification_tasks, name="member-need-modification-task"),
+    path('task/send-leader/<int:task_id>', views.member_task_send_to_leader, name="member-task-send-leader"),
 
     # """ --------------      TESTER        ========================"""
     path('tester/task/all/', views.tester_all_task, name="tester-all-task"),

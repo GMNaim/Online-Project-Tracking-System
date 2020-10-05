@@ -8,7 +8,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', include('base.urls')),
-    path('coo/', include('adminusers.urls')),  # admin = Chief Operating Officer (COO)
+    path('project-manager/', include('projectmanager.urls')),  # Project Manager = Chief Operating Officer (COO)
     path('', include('accounts.urls')),
     path('department/', include('departments.urls')),
     path('team/', include('teams.urls')),
