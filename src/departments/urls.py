@@ -10,8 +10,8 @@ urlpatterns = [
 
     path('project/all/', views.department_all_project, name="department-all-project"),
     path('project/<str:project_code>/', views.department_project_details, name="department-project-details"),
-    path('project/completed/', views.department_completed_project, name="department-completed-project"),
-    path('department/project/running/', views.department_running_project, name="department-running-project"),
+    path('project/completed', views.department_completed_project, name="department-completed-project"),
+    path('project/running', views.department_running_project, name="department-running-project"),
 
     path('project/<str:project_code>/module/add/', views.module_create, name='module-create'),
     path('project/<str:project_code>/module/update/<int:module_id>/', views.module_update,

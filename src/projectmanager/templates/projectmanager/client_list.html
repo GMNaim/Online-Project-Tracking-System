@@ -65,9 +65,9 @@
                                     <a id="confirm-button-url" data-client_id="{{ client.client_id }}"
                                        data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                        class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="confirm"
+                                       data-type="client_delete_confirm"
                                        title="Delete"><span class="sr-only">Delete</span> <i
-                                            class="fa fa-trash-o text-col-white"></i>
+                                            class="fas fa-trash-alt text-col-white"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -85,12 +85,12 @@
 
     <script>
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
-        let delete_url = null;
+        let delete_client_url = null;
         let title = 'Client';
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
-            delete_url = "/project-manager/client/delete/" + $(this).data('client_id');
-            console.log(delete_url);
+            delete_client_url = "/project-manager/client/delete/" + $(this).data('client_id');
+            console.log(delete_client_url);
         });
     </script>
 

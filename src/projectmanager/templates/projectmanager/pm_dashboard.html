@@ -65,7 +65,7 @@
                                 <a href="{% url 'department-list' %}">
                                     <div class="dashboard-card-body l-salmon">
                                         <div class="h1 text-muted text-right mb-4">
-                                            <i class="fa fa-institution text-secondary"></i>
+                                            <i class="fas fa-building text-secondary"></i>
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-dark">
@@ -107,7 +107,7 @@
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">972</span>
+                                                <span class="count">{{total_projects}}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">All
@@ -127,7 +127,7 @@
                                     </div>
                                     <div>
                                         <div class="h4 mb-0 text-light">
-                                            <span class="count">28</span>
+                                            <span class="count">{{completed_project}}</span>
                                         </div>
                                         <small
                                                 class="text-light text-uppercase font-weight-bold   ">Completed

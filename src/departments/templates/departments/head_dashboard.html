@@ -1,5 +1,6 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} Dashboard{% endblock %}
 {% block main_content %}
 
     <div class="card open_task" style="padding-bottom: 5px">
@@ -19,20 +20,21 @@
                         {% if is_super_user_or_pm or is_department_head %}
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-list' %}">
-                                    <div class="dashboard-card-body l-turquoise">
+                                    <div class="dashboard-card-body  l-green">
                                         <div class="h1 text-right mb-4">
-                                            <i class="fa fa-sitemap text-light"></i>
+                                            <i class="fas fa-users text-secondary"></i>
                                         </div>
 
                                         <div>
-                                            <div class="h4 mb-0 text-light">
+                                            <div class="h4 mb-0 text-secondary">
                                                 <span class="count">
-                                                       {{ total_team_in_department }}
+                                                       {{ total_team }}
                                                  </span>
                                             </div>
+
                                             <small
-                                                    class="text-light text-uppercase font-weight-bold">Team</small>
-                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                                    class="text-secondary text-uppercase font-weight-bold">Team</small>
+                                            <div class="progress progress-xs mt-3 mb-0 bg-secondary"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
                                     </div>
@@ -41,13 +43,13 @@
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'department-all-project' %}">
-                                    <div class="dashboard-card-body l-slategray">
+                                    <div class="dashboard-card-body l-turquoise">
                                         <div class="h1 text-light text-right mb-4">
-                                            <i class="fa fa-server"></i>
+                                            <i class="fa fa-tasks"></i>
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">972</span>
+                                                <span class="count">{{total_project_of_department_head}}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">All
@@ -61,19 +63,19 @@
 
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="#">
-                                    <div class="dashboard-card-body l-slategray">
-                                        <div class="h1 text-light text-right mb-4">
+                                <a href="{% url 'department-completed-project' %}">
+                                    <div class="dashboard-card-body l-seagreen">
+                                        <div class="h1 text-secondary text-right mb-4">
                                             <i class="fa fa-server"></i>
                                         </div>
                                         <div>
-                                            <div class="h4 mb-0 text-light">
-                                                <span class="count">972</span>
+                                            <div class="h4 mb-0 text-secondary">
+                                                <span class="count">{{completed_project_of_department_head}}</span>
                                             </div>
                                             <small
-                                                    class="text-light text-uppercase font-weight-bold   ">Completed
+                                                    class="text-secondary text-uppercase font-weight-bold   ">Completed
                                                 Project</small>
-                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                            <div class="progress progress-xs mt-3 mb-0 bg-secondary"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
                                     </div>
@@ -81,14 +83,14 @@
                             </div>
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="#">
+                                <a href="{% url 'department-running-project' %}">
                                     <div class="dashboard-card-body l-coral">
                                         <div class="h1 text-light text-right mb-4">
                                             <i class="fa fa-tasks"></i>
                                         </div>
                                         <div>
                                             <div class="h4 mb-0 text-light">
-                                                <span class="count">28</span>
+                                                <span class="count">{{running_project_of_department_head}}</span>
                                             </div>
                                             <small
                                                     class="text-light text-uppercase font-weight-bold   ">Running

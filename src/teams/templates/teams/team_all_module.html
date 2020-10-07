@@ -1,5 +1,6 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} All Module{% endblock %}
 {% block main_content %}
 
     <div class="card open_task">
@@ -45,14 +46,14 @@
 
                         <tbody>
                         {% for module in assigned_modules_list_to_leader %}
-                            <tr style="background-color: white;"  {% if module.team_leader_notified == False %}style="background-color: #ffd587" {% endif %}>
+                            <tr  {% if module.team_leader_notified == False %}style="background-color: #ffd587" {% endif %}>
                                 <td class="td-padding">{{ forloop.counter }}</td>
                                 <td class="td-padding">{{ module.name|slice:":20" }}{% if module.name|length > 20 %}...{% endif %}</td>
                                 <td class="td-padding">{{ module.project.name|slice:":20" }}{% if module.project.name|length > 20 %}...{% endif %}</td>
                                 <td class="td-padding">
                                      <span  style="font-weight: bolder"  class="badge
                                                              {% if module.status == 1 %}
-                                                                 badge-default
+                                                                 badge-default bg-secondary
                                                              {% elif module.status == 2 %}
                                                                  badge-info
                                                              {% elif module.status == 3 %}
@@ -75,19 +76,18 @@
 {#                                        <button type="button"#}
 {#                                                class="btn btn-primary" title="Assign Module"><span#}
 {#                                                class="sr-only">Assign Module</span> <i#}
-{#                                                class="fa fa-share-square-o"></i></button>#}
+{#                                                class="fas fa-share-square"></i></button>#}
 {#                                    </a>#}
                                     <a href="{% url 'team-module-details' module.id %}">
                                         <button type="button"
-                                                class="btn btn-success" title="Edit"><span
-                                                class="">Details</span> <i
-                                                class="fa fa-edit"></i></button>
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details"><i class="fas fa-info-circle"></i></button>
                                     </a>
 {#                                    <a id="confirm-button-url_project" data-project="{{ module.id }}"#}
 {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
 {#                                       data-type="team_delete_confirm"#}
 {#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
-{#                                            class="fa fa-trash-o text-col-white"></i>#}
+{#                                            class="fas fa-trash-alt text-col-white"></i>#}
 {#                                    </a>#}
                                 </td>
                             </tr>

@@ -1,5 +1,6 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} All Team :: Department - {{ request.user.department.name }}{% endblock %}
 
 {% block main_content %}
 
@@ -61,6 +62,7 @@
                                             {% if request.user.role.name == 'Department Head' %}
                                             <a href="{% url 'team-update' all_team_name %}">
                                                 <button type="button"
+                                                        data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                                         class="btn btn-success" title="Edit"><span
                                                         class="sr-only">Edit</span> <i
                                                         class="fa fa-edit"></i></button>
@@ -68,10 +70,11 @@
 
                                             <a id="confirm-button-url_team"
                                                data-team="{{ all_team_name }}"
+                                               data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                                class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
                                                data-type="confirm_team_delete_type"
                                                title="Delete"><span class="sr-only">Delete</span> <i
-                                                    class="fa fa-trash-o text-col-white"></i>
+                                                    class="fas fa-trash-alt text-col-white"></i>
                                             </a>
                                                 {% else %}
                                                 <p style="text-align: center; font-size: 20px;">-</p>
@@ -92,6 +95,7 @@
                                     <td class="actions">
                                         <a href="{% url 'team-update' team_name %}">
                                             <button type="button"
+                                                    data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                                     class="btn btn-success" title="Edit"><span
                                                     class="sr-only">Edit</span> <i
                                                     class="fa fa-edit"></i></button>
@@ -99,10 +103,11 @@
 
                                         <a id="confirm-button-url_team"
                                            data-team="{{ team_name }}"
+                                           data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                            class="btn btn-danger js-sweetalert confirm-button-url delete-confirm"
                                            data-type="confirm_team_delete_type"
                                            title="Delete"><span class="sr-only">Delete</span> <i
-                                                class="fa fa-trash-o text-col-white"></i>
+                                                class="fas fa-trash-alt text-col-white"></i>
                                         </a>
 
                                     </td>

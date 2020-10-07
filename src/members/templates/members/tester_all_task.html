@@ -4,10 +4,10 @@
 
     <div class="card open_task">
         <div class="header">
-{#            <a href="{% url 'project-add' %}">#}
-{#                <button type="button" class="btn btn-success"><i#}
-{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
-{#            </a>#}
+            {#            <a href="{% url 'project-add' %}">#}
+            {#                <button type="button" class="btn btn-success"><i#}
+            {#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+            {#            </a>#}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -26,7 +26,7 @@
         </div>
         <div class="body">
             <h4>All Task to Test</h4>
-            <div class="body">
+            <div class="body p-0">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
                            id="datatable-project_list">
@@ -51,38 +51,27 @@
                                 <td>{{ task.task.name }}</td>
                                 <td>{{ task.task.assigned_member }}</td>
                                 <td>
-                                <span style="font-weight: bolder" class="badge {% if task.status == 1 %}
-                                                                 badge-default
+                                <span style="font-weight: bolder" class="badge text-white
+                                                             {% if task.status == 1 %}
+                                                                 badge-default bg-secondary
                                                              {% elif task.status == 2 %}
-                                                                 badge-primary
+                                                                 badge-primary bg-primary
                                                              {% elif task.status == 3 %}
-                                                                 badge-danger
+                                                                 badge-danger bg-danger
                                                              {% elif task.status == 4 %}
-                                                                 badge-success
+                                                                 badge-success bg-success
                                                              {% endif %}">
                                         {{ task.get_status_display }}</span>
                                 </td>
                                 <td>{{ task.created_at }} </td>
                                 <td>{{ task.task.submission_date|date }} </td>
                                 <td class="actions">
-{#                                    <a {% if module.status == 2 %}{% else %}href="{% url 'task-assign' module.id %}"{% endif %}>#}
-{#                                        <button type="button"#}
-{#                                                class="btn btn-primary" title="Assign Module"><span#}
-{#                                                class="sr-only">Assign Module</span> <i#}
-{#                                                class="fa fa-share-square-o"></i></button>#}
-{#                                    </a>#}
                                     <a href="{% url 'tester-task-details' task.id %}">
                                         <button type="button"
-                                                class="btn btn-success" title="Edit"><span
-                                                class="">Details</span> <i
-                                                class="fa fa-eye"></i></button>
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details">
+                                            <i class="fas fa-info-circle"></i></button>
                                     </a>
-{#                                    <a id="confirm-button-url_project" data-project="{{ module.id }}"#}
-{#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
-{#                                       data-type="team_delete_confirm"#}
-{#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
-{#                                            class="fa fa-trash-o text-col-white"></i>#}
-{#                                    </a>#}
                                 </td>
                             </tr>
 

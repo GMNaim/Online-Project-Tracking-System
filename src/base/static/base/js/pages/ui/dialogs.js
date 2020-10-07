@@ -78,7 +78,7 @@ function showWithTitleMessage() {
 function showCommonConfirmMessage() {
     swal({
         title: "Are you sure?",
-        text: title+" will be delete permanently.",
+        text: title+" will be delete permanently. All information related with this employee will be deleted.",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",

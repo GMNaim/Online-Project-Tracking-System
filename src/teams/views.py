@@ -387,6 +387,24 @@ def team_delete(request, team_name):
             return render(request, 'teams/team_list.html', context)
 
 
+def team_member_list(request):
+    if request.user.is_authenticated:
+        members = User.objects.filter(team_member=request.user.team_member)
+        context={'members': members, 'active': 'active'}
+        for mem in members:
+            print(mem.username, mem.team_member.name, 'task no', mem.task_set.count())
+        return render(request, 'teams/team_member_list.html', context)
+
+
+
+
+
+
+
+
+
+
+
 """ ==============================================  TASK WORK  =============================================="""
 
 

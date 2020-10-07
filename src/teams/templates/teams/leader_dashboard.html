@@ -1,5 +1,6 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} Dashboard{% endblock %}
 {% block main_content %}
 
     <div class="card open_task" style="padding-bottom: 5px">
@@ -18,8 +19,8 @@
 
                         {% if is_super_user_or_pm or is_team_leader %}
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="{% url 'team-list' %}">
-                                    <div class="dashboard-card-body l-turquoise">
+                                <a href="{% url 'my-team-members' %}">
+                                    <div class="dashboard-card-body l-slategray">
                                         <div class="h1 text-right mb-4">
 {#                                            <i class="fa fa-sitemap text-light"></i>#}
                                             <i class="fa fa-users text-light"></i>
@@ -42,18 +43,18 @@
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-all-module' %}">
-                                    <div class="dashboard-card-body l-slategray">
-                                        <div class="h1 text-light text-right mb-4">
-                                            <i class="fa fa-server"></i>
+                                    <div class="dashboard-card-body l-salmon">
+                                        <div class="h1 text-dark text-right mb-4">
+                                            <i class="fa fa-tasks"></i>
                                         </div>
                                         <div>
-                                            <div class="h4 mb-0 text-light">
+                                            <div class="h4 mb-0 text-dark">
                                                 <span class="count">{{ total_module_of_leader }}</span>
                                             </div>
                                             <small
-                                                    class="text-light text-uppercase font-weight-bold   ">All
+                                                    class="text-dark text-uppercase font-weight-bold   ">All
                                                 Module</small>
-                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                            <div class="progress progress-xs mt-3 mb-0 bg-dark"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
                                     </div>
@@ -63,18 +64,18 @@
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
                                 <a href="{% url 'team-completed-module' %}">
-                                    <div class="dashboard-card-body l-slategray">
-                                        <div class="h1 text-light text-right mb-4">
+                                    <div class="dashboard-card-body l-green">
+                                        <div class="h1 text-col-dark text-right mb-4">
                                             <i class="fa fa-server"></i>
                                         </div>
                                         <div>
-                                            <div class="h4 mb-0 text-light">
+                                            <div class="h4 mb-0 text-dark">
                                                 <span class="count">{{ completed_module_of_leader }}</span>
                                             </div>
                                             <small
-                                                    class="text-light text-uppercase font-weight-bold   ">Completed
+                                                    class="text-dark text-uppercase font-weight-bold   ">Completed
                                                 Module</small>
-                                            <div class="progress progress-xs mt-3 mb-0 bg-light"
+                                            <div class="progress progress-xs mt-3 mb-0 bg-dark"
                                                  style="width: 40%; height: 5px;"></div>
                                         </div>
                                     </div>
@@ -82,8 +83,8 @@
                             </div>
 
                             <div class="dashboard-card col-lg-2 col-md-6 no-padding no-shadow">
-                                <a href="#">
-                                    <div class="dashboard-card-body l-coral">
+                                <a href="{% url 'team-running-module' %}">
+                                    <div class="dashboard-card-body l-turquoise">
                                         <div class="h1 text-light text-right mb-4">
                                             <i class="fa fa-tasks"></i>
                                         </div>

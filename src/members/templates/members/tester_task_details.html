@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-lg-8 col-md-12">
                             <span style="font-size: 16px; font-weight: bolder" class="badge {% if selected_task.status == 1 %}
-                                                                 badge-default
+                                                                 badge-default bg-secondary
                                                              {% elif selected_task.status == 2 %}
                                                                  badge-primary
                                                              {% elif selected_task.status == 3 %}
@@ -239,7 +239,7 @@
         {#                                            <button type="button"#}
         {#                                                    class="btn btn-primary" title="Assign Task"><span#}
         {#                                                    class="sr-only">Assign Task</span> <i#}
-        {#                                                    class="fa fa-share-square-o"></i>#}
+        {#                                                    class="fas fa-share-square"></i>#}
         {#                                            </button>#}
         {#                                        </a>#}
         {#                                    {% endif %}#}
@@ -254,7 +254,7 @@
         {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
         {#                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"#}
         {#                                       title="Delete Task"><span class="sr-only">Delete Task</span> <i#}
-        {#                                            class="fa fa-trash-o text-col-white"></i>#}
+        {#                                            class="fas fa-trash-alt text-col-white"></i>#}
         {#                                    </a>#}
         {##}
         {##}

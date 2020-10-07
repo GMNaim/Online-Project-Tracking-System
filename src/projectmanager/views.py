@@ -876,7 +876,7 @@ def project_update(request, project_code):
                     """ If project is assigned already to a dep and then change the dep then notification count"""
 
                     if selected_department_obj != selected_project.department and selected_project.status == 2:
-                        previously_assigned_head.notification_count += 1  # decrease previous head notification count
+                        previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from him
                         previously_assigned_head.save()
                         # create new task history object
                         task_history = TaskHistory()
@@ -884,9 +884,9 @@ def project_update(request, project_code):
                         task_history.description = (model_to_dict(selected_project))
                         task_history.status = 'Project Removed'
                         task_history.save()
-                        if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
-                            previously_assigned_head.notification_count = 0  # then make it 0
-                            previously_assigned_head.save()
+                        # if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
+                        #     previously_assigned_head.notification_count = 0  # then make it 0
+                        #     previously_assigned_head.save()
 
 
                         if project_status == '':

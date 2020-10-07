@@ -1,11 +1,12 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} Add Task :: Module: {{ selected_module.name }}{% endblock %}
 {% block main_content %}
 
 
     <div class="card open_task">
         <div class="header text-center">
-            <h2>Add Task for project :: {{ selected_module.name }}</h2>
+            <h2>Add Task for Module :: {{ selected_module.name }}</h2>
 
                 <p class="text-center" style="margin-top: 10px;">Submission Date: {{ selected_module.submission_date }}</p>
 

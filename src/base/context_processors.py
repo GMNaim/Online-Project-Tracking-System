@@ -79,10 +79,15 @@ def nav_bar_content(request):
 
             """Leader NOTIFICATION ITEM"""
             if request.user.team_member.id != 10 and is_team_leader:
+                # user_notification_item = TaskHistory.objects.filter(Q(module__assigned_team=request.user.team_member,
+                #                                                       module__status__in=[1, 2]) | Q(
+                #     module__assigned_team=request.user.team_member,
+                #     task__status=7)).order_by('-created_at')[:user_notification_count]
                 user_notification_item = TaskHistory.objects.filter(Q(module__assigned_team=request.user.team_member,
                                                                       module__status__in=[1, 2]) | Q(
                     module__assigned_team=request.user.team_member,
-                    task__status=7)).order_by('-created_at')[:user_notification_count]
+                    task__status=7)).order_by('-created_at')[:5]
+
 
                 print('leader user_notification_item: -- ', user_notification_item, 'user notification count',
                       user_notification_count)

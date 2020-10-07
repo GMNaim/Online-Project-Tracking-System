@@ -1,13 +1,14 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
+{% block title %} Running Projects{% endblock %}
 {% block main_content %}
 
     <div class="card open_task">
         <div class="header">
-{#            <a href="{% url 'project-add' %}">#}
-{#                <button type="button" class="btn btn-success"><i#}
-{#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
-{#            </a>#}
+            {#            <a href="{% url 'project-add' %}">#}
+            {#                <button type="button" class="btn btn-success"><i#}
+            {#                        class="fa fa-plus-square"></i><span> Add New Project</span></button>#}
+            {#            </a>#}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -25,51 +26,74 @@
             </ul>
         </div>
         <div class="body">
-            <h4>Project List</h4>
-            <div class="body">
+            <h4>Running Project{{ dep_running_project|pluralize:'s' }}</h4>
+            <div class="body p-0">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped dataTable  js-exportable"
-                           id="datatable-project_list">
+                    <table class="table table-bordered table-hover table-striped dataTable"
+                           id="datatable-pm-project_list">
                         <thead>
                         <tr class="bg-dark" style="color: white;">
                             <th>#</th>
                             <th>Project Name</th>
-                            <th>Department</th>
                             <th>Status</th>
+                            <th>Progress</th>
                             <th>Client</th>
                             <th>Assigned Date</th>
-                            <th>Actions</th>
+                            <th>Submission Date</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        {% for project in projects %}
-                            <tr>
+                        {% for project in dep_running_project %}
+                            <tr {% if project.department_head_notified == False %}style="background-color: #ffd587"{% endif %}>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ project.name }}</td>
-                                <td>{{ project.department.name }}</td>
-                                <td>{{ project.get_status_display }}</td>
-                                <td>{{ project.client.name }} :: {{ project.client.company_name }}</td>
-                                <td>{{ project.created_at|date }}</td>
+                                <td>{{ project.name|slice:":22" }}{% if project.name|length > 22 %}...{% endif %}</td>
+                                <td>
+                                    <span style="font-weight: bolder" class="badge text-white
+                                                            {% if project.status == 1 %}
+                                                                 badge-default bg-secondary
+                                                             {% elif project.status == 2 %}
+                                                                 badge-info bg-info
+                                                             {% elif project.status == 3 %}
+                                                                 badge-primary bg-primary
+                                                             {% elif project.status == 4 %}
+                                                                 badge-success bg-success
+                                                             {% endif %}">{{ project.get_status_display }}</span>
+                                </td>
+
+                                <td class="td-padding">
+                                    <div class="progress progress-xs">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="30"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100" style="width: 30%; "></div>
+                                    </div>
+                                    <small>Completion: 0%</small>
+
+                                <td>{{ project.client.company_name|slice:":12" }}
+                                    {% if project.client.company_name|length > 12 %}...{% endif %}</td>
+                                <td>{{ project.assigned_at|date }}</td>
+                                <td>{{ project.delivery_date|date }}<br/>
+                                    <span style="color: #fa6418; background-color: black;padding: 2px 5px; border-radius: 3px; margin: 5px !important;">
+                                        {{ project.get_day_left_to_submit }} days left</span></td>
                                 <td class="actions">
-                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>
+                                    {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}
+                                    {#                                        <button type="button"#}
+                                    {#                                                class="btn btn-primary" title="Assign Project"><span#}
+                                    {#                                                class="sr-only">Assign Project</span> <i#}
+                                    {#                                                class="fas fa-share-square"></i></button>#}
+                                    {#                                    </a>#}
+                                    <a href="{% url 'department-project-details' project.code %}">
                                         <button type="button"
-                                                class="btn btn-primary" title="Assign Project"><span
-                                                class="sr-only">Assign Project</span> <i
-                                                class="fa fa-share-square-o"></i></button>
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details"><i class="fas fa-info-circle"></i></button>
                                     </a>
-                                    <a href="{% url 'project-update' project.code %}">
-                                        <button type="button"
-                                                class="btn btn-success" title="Edit"><span
-                                                class="sr-only">Edit</span> <i
-                                                class="fa fa-edit"></i></button>
-                                    </a>
-                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"
-                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="team_delete_confirm"
-                                       title="Delete"><span class="sr-only">Delete</span> <i
-                                            class="fa fa-trash-o text-col-white"></i>
-                                    </a>
+                                    {#                                    <a id="confirm-button-url_project" data-project="{{ project.code }}"#}
+                                    {#                                       class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "#}
+                                    {#                                       data-type="team_delete_confirm"#}
+                                    {#                                       title="Delete"><span class="sr-only">Delete</span> <i#}
+                                    {#                                            class="fas fa-trash-alt text-col-white"></i>#}
+                                    {#                                    </a>#}
                                 </td>
                             </tr>
                         {% endfor %}

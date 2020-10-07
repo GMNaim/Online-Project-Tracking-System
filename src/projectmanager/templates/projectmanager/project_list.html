@@ -55,14 +55,15 @@
                                 <td class="td-padding" style="padding: 10px 5px;">{{ forloop.counter }}</td>
                                 <td class="td-padding">{{ project.name|slice:":22" }}{% if project.name|length > 22 %}...{% endif %}</td>
                                 <td class="td-padding">{{ project.department.name }}</td>
-                                <td class="td-padding"><span class="badge {% if project.status == 1 %}
-                                                                 badge-default
+                                <td class="td-padding"><span class="badge text-white
+                                                            {% if project.status == 1 %}
+                                                                 badge-default bg-secondary
                                                              {% elif project.status == 2 %}
-                                                                 badge-info
+                                                                 badge-info bg-info
                                                              {% elif project.status == 3 %}
-                                                                 badge-primary
+                                                                 badge-primary bg-primary
                                                              {% elif project.status == 4 %}
-                                                                 badge-success
+                                                                 badge-success bg-success
                                                              {% endif %}">{{ project.get_status_display }}</span>
                                 </td>
 
@@ -82,7 +83,7 @@
                                         <button type="button" data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                                 class="btn btn-primary"title="Assign Project"><span
                                                 class="sr-only">Assign Project</span> <i
-                                                class="fa fa-share-square-o"></i></button>
+                                                class="fas fa-share-square"></i></button>
                                     </a>
                                     {% endif %}
                                     <a href="{% url 'project-update' project.code %}">
@@ -97,7 +98,7 @@
                                        data-status="{% if project.status == 3 %}running{% elif project.status == 2 %}assigned{% endif %}"
                                        data-type="{% if project.status >= 2 %}with-title{% else %}team_delete_confirm{% endif %}"
                                        title="Delete"><span class="sr-only">Delete</span>
-                                        <i class="fa fa-trash-o text-col-white"></i>
+                                        <i class="fas fa-trash-alt text-col-white"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -119,11 +120,11 @@
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
         let delete_project_url = null;
         let status = null;
+        let title = 'Project';
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
             delete_project_url = "/project-manager/project/delete/" + $(this).data('project');
-            console.log(delete_project_url);
-            status = $('.delete-confirm').data('status')
+            status = $(this).data('status');
         });
         {#let running = 'Running';#}
 

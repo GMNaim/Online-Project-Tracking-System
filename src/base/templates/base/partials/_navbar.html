@@ -1,5 +1,27 @@
 {% load static %}
+<style>
+    /* width */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
 
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 10px #6b6b6b;
+        border-radius: 10px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #31a4e2;
+        border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #25a1b3;
+    }
+</style>
 
 <nav class="navbar navbar-fixed-top">
     <div class="container-fluid">
@@ -30,7 +52,7 @@
                 </li>
                 <li>
                     <div id="navbar-menu">
-                        <ul class="nav navbar-nav">
+                        <ul class="nav navbar-nav" style="">
 
                             <li class="dropdown">
                                 <a href="javascript:void(0);" class="dropdown-toggle icon-menu"
@@ -51,7 +73,8 @@
                                         {{ user_notification_count }}</span>
                                     {% endif %}
                                 </a>
-                                <ul class="dropdown-menu animated bounceIn notifications">
+                                <ul class="dropdown-menu animated bounceIn notifications"
+                                    style="{% if user_notification_count %}height:400px; overflow-y: scroll {% endif %}">
                                     {#                                    {% if is_department_head %}#}
                                     {#                                        {% if user_notification_count %}#}
                                     {#                                            <li class="header"><strong>You have {{ user_notification_count }} new#}
@@ -81,12 +104,13 @@
 
 
                                     {% if user_notification_count %}
-                                        <li class="header"><strong>You have {{ user_notification_count }} new
-                                            Notification{{ user_notification_count|pluralize }}</strong></li>
+                                        <li class="header"><strong>You have {{ user_notification_count }} new Notification{{ user_notification_count|pluralize }}</strong></li>
                                     {% else %}
                                         <li class="header"><strong>You don't have any new Notifications</strong>
                                         </li>
                                     {% endif %}
+
+
                                     {% if user_notification_item is not None %}
 {#                                        {% for item in user_notification_item %}#}
 {#                                            <li>#}
@@ -121,27 +145,12 @@
 {#                                        {% endfor %}#}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                         {% for item in user_notification_item %}
                                             <li>
                                                 <a style="color:#d4d4d4;" href="
                                                         {% if is_department_head %}
                                                             {% url 'department-project-details' item.project.code %}
-                                                        
+
                                                         {% elif is_team_leader %}
                                                             {% url 'team-module-details' item.module.id %}
                                                         {% elif is_team_member %}
@@ -173,7 +182,7 @@
                                                              <p class="text" >{{ item.status }} ::
                                                                 <strong>{{ item.submitted_task.task.name }}</strong></p>
                                                         {% endif %}
-        
+
                                                             {% if is_department_head %}
                                                                 <span style="color:#d4d4d4;" class="timestamp">Assigned at: {{ item.project.assigned_at }}</span>
                                                             {% elif is_team_leader and item.task.status == 7 %}
@@ -194,33 +203,6 @@
                                             </li>
 
                                         {% endfor %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                                         <li class="footer"><a href="
                                                             {% if is_department_head %}

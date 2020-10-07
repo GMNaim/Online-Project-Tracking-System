@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 
-from projectmanager.models import Client, Module, Task, SubmittedToQATask
+from projectmanager.models import Client, Module, Task, SubmittedToQATask, Project
 from teams.models import Team
 from .decorators import has_access, has_access_dashboard
 from .models import Department
@@ -47,21 +47,16 @@ def dashboard(request):
         is_tester = request.user.role.name == role_tester
         print('dashboard testing================')
         """ Project Manager SUPER USER INFO """
-        total_employee = User.objects.filter(is_active=True).count()
-        total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
-        total_team = Team.objects.exclude(id=10).count()
-        total_client = Client.objects.all().count()
-        total_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).count()
-        running_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=3).count()
-        completed_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=4).count()
+
+
         # task count of member
         total_task_of_member = Task.objects.filter(assigned_member=request.user).count()
         completed_task_of_member = Task.objects.filter(assigned_member=request.user, status=7).count()
         # Task count of tester
         total_task_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user).count()
-        print(total_task_of_tester, 'ddddddddd')
         running_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user, status=2).count()
-        completed_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user,status=4).count()
+        completed_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user,
+                                                                           status=4).count()
 
         # """ DEPARTMENT INFO """
         # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()
@@ -80,42 +75,78 @@ def dashboard(request):
         #     project_assigned_dep_head.notification_count = 0
         # print('post req.$$$$$$$$$$$$$$$$$$$$', project_assigned_dep_head.notification_count)
 
-        # total members in the team
-        members_in_team = User.objects.filter(team_member__id=request.user.team_member.id).count()
-        print('member in the team ', members_in_team)
-        context = {'total_employee': total_employee,
-                   'total_department': total_department,
-                   'total_team': total_team,
-                   'total_client': total_client,
-                   'is_super_user_or_pm': is_super_user_or_pm,
+
+        context = {'is_super_user_or_pm': is_super_user_or_pm,
                    'is_department_head': is_department_head,
                    'is_team_leader': is_team_leader,
                    'is_employee': is_employee,
                    'is_team_member': is_team_member,
                    'is_tester': is_tester,
 
-                   'members_in_team': members_in_team,
-                   'total_module_of_leader': total_module_of_leader,
-
                    'total_task_of_member': total_task_of_member,
                    'completed_task_of_member': completed_task_of_member,
 
                    'total_task_of_tester': total_task_of_tester,
                    'running_tasks_count_of_tester': running_tasks_count_of_tester,
-                   'completed_tasks_count_of_tester': completed_tasks_count_of_tester,
-                   'completed_module_of_leader': completed_module_of_leader,
-                   'running_module_of_leader': running_module_of_leader}
+                   'completed_tasks_count_of_tester': completed_tasks_count_of_tester,}
 
         if is_super_user_or_pm:
+            total_projects = Project.objects.all().count()
+            completed_project = Project.objects.filter(status=4).count()
+            total_employee = User.objects.filter(is_active=True).exclude(role__name__iexact=role_super_user).count()
+            total_department = Department.objects.exclude(id=16).filter(is_active=True).count()
+            total_team = Team.objects.exclude(id=10).count()
+            total_client = Client.objects.all().count()
+
+            context['total_projects'] = total_projects
+            context['completed_project'] = completed_project
+            context['total_employee'] = total_employee
+            context['total_department'] = total_department
+            context['total_team'] = total_team
+            context['total_client'] = total_client
+
             return render(request, 'projectmanager/pm_dashboard.html', context)
+
+
         elif is_department_head:
+            total_project_of_department_head = Project.objects.filter(department=request.user.department,
+                                                                      status__gt=1).count()
+            running_project_of_department_head = Project.objects.filter(department=request.user.department,
+                                                                        status=3).count()
+            completed_project_of_department_head = Project.objects.filter(department=request.user.department,
+                                                                          status=4).count()
+            total_team = Team.objects.filter(department=request.user.department).count()
+            context['total_project_of_department_head'] = total_project_of_department_head
+            context['completed_project_of_department_head'] = completed_project_of_department_head
+            context['running_project_of_department_head'] = running_project_of_department_head
+            context['total_team'] = total_team
+
             return render(request, 'departments/head_dashboard.html', context)
+
+
         elif is_team_leader:
+            # total members in the team
+            members_in_team = User.objects.filter(team_member__id=request.user.team_member.id).count()
+            # Leader
+            total_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status__gte=2).count()
+            running_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=3).count()
+            completed_module_of_leader = Module.objects.filter(assigned_team=request.user.team_member, status=4).count()
+
+            context['members_in_team'] = members_in_team
+            context['total_module_of_leader'] = total_module_of_leader
+            context['running_module_of_leader'] = running_module_of_leader
+            context['completed_module_of_leader'] = completed_module_of_leader
             return render(request, 'teams/leader_dashboard.html', context)
+
+
         elif is_team_member or is_team_leader:
             return render(request, 'members/member_dashboard.html', context)
+
+
         elif is_tester:
             return render(request, 'members/tester_dashboard.html', context)
+
+
         elif is_employee:
             return render(request, 'teams/leader_dashboard.html', context)
 
@@ -216,7 +247,8 @@ def login_view(request):
 
 @login_required(login_url='login')
 @has_access(
-    allowed_roles=[role_pm, role_employee, role_department_head, role_team_member, role_team_leader, role_tester, role_super_user])
+    allowed_roles=[role_pm, role_employee, role_department_head, role_team_member, role_team_leader, role_tester,
+                   role_super_user])
 def logout_view(request):
     """ Logout for all users """
     logout(request)

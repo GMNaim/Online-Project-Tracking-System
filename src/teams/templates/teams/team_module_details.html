@@ -1,7 +1,7 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
 {% block title %}
-    Team: {{ selected_module.assigned_team.name }} - {{ selected_module.name }} - All Task
+    Module: {{ selected_module.name }} - Details
 {% endblock %}
 {% block main_content %}
 
@@ -13,42 +13,32 @@
 
                 <div class="body">
                     <ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link active show" data-toggle="tab" href="#Home-withicon"><i
-                                class="fa fa-home"></i> Home</a></li>
-                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Profile-withicon"><i
-                                class="fa fa-user"></i> Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Contact-withicon"><i
-                                class="fa fa-vcard"></i> Contact</a></li>
+                        <li class="nav-item"><a class="nav-link active show" data-toggle="tab" href="#Module-withicon">
+                            <i class="fas fa-project-diagram"></i> Module</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Module-description-withicon"><i
+                                class="fas fa-envelope-open-text"></i> Module Description</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Project-withicon">
+                            <i class="fas fa-project-diagram"></i> Project</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#project-description-withicon"><i
+                                class="fas fa-envelope-open-text"></i> Project Description</a></li>
+                        {#                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Contact-withicon"><i#}
+                        {#                                class="fa fa-vcard"></i> Contact</a></li>#}
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane show active" id="Home-withicon">
+                        <div class="tab-pane show active" id="Module-withicon">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Module general info</h2>
+                                </div>
+                                <div class="body col-lg-12 col-md-12">
+                                    <ul class=" list-unstyled basic-list font-18">
+                                        <li><i class="icon-book-open m-r-5"></i> Module Name: <span
+                                                class="telegram-color p-1">{{ selected_module.name }}</span></li>
 
-
-                            <div class="row clearfix" style="height: 48px">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;">Project Name: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p style="font-size: 18px;">{{ selected_module.project.name }}</p><br/>
-                                </div>
-                            </div>
-                            <div class="row clearfix" style="height: 48px">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;">Module Name: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p style="font-size: 18px;">{{ selected_module.name }}</p><br/>
-                                </div>
-                            </div>
-                            <div class="row clearfix" style="height: 48px">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;">Module Status: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p style="font-size: 18px;">
-                                        <span style="font-weight: bolder"
-                                              class="badge {% if selected_module.status == 1 %}
-                                                                 badge-default
+                                        <li><i class="fas fa-thermometer-half m-r-5"></i> Module Status: <span
+                                                style="font-weight: bolder"
+                                                class="badge {% if selected_module.status == 1 %}
+                                                                 badge-default bg-secondary
                                                              {% elif selected_module.status == 2 %}
                                                                  badge-info
                                                              {% elif selected_module.status == 3 %}
@@ -56,75 +46,127 @@
                                                              {% elif selected_module.status == 4 %}
                                                                  badge-success
                                                              {% endif %}">{{ selected_module.get_status_display }}</span>
-                                    </p><br/>
-                                </div>
-                            </div>
-                            <div class="row clearfix">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;padding-bottom: 5px !important;">Module Description: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12 " style="font-size: 18px;">
-                                    <p class=""
-                                       style="font-size: 18px;">{{ selected_module.description|linebreaks }}</p>
-                                </div>
-                            </div>
-                            <div class="row clearfix">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;padding-bottom: 5px !important;">Module Assigned
-                                        Date: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p class="" style="font-size: 18px;">{{ selected_module.assigned_at|date }}</p>
-                                </div>
-                            </div>
-                            <div class="row clearfix">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Module
-                                        Submission Date: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p class="" style="font-size: 18px;">{{ selected_module.submission_date }} ::
-                                        <span class=" badge badge-danger"> {{ selected_module.get_day_left_to_submit }} days left to submit</span>
-                                    </p>
-                                </div>
-                            </div>
-                            {% if selected_module.is_completed %}
-                                <div class="row clearfix">
-                                    <div class="col-lg-4 col-md-12">
-                                        <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">
-                                            Module
-                                            Completed At: </p>
-                                    </div>
-                                    <div class="col-lg-8 col-md-12">
-                                        <p class="text-success" style="font-size: 18px;">
-                                            {{ selected_module.completed_at|date }}
-                                        </p>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="row clearfix">
-                                <div class="col-lg-4 col-md-12">
-                                    <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Total
-                                        Task Created: </p>
-                                </div>
-                                <div class="col-lg-8 col-md-12">
-                                    <p class="" style="font-size: 18px;">{{ task_list.count }}</p>
+                                        </li>
+                                        <li><i class="fa fa-calendar-alt m-r-5"></i> Module Assigned Date: <span
+                                                class="badge-primary badge">{{ selected_module.assigned_at|default_if_none:'' }}</span>
+                                        </li>
+                                        <li><i class="fa fa-calendar-alt m-r-5"></i> Module Submission Date:
+                                            <span class="badge badge-danger">
+                                        {{ selected_module.get_day_left_to_submit }} days left to submit</span>
+                                            <span class="badge-purple badge">{{ selected_module.submission_date }}</span>
+
+                                        </li>
+                                        {% if selected_module.status == 4 %}
+                                            <li><i class="fa fa-calendar-alt m-r-5"></i> Module Completed At:
+                                                <span class="badge-success badge">{{ selected_module.completed_at }}</span>
+                                            </li>
+                                        {% endif %}
+                                        <li><i class="fas fa-tasks m-r-5"></i> Total Task Created:
+                                            <span class="badge-success badge">{{ task_list.count }}</span>
+
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
 
 
                         </div>
-                        <div class="tab-pane" id="Profile-withicon">
-                            <h6>Profile</h6>
-                            <p>write someting here</p>
+                        <div class="tab-pane" id="Module-description-withicon">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Module Description</h2>
+                                </div>
+                                <div class="body col-lg-12 col-md-12">
+                                    <ul class=" list-unstyled basic-list font-15">
+                                        <li style="text-align: left" class="align-left">
+                                            <span>{{ selected_module.description|linebreaks }}</span>
+                                        </li>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
                         </div>
-                        <div class="tab-pane" id="Contact-withicon">
-                            <h6>Contact</h6>
-                            <p>write someting here</p>
+                        <div class="tab-pane show " id="Project-withicon">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Project of the module</h2>
+                                </div>
+                                <div class="body col-lg-12 col-md-12">
+                                    <ul class=" list-unstyled basic-list font-18">
+                                        <li><i class="icon-book-open m-r-5"></i> Project Name: <span
+                                                class="telegram-color p-1">{{ selected_module.project.name }}</span></li>
+
+                                        <li><i class="fas fa-thermometer-half m-r-5"></i> Project Status: <span
+                                                style="font-weight: bolder"
+                                                class="badge text-white
+                                                            {% if selected_module.project.status == 1 %}
+                                                                 badge-default  bg-secondary
+                                                             {% elif selected_module.project.status == 2 %}
+                                                                 badge-info bg-info
+                                                             {% elif selected_module.project.status == 3 %}
+                                                                 badge-primary bg-primary
+                                                             {% elif selected_module.project.status == 4 %}
+                                                                 badge-success bg-success
+                                                             {% endif %}">{{ selected_module.project.get_status_display }}</span>
+                                        </li>
+{#                                        <li><i class="fa fa-calendar-alt m-r-5"></i> Project Assigned Date: <span#}
+{#                                                class="badge-primary badge">{{ selected_module.project.assigned_at|default_if_none:'' }}</span>#}
+{#                                        </li>#}
+{#                                        <li><i class="fa fa-calendar-alt m-r-5"></i> Project Submission Date:#}
+{#                                            <span class="badge badge-danger">#}
+{#                                        {{ selected_module.project.get_day_left_to_submit }} days left to submit</span>#}
+{#                                            <span class="badge-purple badge">{{ selected_module.project.delivery_date }}</span>#}
+{##}
+{#                                        </li>#}
+                                        {% if selected_module.project.status == 4 %}
+                                            <li><i class="fa fa-calendar-alt m-r-5"></i> Project Completed At:
+                                                <span class="badge-success badge">{{ selected_module.project.completed_at }}</span>
+
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="tab-pane" id="project-description-withicon">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Project Description</h2>
+                                </div>
+                                <div class="body col-lg-12 col-md-12">
+                                    <ul class=" list-unstyled basic-list font-15">
+                                        <li style="text-align: left" class="align-left">
+                                            <span>{{ selected_module.project.description|linebreaks }}</span>
+                                        </li>
+
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
 
                         </div>
                     </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             </div>
@@ -179,7 +221,7 @@
                                 <td class="td-padding">{{ task.assigned_member }}</td>
                                 <td class="td-padding"><span style="font-weight: bolder"
                                                              class="badge {% if task.status == 1 %}
-                                                                 badge-default
+                                                                 badge-default bg-secondary
                                                              {% elif task.status == 2 %}
                                                                  badge-info
                                                              {% elif task.status == 3 %}
@@ -210,7 +252,7 @@
                                                     data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                                     class="btn btn-primary" title="Assign Task"><span
                                                     class="sr-only">Assign Task</span> <i
-                                                    class="fa fa-share-square-o"></i>
+                                                    class="fas fa-share-square"></i>
                                             </button>
                                         </a>
                                     {% endif %}
@@ -225,9 +267,10 @@
                                        data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
                                        data-task="{{ task.id }}"
                                        class="btn btn-danger js-sweetalert confirm-button-url delete-confirm "
-                                       data-type="{% if task.status == 2 %}with-title{% else %}task_delete_confirm{% endif %}"
+                                       data-type="{% if task.status >= 2 and task.status < 7 %}with-title{% else %}task_delete_confirm{% endif %}"
+                                       data-status="{% if task.status >= 3 %}running{% elif task.status == 2 %}assigned{% endif %}"
                                        title="Delete Task"><span class="sr-only">Delete Task</span> <i
-                                            class="fa fa-trash-o text-col-white"></i>
+                                            class="fas fa-trash-alt text-col-white"></i>
                                     </a>
 
 
@@ -246,12 +289,13 @@
     <script>
         // SCript for delete user. here we are just taking the url of the user to delete and it will be using in dialog.js
         let delete_task_url = null;
-        let title = null;
+        let status = null;
+        let title = 'Task';
         $('.delete-confirm').on('click', function (event) {
             event.preventDefault();
             delete_task_url = "/team/module/" + $(this).data('module') + "/task/delete/" + $(this).data('task');
-            console.log(delete_task_url);
-            title = 'Task'
+            {#console.log(delete_task_url);#}
+            status = $(this).data('status');
         });
     </script>
 

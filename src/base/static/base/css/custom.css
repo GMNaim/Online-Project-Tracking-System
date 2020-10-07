@@ -110,28 +110,43 @@ select{
 
 
 /*table padding decrease...............*/
-.td-padding {
-    padding: 10px 5px;
+/*.td-padding {*/
+/*    padding: 10px 5px;*/
+/*}*/
+
+table.dataTable th,
+table.dataTable td{
+    padding: 10px 2px 10px 5px !important;
+
+}
+table.dataTable td {
+    text-align: center;
 }
 
+table.dataTable th:first-child {
+    padding: 10px 15px !important;
+}
 
-
-
-/*table#datatable-pm-project_list.dataTable tbody tr:hover {*/
-/*    background-color: #ffa;*/
-/*}*/
-
-/*table#datatable-pm-project_list.dataTable tbody tr:hover > .sorting_1 {*/
-/*    background-color: #ffa;*/
-/*}*/
-
-/*table#datatable-pm-project_list.dataTable thead:hover {*/
-/*    background-color: #ffa;*/
-/*}*/
-
+table.dataTable {
+    font-size: 13px;
+}
+table.dataTable tbody.tr {
+    background-color: white;
+}
 
 
 table.dataTable tbody tr:hover {
-    background-color: #5abbed !important;
-    color: white;
+    background-color: #bacfde !important;
+    color: #000000;
 }
+
+
+.progress-bar {
+    background-color: #0fcb50;
+}
+
+
+/*table.dataTable td.sorting_1{ background-color: white; border:1px #4893d3; }*/
+/*table.dataTable td{ background-color: white;  border:1px #4893d3;}*/
+/*table.dataTable tr.odd { background-color: white;  border:1px #4893d3;}*/
+/*table.dataTable tr.even{ background-color: white; border:1px #4893d3; }*/

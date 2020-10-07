@@ -6,14 +6,25 @@
             <ul id="main-menu" class="metismenu">
 
 
-                <li class="align-items-center font-20"><a><i class="icon-user"
-                                                             style="color: #1b92ff;"></i><span>{{ request.user.username }}
-                                  </span></a></li>
-                <li class="align-items-center" style="color: cornflowerblue">
-                    <span>{{ sidebar_role_name }}
+                <li class="p-0" style="padding-top: 10px !important;">
+                    <a class="justify-content-center p-0" style="font-size:20px; width:100%!important;">
+                        <i class="icon-user" style="color: #1b92ff;"></i>
+                        <span style="font-size:20px; text-align: center!important;">
+                            {{ request.user.username|upper }}</span>
+                    </a>
+                </li>
+
+
+                <li class="p-t-0" style="color: cornflowerblue">
+                    <a class="p-t-0">
+                    <span style="width:100%; text-align: center!important;">{{ sidebar_role_name }}
                         {% if sidebar_department_name is not None %}
-                            <span class="font-weight-bolder" style="font-size: 16px; font-weight: bolder">|</span>
-                            {{ sidebar_department_name|default_if_none:'' }}  {% endif %}</span></li>
+                            <br/>{{ sidebar_department_name|default_if_none:'' }}  {% endif %}</span>
+                    </a>
+                </li>
+
+
+
 
                 {% if is_super_user_or_pm %}
                     {#  if Project Manager these list will be shown   #}
@@ -23,10 +34,11 @@
                     </li>
 
                     <li class="{% if '/project-manager/employee' in request.path %} active {% endif %}">
-                        <a href="{% url 'employee-list' %}" class="has-arrow"><i class="icon-map"></i> <span>Employee</span></a>
+                        <a href="{% url 'employee-list' %}" class="has-arrow"><i class="icon-users"></i>
+                            <span>Employee</span></a>
                         <ul>
                             <li class="{% if '/employee/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'employee-list' %}">Employee List</a></li>
+                                    href="{% url 'employee-list' %}">All Employee</a></li>
                             <li class="{% if '/employee/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'employee-add' %}">Employee Add</a></li>
 
@@ -34,10 +46,10 @@
                     </li>
 
                     <li class="{% if '/team' in request.path %} active {% endif %}">
-                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>Team</span></a>
+                        <a href="#Team" class="has-arrow"><i class="fas fa-sitemap"></i> <span style="margin-left: 14px">Team</span></a>
                         <ul>
                             <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-list' %}">Team List</a></li>
+                                    href="{% url 'team-list' %}">All Team</a></li>
                             {% if request.user.role.name == 'Department Head' %}
                                 <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
                                         href="{% url 'team-add' %}">Team Add</a></li>
@@ -47,10 +59,10 @@
                     </li>
 
                     <li class="{% if '/department' in request.path %} active {% endif %}">
-                        <a href="#Department" class="has-arrow"><i class="icon-map"></i> <span>Department</span></a>
+                        <a href="#Department" class="has-arrow"><i class="fas fa-building"></i> <span style="margin-left: 18px">Department</span></a>
                         <ul>
                             <li class="{% if '/department/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'department-list' %}">Department List</a></li>
+                                    href="{% url 'department-list' %}">All Department</a></li>
                             <li class="{% if '/department/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'department-add' %}">Department Add</a></li>
 
@@ -58,70 +70,79 @@
                     </li>
 
                     <li class="{% if '/client' in request.path %} active {% endif %}">
-                        <a href="#Client" class="has-arrow"><i class="icon-map"></i> <span>Client</span></a>
+                        <a href="#Client" class="has-arrow"><i class="fas fa-address-book"></i> <span style="margin-left: 18px">Client</span></a>
                         <ul>
                             <li class="{% if '/client/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'client-list' %}">Client List</a></li>
+                                    href="{% url 'client-list' %}">All Client</a></li>
                             <li class="{% if '/client/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'client-add' %}">Client Add</a></li>
 
                         </ul>
                     </li>
                     <li class="{% if 'project-manager/project' in request.path %} active {% endif %}">
-                        <a href="#Project" class="has-arrow"><i class="icon-map"></i> <span>Project</span></a>
+                        <a href="#Project" class="has-arrow"><i class="fas fa-tasks"></i> <span style="margin-left: 18px">Project</span></a>
                         <ul>
                             <li class="{% if '/project/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'project-list' %}">Project List</a></li>
+                                    href="{% url 'project-list' %}">All Project</a></li>
                             <li class="{% if '/project/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'project-add' %}">Project Add</a></li>
 
                         </ul>
                     </li>
 
-                    <li class="{% if '/client/list' in request.path %} active {% endif %}" class=""><a
-                            href="{% url 'client-list' %}"><i class="icon-home"></i><span>Client
-                                        List</span></a>
-                    </li>
-
 
                     {#----------------------------------------   for department head  --------------------------------#}
                 {% elif is_department_head %}
+                    <li class="{% if request.resolver_match.view_name == 'dashboard' %} active {% endif %}">
+                        <a href="{% url 'dashboard' %}"><i
+                                class="icon-home"></i><span>Dashboard</span></a>
+                    </li>
+
                     <li class="{% if '/team' in request.path %} active {% endif %}">
-                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>Team</span></a>
+
+                        <a href="#Team" class="has-arrow"><i class="fas fa-sitemap"></i> <span style="margin-left: 18px">Team</span></a>
                         <ul>
                             <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-list' %}">Team List</a></li>
+                                    href="{% url 'team-list' %}">All Team</a></li>
                             <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
                                     href="{% url 'team-add' %}">Team Add</a></li>
                         </ul>
                     </li>
 
                     <li class="{% if '/department/project' in request.path %} active {% endif %}">
-                        <a href="#Department_project" class="has-arrow"><i class="icon-map"></i>
-                            <span>Project</span></a>
+                        <a href="#Department_project" class="has-arrow">
+                            <i class="fas fa-tasks"></i> <span style="margin-left: 18px">Project</span></a>
                         <ul>
                             <li class="{% if '/department/project/all' in request.path %} active {% endif %}"><a
-                                    href="{% url 'department-all-project' %}">All Project List</a></li>
-                            <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-add' %}">Team Add</a></li>
+                                    href="{% url 'department-all-project' %}">All Project</a></li>
+                            <li class="{% if '/department/project/running' in request.path %} active {% endif %}"><a
+                                    href="{% url 'department-running-project' %}">Running Project</a></li>
+                            <li class="{% if '/department/project/completed' in request.path %} active {% endif %}"><a
+                                    href="{% url 'department-completed-project' %}">Completed Project</a></li>
+
                         </ul>
                     </li>
 
                     {#----------------------------------------   for team leader   --------------------------------#}
                 {% elif is_team_leader %}
+                    <li class="{% if request.resolver_match.view_name == 'dashboard' %} active {% endif %}">
+                        <a href="{% url 'dashboard' %}"><i
+                                class="icon-home"></i><span>Dashboard</span></a>
+                    </li>
 
-                    <li class="{% if '/team/list' in request.path %} active {% endif %}">
-                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>My Team</span></a>
+
+                    <li class="{% if active == 'active' %} active {% endif %}">
+                        <a href="#Team" class="has-arrow"><i class="fas fa-sitemap"></i> <span style="margin-left: 13px">My Team</span></a>
                         <ul>
-                            <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-list' %}">Team Members</a></li>
+                            <li class="{% if active == 'active' %} active {% endif %}"><a
+                                    href="{% url 'my-team-members' %}">Team Members</a></li>
                             <li class="{% if '/team/add' in request.path %} active {% endif %}"><a
                                     href="/">My Member Dashboard</a></li>
                         </ul>
                     </li>
 
-                    <li class="{% if '/team/module' in request.path %} active {% endif %}">
-                        <a href="#Team_Module" class="has-arrow"><i class="icon-map"></i> <span>Modules</span></a>
+                    <li class="{% if '/module/' in request.path %} active {% endif %}">
+                        <a href="#Team_Module" class="has-arrow"><i class="fas fa-project-diagram"></i> <span style="margin-left: 13px">Modules</span></a>
                         <ul>
                             <li class="{% if '/module/all' in request.path %} active {% endif %}"><a
                                     href="{% url 'team-all-module' %}">All Module</a></li>
@@ -131,12 +152,22 @@
                                     href="{% url 'team-completed-module' %}">Completed Module</a></li>
                         </ul>
                     </li>
+
+
+
                     {#----------------------------------------   for team member   --------------------------------#}
                 {% elif is_team_member or is_team_leader %}
 
-                    <li class="{% if '/team/list' in request.path %} active {% endif %}">
-                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>My Team</span></a>
+                    <li class="{% if request.resolver_match.view_name == 'dashboard' %} active {% endif %}">
+                        <a href="{% url 'dashboard' %}"><i
+                                class="icon-home"></i><span>Dashboard</span></a>
+                    </li>
+
+                    <li class="{% if '/team/my-team-members/' in request.path %} active {% endif %}">
+                        <a href="#Team" class="has-arrow"><i class="fas fa-sitemap"></i> <span style="margin-left: 13px">My Team</span></a>
                         <ul>
+                            <li class="{% if active == 'active' %} active {% endif %}"><a
+                                    href="{% url 'my-team-members' %}">Team Members</a></li>
                             <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
                                     href="{% url 'team-list' %}">Team Members</a></li>
                             {#                        <li class="{% if '/team/add' in request.path %} active {% endif %}"><a#}
@@ -145,8 +176,8 @@
                     </li>
 
                     <li class="{% if '/member/task' in request.path %} active {% endif %}">
-                        <a href="{% url 'member-all-task' %}" class="has-arrow"><i class="icon-map"></i>
-                            <span>Task</span></a>
+                        <a href="{% url 'member-all-task' %}" class="has-arrow"><i class="fas fa-tasks"></i>
+                            <span style="margin-left: 13px">Task</span></a>
                         <ul>
                             <li class="{% if '/task/all' in request.path %} active {% endif %}"><a
                                     href="{% url 'member-all-task' %}">All Task</a></li>
@@ -167,32 +198,22 @@
                     {#----------------------------------------   for tester   --------------------------------#}
                 {% elif is_tester %}
 
-                    <li class="{% if '/team/list' in request.path %} active {% endif %}">
-                        <a href="#Team" class="has-arrow"><i class="icon-map"></i> <span>My Team</span></a>
-                        <ul>
-                            <li class="{% if '/team/list' in request.path %} active {% endif %}"><a
-                                    href="{% url 'team-list' %}">Team Members</a></li>
-                            {#                        <li class="{% if '/team/add' in request.path %} active {% endif %}"><a#}
-                            {#                                href="{% url 'team-add' %}">Team Add</a></li>#}
-                        </ul>
+                    <li class="{% if request.resolver_match.view_name == 'dashboard' %} active {% endif %}">
+                        <a href="{% url 'dashboard' %}"><i
+                                class="icon-home"></i><span>Dashboard</span></a>
                     </li>
 
                     <li class="{% if '/tester/task' in request.path %} active {% endif %}">
-                        <a href="{% url 'tester-all-task' %}" class="has-arrow"><i class="icon-map"></i>
-                            <span>Task</span></a>
+                        <a href="{% url 'tester-all-task' %}" class="has-arrow"><i class="fas fa-tasks"></i>
+                            <span style="margin-left: 13px">Task</span></a>
                         <ul>
                             <li class="{% if '/task/all' in request.path %} active {% endif %}"><a
                                     href="{% url 'tester-all-task' %}">All Task</a></li>
                             <li class="{% if '/task/running' in request.path %} active {% endif %}"><a
                                     href="{% url 'tester-running-task' %}">Running Task</a></li>
-                            <li class="{% if '/task/test-passed' in request.path %} active {% endif %}"><a
-                                    href="{% url 'member-test-passed-task' %}">Test Passed Task</a></li>
-                            <li class="{% if '/task/submitted' in request.path %} active {% endif %}"><a
-                                    href="{% url 'member-submitted-task' %}">Submitted to QA Task</a></li>
                             <li class="{% if '/task/completed' in request.path %} active {% endif %}"><a
                                     href="{% url 'tester-completed-task' %}">Verified Task</a></li>
-                            <li class="{% if '/task/need-modification' in request.path %} active {% endif %}"><a
-                                    href="{% url 'member-need-modification-task' %}">Need Modification Task</a></li>
+
                         </ul>
                     </li>
 
