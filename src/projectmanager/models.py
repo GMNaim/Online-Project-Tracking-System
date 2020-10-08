@@ -40,6 +40,7 @@ class Project(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=255)
     description = models.TextField()
+    assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.SET_DEFAULT, default=16)  # 16=Not Assigned dep..
     status = models.IntegerField(choices=PROJECT_STATUS, default=1)

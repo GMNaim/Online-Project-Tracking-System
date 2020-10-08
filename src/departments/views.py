@@ -191,7 +191,7 @@ def department_project_details(request, project_code):
     module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
     print(module_list.count())
     #  If there is at least one module created then project status will be change to running.
-    if module_list.count() > 0:
+    if selected_project.status != 4 and module_list.count() > 0:
         selected_project.status = 3  # if any module then status will be 3 means running
         selected_project.save()
 

@@ -1,26 +1,6 @@
 {% load static %}
 <style>
-    /* width */
-    ::-webkit-scrollbar {
-        width: 12px;
-    }
 
-    /* Track */
-    ::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 10px #6b6b6b;
-        border-radius: 10px;
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-        background: #31a4e2;
-        border-radius: 10px;
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-        background: #25a1b3;
-    }
 </style>
 
 <nav class="navbar navbar-fixed-top">
@@ -104,7 +84,8 @@
 
 
                                     {% if user_notification_count %}
-                                        <li class="header"><strong>You have {{ user_notification_count }} new Notification{{ user_notification_count|pluralize }}</strong></li>
+                                        <li class="header"><strong>You have {{ user_notification_count }} new
+                                            Notification{{ user_notification_count|pluralize }}</strong></li>
                                     {% else %}
                                         <li class="header"><strong>You don't have any new Notifications</strong>
                                         </li>
@@ -114,43 +95,45 @@
 
 
                                     {% if user_notification_item is not None %}
-{#                                        {% for item in user_notification_item %}#}
-{#                                            <li>#}
-{#                                                <a href="#}
-{#                                                        {% if is_department_head %}#}
-{#                                                            {% url 'department-project-details' item.code %}#}
-{#                                                        {% elif is_team_leader %}#}
-{#                                                            {% url 'team-module-details' item.id %}#}
-{#                                                        {% elif is_team_member %}#}
-{#                                                            {% url 'member-task-details' item.id %}#}
-{#                                                        {% elif is_tester %}#}
-{#                                                            {% url 'tester-task-details' item.id %}#}
-{#                                                        {% endif %} ">#}
-{#                                                    <div class="media">#}
-{#                                                        <div class="media-left">#}
-{#                                                            <i class="fa fa-tasks text-warning"></i>#}
-{#                                                        </div>#}
-{#                                                        <div class="media-body">#}
-{#                                                            <p class="text">New Task ::#}
-{#                                                                <strong>{{ item.name }}</strong></p>#}
-{#                                                            {% if is_department_head %}#}
-{#                                                                <span class="timestamp">Delivery Date: {{ item.delivery_date }}</span>#}
-{#                                                            {% else %}#}
-{#                                                                <span class="timestamp">Submission Date: {{ item.submission_date }}</span>#}
-{#                                                            {% endif %}#}
-{##}
-{#                                                        </div>#}
-{#                                                    </div>#}
-{#                                                </a>#}
-{#                                            </li>#}
-{##}
-{#                                        {% endfor %}#}
+                                        {#                                        {% for item in user_notification_item %}#}
+                                        {#                                            <li>#}
+                                        {#                                                <a href="#}
+                                        {#                                                        {% if is_department_head %}#}
+                                        {#                                                            {% url 'department-project-details' item.code %}#}
+                                        {#                                                        {% elif is_team_leader %}#}
+                                        {#                                                            {% url 'team-module-details' item.id %}#}
+                                        {#                                                        {% elif is_team_member %}#}
+                                        {#                                                            {% url 'member-task-details' item.id %}#}
+                                        {#                                                        {% elif is_tester %}#}
+                                        {#                                                            {% url 'tester-task-details' item.id %}#}
+                                        {#                                                        {% endif %} ">#}
+                                        {#                                                    <div class="media">#}
+                                        {#                                                        <div class="media-left">#}
+                                        {#                                                            <i class="fa fa-tasks text-warning"></i>#}
+                                        {#                                                        </div>#}
+                                        {#                                                        <div class="media-body">#}
+                                        {#                                                            <p class="text">New Task ::#}
+                                        {#                                                                <strong>{{ item.name }}</strong></p>#}
+                                        {#                                                            {% if is_department_head %}#}
+                                        {#                                                                <span class="timestamp">Delivery Date: {{ item.delivery_date }}</span>#}
+                                        {#                                                            {% else %}#}
+                                        {#                                                                <span class="timestamp">Submission Date: {{ item.submission_date }}</span>#}
+                                        {#                                                            {% endif %}#}
+                                        {##}
+                                        {#                                                        </div>#}
+                                        {#                                                    </div>#}
+                                        {#                                                </a>#}
+                                        {#                                            </li>#}
+                                        {##}
+                                        {#                                        {% endfor %}#}
 
 
                                         {% for item in user_notification_item %}
                                             <li>
                                                 <a style="color:#d4d4d4;" href="
-                                                        {% if is_department_head %}
+                                                        {% if is_super_user_or_pm %}
+                                                            {% url 'project-list' %}
+                                                        {% elif is_department_head %}
                                                             {% url 'department-project-details' item.project.code %}
 
                                                         {% elif is_team_leader %}
@@ -165,38 +148,53 @@
                                                             <i class="fa fa-tasks text-warning"></i>
                                                         </div>
                                                         <div class="media-body" style="color:#d4d4d4;">
-                                                        {% if is_department_head %}
-                                                            <p class="text">{{ item.status }} ::
-                                                                <strong>{{ item.project.name }}</strong></p>
-{#                                                        {% elif is_team_leader %}#}
-{#                                                            <p class="text">{{ item.status }} ::#}
-{#                                                                <strong>{{ item.module.name }}</strong></p>#}
-                                                        {% elif is_team_leader and item.task.status == 7 %}
+                                                            {% if is_super_user_or_pm %}
                                                                 <p class="text">{{ item.status }} ::
-                                                                <strong>{{ item.task.name }}</strong></p>
-                                                        {% elif is_team_leader %}
+                                                                    <strong>{{ item.project.name }}</strong></p>
+                                                            {% elif is_department_head and item.module.status == 4 %}
                                                                 <p class="text">{{ item.status }} ::
-                                                                <strong>{{ item.module.name }}</strong></p>
-                                                        {% elif is_team_member %}
-                                                            <p class="text">{{ item.status }} ::
-                                                                <strong>{{ item.task.name }}</strong></p>
-                                                        {% elif is_tester %}
-                                                             <p class="text" >{{ item.status }} ::
-                                                                <strong>{{ item.submitted_task.task.name }}</strong></p>
-                                                        {% endif %}
-
-                                                            {% if is_department_head %}
-                                                                <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
+                                                                    <strong>{{ item.module.name }}</strong></p>
+                                                            {% elif is_department_head %}
+                                                                <p class="text">{{ item.status }} ::
+                                                                    <strong>{{ item.project.name }}</strong></p>
+                                                                {#                                                        {% elif is_team_leader %}#}
+                                                                {#                                                            <p class="text">{{ item.status }} ::#}
+                                                                {#                                                                <strong>{{ item.module.name }}</strong></p>#}
                                                             {% elif is_team_leader and item.task.status == 7 %}
-                                                              {#    if the user is leader and the task is completed then .....    #}
-                                                             <span style="color:#d4d4d4;" class="timestamp">Completed at: {{ item.task.completed_at }}</span>
-                                                           {% elif is_team_leader %}
-                                                             <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
+                                                                <p class="text">{{ item.status }} ::
+                                                                    <strong>{{ item.task.name }}</strong></p>
+                                                            {% elif is_team_leader %}
+                                                                <p class="text">{{ item.status }} ::
+                                                                    <strong>{{ item.module.name }}</strong></p>
                                                             {% elif is_team_member %}
-                                                                 <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
+                                                                <p class="text">{{ item.status }} ::
+                                                                    <strong>{{ item.task.name }}</strong></p>
                                                             {% elif is_tester %}
-{#                                                                for now giving task submission date as didn't create any sub. date for tester. #}
-                                                                    <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
+                                                                <p class="text">{{ item.status }} ::
+                                                                    <strong>{{ item.submitted_task.task.name }}</strong>
+                                                                </p>
+                                                            {% endif %}
+                                                            {% if is_super_user_or_pm %}
+                                                                <span style="color:#d4d4d4;" class="timestamp">Completed at: {{ item.project.completed_at }}</span>
+                                                            {% elif is_department_head and item.module.status == 4 %}
+                                                                {#  <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>#}
+                                                                <span style="color:#d4d4d4;" class="timestamp">Completed at: {{ item.module.completed_at }}</span>
+                                                            {% elif is_department_head %}
+                                                                <span style="color:#d4d4d4;"
+                                                                      class="timestamp">{{ item.created_at }}</span>
+                                                            {% elif is_team_leader and item.task.status == 7 %}
+                                                                {#    if the user is leader and the task is completed then .....    #}
+                                                                <span style="color:#d4d4d4;" class="timestamp">Completed at: {{ item.task.completed_at }}</span>
+                                                            {% elif is_team_leader %}
+                                                                <span style="color:#d4d4d4;"
+                                                                      class="timestamp">{{ item.created_at }}</span>
+                                                            {% elif is_team_member %}
+                                                                <span style="color:#d4d4d4;"
+                                                                      class="timestamp">{{ item.created_at }}</span>
+                                                            {% elif is_tester %}
+                                                                {#                                                                for now giving task submission date as didn't create any sub. date for tester. #}
+                                                                <span style="color:#d4d4d4;"
+                                                                      class="timestamp">{{ item.created_at }}</span>
                                                             {% endif %}
 
                                                         </div>
@@ -207,14 +205,16 @@
                                         {% endfor %}
 
                                         <li class="footer"><a href="
-                                                            {% if is_department_head %}
+                                                            {% if is_super_user_or_pm %}
+                                                            {% url 'project-list' %}
+                                                            {% elif is_department_head %}
                                                             {% url 'department-all-project' %}
                                                             {% elif is_team_leader %}
                                                             {% url 'team-all-module' %}
                                                             {% elif is_team_member %}
-                                                            {% url 'member-all-task'%}
+                                                            {% url 'member-all-task' %}
                                                             {% elif is_tester %}
-                                                            {% url 'tester-all-task'%}
+                                                            {% url 'tester-all-task' %}
                                                             {% endif %}" class="more">See all
                                             notifications</a></li>
                                     {% endif %}
@@ -248,8 +248,8 @@
                                     {#                                    {% endif %}#}
 
 
-{#                                                                        <li class="footer"><a href="javascript:void(0);" class="more">See all#}
-{#                                                                            notifications</a></li>#}
+                                    {#                                                                        <li class="footer"><a href="javascript:void(0);" class="more">See all#}
+                                    {#                                                                            notifications</a></li>#}
                                 </ul>
                             </li>
                             <li class="dropdown">

@@ -14,9 +14,9 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'client', 'department', 'status', 'department_head_notified', 'assigned_at')
+    list_display = ('id', 'name', 'client', 'assigned_by', 'department', 'status', 'department_head_notified', 'assigned_at')
     list_display_links = ('id', 'name')
-    list_editable = ('status', 'assigned_at', 'department_head_notified',)
+    list_editable = ('status', 'assigned_at', 'department_head_notified', 'assigned_by',)
 
     ordering = ('id',)
     search_fields = ('name', 'client', 'department', 'code')

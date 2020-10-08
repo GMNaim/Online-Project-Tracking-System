@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.decorators import has_access
 from accounts.models import User
-from projectmanager.models import Task, SubmittedToQATask, user_directory_path, TaskHistory
+from projectmanager.models import Task, SubmittedToQATask, user_directory_path, TaskHistory, Module
 
 # Role Names
 
@@ -108,17 +108,17 @@ def member_task_details(request, task_id):
                     selected_task.is_send_to_leader = True
                     selected_task.save()
 
-                    """ Setting notification count number as task is send to team leader """
+                    """ Setting notification count number as completed task is send to team leader """
                     # getting the team leader
                     task_send_to_team_leader = User.objects.get(team_member=module_of_the_task.assigned_team,
                                                                 role__name__exact=role_team_leader)
                     print(task_send_to_team_leader)
-                    # setting the notification count number as project is assigned to team leader
+                    # setting the notification count number as task is completed
                     task_send_to_team_leader.notification_count += 1
                     task_send_to_team_leader.save()
                     # print(task_send_to_team_leader.id, 'ddddddddddddddddd')
 
-                    # create new task history object
+                    # create new task history object as task is completed
                     task_history = TaskHistory()
                     task_history.task = selected_task
                     task_history.module = module_of_the_task
@@ -130,7 +130,7 @@ def member_task_details(request, task_id):
 
 
 
-                    """ =============Checking whether Module completed ============="""
+                    """ =============Checking whether the Module is completed ============="""
                     task_list = Task.objects.filter(module=module_of_the_task)
                     all_task = task_list.count()
                     task_complete_counter = 0
@@ -146,13 +146,78 @@ def member_task_details(request, task_id):
                         module_of_the_task.is_completed = True
                         module_of_the_task.completed_at = datetime.now()
                         module_of_the_task.save()
+
+                        """ Setting notification for head as the module is completed. """
+                        # getting the head
+                        head_of_the_dep = User.objects.get(department=request.user.department, role__name__iexact=role_department_head)
+                        print('head_of_the_dep: ', head_of_the_dep)
+                        # setting the notification count number as task is completed
+                        head_of_the_dep.notification_count += 1
+                        head_of_the_dep.save()
+
+                        # create new task history object as module is completed
+                        task_history = TaskHistory()
+                        task_history.module = module_of_the_task
+                        task_history.project = module_of_the_task.project
+                        task_history.description = (model_to_dict(module_of_the_task))
+                        task_history.status = 'Module Completed'
+                        task_history.user = head_of_the_dep
+                        task_history.save()
+
                     else:
                         module_of_the_task.is_completed = False
                         module_of_the_task.status = 3
                         module_of_the_task.completed_at = None
                         module_of_the_task.save()
-                    print('---------\.', module_of_the_task.name, module_of_the_task.get_status_display())
+                    print('---------.///', module_of_the_task.name, module_of_the_task.get_status_display())
 
+
+                    """ =============Checking whether the Project is completed ============="""
+                    project_of_the_modules = module_of_the_task.project  # getting the project of the tasks/modules
+                    print(project_of_the_modules)
+                    list_of_modules_of_a_project = Module.objects.filter(project=project_of_the_modules)  # all module of the project
+                    total_modules_of_a_project = list_of_modules_of_a_project.count()
+                    print(total_modules_of_a_project)
+                    module_complete_counter = 0
+
+                    for module in list_of_modules_of_a_project:
+                        print(module.get_status_display())
+                        if module.status == 4:
+                            module_complete_counter += 1  # if module is completed then increment then compare it with total task.
+
+                    if total_modules_of_a_project == module_complete_counter:
+                        project_of_the_modules.status = 4
+                        print(project_of_the_modules.get_status_display(), 'showing status after setting 4')
+                        # project_of_the_modules.is_completed = True
+                        project_of_the_modules.completed_at = datetime.now()
+                        project_of_the_modules.save()
+
+
+                        """ Setting notification for pm as the module is completed. """
+                        # getting the project manager
+                        all_pm = User.objects.filter(role__name__iexact=role_pm)
+                        pm = project_of_the_modules.assigned_by
+                        print('All pm are: : ', pm, all_pm)
+                        task_history = TaskHistory()
+                        for p_m in all_pm:
+                            # setting the notification count number as task is completed
+                            p_m.notification_count += 1
+                            p_m.save()
+                            # create new task history object as module is completed
+                            task_history.project = project_of_the_modules
+                            task_history.description = (model_to_dict(project_of_the_modules))
+                            task_history.status = 'Project Completed'
+                            task_history.user = p_m
+                            task_history.save()
+
+                    else:
+                        # project_of_the_modules.is_completed = False
+                        project_of_the_modules.status = 3
+                        print(project_of_the_modules.get_status_display(), 'showing status in else...')
+                        project_of_the_modules.completed_at = None
+                        project_of_the_modules.save()
+
+                    print('---------.///', module_of_the_task.name, module_of_the_task.get_status_display())
 
 
 
@@ -270,6 +335,7 @@ def submit_task_to_tester(request, task_id):
                 task_history = TaskHistory()
                 # task_history.task = get_task
                 task_history.submitted_task = submitted_task
+                task_history.task = get_task
                 task_history.description = (model_to_dict(get_task))
                 task_history.status = 'New Task'
                 task_history.user = get_tester
