@@ -82,9 +82,9 @@
                         <select {% if selected_task.status > 2 %}disabled{% endif %} id="single-selection-project_assign" name="task_status"
                                 class="multiselect multiselect-custom"
                                 data-parsley-errors-container="#error-singleselect-project_status">
-                            <option value="" selected>Select a status</option>
-                            <option value="1"  >Not Assigned</option>
-                            <option value="2"{% if selected_task.status == 2 %} selected{% endif %}>Assigned</option>
+                            <option disabled value="" selected>Select a status</option>
+                            <option {% if selected_task.status > 2 %}disabled {% endif %} value="1"  >Not Assigned</option>
+                            <option {% if selected_task.status > 2 %}disabled {% endif %} value="2"{% if selected_task.status == 2 %} selected{% endif %}>Assigned</option>
                             <option value="3" disabled {% if selected_task.status == 3 %} selected {% endif %}>Running</option>
                             <option value="4" disabled {% if selected_task.status == 4 %} selected {% endif %}>Submitted to Tester</option>
                             <option value="5" disabled {% if selected_task.status == 5 %} selected {% endif %}>Need Modification

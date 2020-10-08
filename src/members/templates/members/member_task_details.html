@@ -117,7 +117,7 @@
             {% elif selected_task.status == 6 %}
                 <a href="{% url 'member-task-details' selected_task.id %}?status=7">
                     <button type="button" class="btn btn-success"><i
-                            class="fa fa-paper-plane-o"></i><span> Submit Task to Team Leader</span></button>
+                            class="fas fa-paper-plane"></i><span> Submit Task to Team Leader</span></button>
                 </a>
             {% elif selected_task.status == 4 %}
                 <span class="bg-dark badge badge-warning font-weight-bolder font-14"> You have submit this task to tester.</span>

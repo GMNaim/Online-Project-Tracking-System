@@ -19,7 +19,7 @@ urlpatterns = [
     path('task/submitted/', views.member_submitted_tasks, name="member-submitted-task"),
     path('task/submit_to_tester/<int:task_id>', views.submit_task_to_tester, name="submit-task"),
     path('task/need-modification/', views.member_need_modification_tasks, name="member-need-modification-task"),
-    path('task/send-leader/<int:task_id>', views.member_task_send_to_leader, name="member-task-send-leader"),
+    # path('task/send-leader/<int:task_id>', views.member_task_send_to_leader, name="member-task-send-leader"),
 
     # """ --------------      TESTER        ========================"""
     path('tester/task/all/', views.tester_all_task, name="tester-all-task"),

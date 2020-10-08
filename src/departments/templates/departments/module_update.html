@@ -9,7 +9,7 @@
     <div class="card open_task">
         <div class="header text-center">
             <h3>Update Module :: "{{ selected_module.name }}"</h3>
-                <h5>Project :: "{{ selected_project.name }}"</h5>
+            <h5>Project :: "{{ selected_project.name }}"</h5>
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -29,7 +29,8 @@
             </ul>
         </div>
         <div class="body">
-            <form id="basic-form" method="POST" action="{% url 'module-update' selected_project.code selected_module.id %}" novalidate=""
+            <form id="basic-form" method="POST"
+                  action="{% url 'module-update' selected_project.code selected_module.id %}" novalidate=""
                   style="padding: 0 167px;">
                 {% csrf_token %}
                 <div class="form-group">
@@ -47,7 +48,7 @@
                             <option value="">Select a Team</option>
                             {% for team in team_in_department %}
                                 <option value="{{ team.id }}" {% if selected_module.assigned_team.id == team.id %}
-                                        selected {% endif %}>{{ team.name }}</option>
+                                        selected {% endif %}>{{ team.name }} :: {{ team.get_team_leader }}</option>
                             {% endfor %}
                         </select>
                         <p id="error-singleselect"></p>
@@ -76,14 +77,16 @@
 
 
                 <div class=" form-group w-100">
-                    <label for="single-selection-project_assign">Assign to Department Head</label>
+                    <label for="single-selection-project_assign">Select Module Status</label>
                     <div class="multiselect_div">
-                        <select {% if selected_module.status > 2 %} disabled {% endif %}id="single-selection-project_assign" name="module_status"
-                                class="multiselect multiselect-custom"
-                                data-parsley-errors-container="#error-singleselect-project_status">
-                            <option value="" selected>Select a status</option>
-                            <option value="1">Not Assigned</option>
-                            <option value="2" >Assigned</option>
+                        <select {% if selected_module.status > 2 %}disabled {% endif %} id="single-selection-project_assign" name="module_status"
+                            class="multiselect multiselect-custom"
+{#                            data-parsley-required#}
+                                data-parsley-trigger-after-failure="change"
+                            data-parsley-errors-container="#error-singleselect-project_status">
+                            <option disabled value="" selected>Select a status</option>
+                            <option {% if selected_module.status > 2 %}disabled {% endif %}  value="1">Not Assigned</option>
+                            <option {% if selected_module.status > 2 %}disabled {% endif %}  value="2" {% if module_status == 2 %} selected {% endif %}> Assigned</option>
                             <option value="3" disabled {% if module_status == 3 %} selected {% endif %}>Running</option>
                             <option value="4" disabled {% if module_status == 4 %} selected {% endif %}>Completed
                             </option>

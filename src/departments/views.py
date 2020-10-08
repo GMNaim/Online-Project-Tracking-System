@@ -140,33 +140,32 @@ def department_delete(request, department_name):
         return render(request, 'departments/department_list.html', context)
 
 
-
 """=======================================   DEPARTMENT HEAD PART    ============================================="""
 
 
 @login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_all_project(request):
-    assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id, status__gte=2).order_by('-assigned_at')
+    assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id,
+                                                            status__gte=2).order_by('-assigned_at')
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
     current_user = User.objects.get(id=request.user.id)
     current_user.notification_count = 0
     current_user.save()
     """ LIST OF NOTIFICATION ITEMS """
-    user_notification_item = Project.objects.filter(department_id=request.user.department.id,
-                                                       status=2).order_by('-assigned_at', 'status')
-    if current_user.notification_count == 0:  # if notification count zero then notification items none.
-        user_notification_item = None
+    # user_notification_item = Project.objects.filter(department_id=request.user.department.id,
+    #                                                    status=2).order_by('-assigned_at', 'status')
+    # if current_user.notification_count == 0:  # if notification count zero then notification items none.
+    #     user_notification_item = None
 
-    context = {'assigned_projects_list_to_head': assigned_projects_list_to_head,
-               'user_notification_item': user_notification_item }
+    context = {'assigned_projects_list_to_head': assigned_projects_list_to_head}
     return render(request, 'departments/department_all_project.html', context)
 
 
 @login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_running_project(request):
-    dep_running_project = Project.objects.filter(status=3)
+    dep_running_project = Project.objects.filter(department=request.user.department, status=3)
 
     context = {'dep_running_project': dep_running_project, }
     return render(request, 'departments/department_running_project.html', context)
@@ -175,7 +174,7 @@ def department_running_project(request):
 @login_required(login_url='login')
 @has_access(allowed_roles=[role_department_head])
 def department_completed_project(request):
-    dep_completed_project = Project.objects.filter(status=4)
+    dep_completed_project = Project.objects.filter(department=request.user.department, status=4)
     print(dep_completed_project, '-----------------------77777777')
 
     context = {'dep_completed_project': dep_completed_project, }
@@ -202,14 +201,13 @@ def department_project_details(request, project_code):
     current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
-    user_notification_item = Project.objects.filter(department_id=request.user.department.id,
-                                                    status=2).order_by('-assigned_at', 'status')
-    if current_user.notification_count == 0:  # if notification count zero then notification items none.
-        user_notification_item = None
+    # user_notification_item = Project.objects.filter(department_id=request.user.department.id,
+    #                                                 status=2).order_by('-assigned_at', 'status')
+    # if current_user.notification_count == 0:  # if notification count zero then notification items none.
+    #     user_notification_item = None
 
     context = {'selected_project': selected_project,
-               'module_list': module_list,
-               'user_notification_item': user_notification_item}
+               'module_list': module_list}
     return render(request, 'departments/department_project_details.html', context)
 
 
@@ -327,18 +325,18 @@ def module_update(request, project_code, module_id):
             selected_team = request.POST['select_team']
             description = request.POST['description']
             submission_date = request.POST['submission_date']
-            module_status = request.POST['module_status']
-            print('Post data: = ', name, selected_team, description, submission_date, module_status)
-            print(Module.objects.filter(name__iexact=name),
-                  Module.objects.filter(name__iexact=name).exclude(name__iexact=selected_module.name), '000')
+            module_status = request.POST.get('module_status', '')
+            # print('Post data: = ', name, selected_team, description, submission_date, module_status)
+            # print(Module.objects.filter(name__iexact=name),
+            #       Module.objects.filter(name__iexact=name).exclude(name__iexact=selected_module.name), '000')
 
             date_obj = datetime.strptime(submission_date, '%Y-%m-%d')  # converting string date to date obj
             submission_date_obj = date_obj.date()  # datetime obj to save in model
-            print('Date:', submission_date_obj)
+            # print('Date:', submission_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = submission_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
+            # print(check_old_date)
             context = {'team_in_department': team_in_dep,
                        'name': name,
                        'description': description,
@@ -391,113 +389,121 @@ def module_update(request, project_code, module_id):
                     # if module_status != '':  # '' means not selecting any status
                     #     selected_module.status = int(module_status)  # setting the module
 
-
                     """ Setting notification as module is assigned to a team leader """
                     # getting the team leader
                     module_previously_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                                                                   role__name__exact=role_team_leader)
+                                                                              role__name__exact=role_team_leader)
 
+                    """ If module is assigned already to a team and then only change the team then notification count"""
 
-
-                    """ If module is assigned already to a team and then change the team then notification count"""
-
-                    if selected_team_obj != selected_module.assigned_team and selected_module.status == 2:
-                        module_previously_assigned_team_leader.notification_count += 1   # increase previous head notification count to tell that project is removed from him
+                    if (module_status == '' or int(
+                            module_status) == 1) and selected_team_obj != selected_module.assigned_team and selected_module.status == 2:
+                        print('1')
+                        # if selected_team_obj != selected_module.assigned_team and selected_module.status == 2:
+                        module_previously_assigned_team_leader.notification_count += 1  # increase previous leader notification count to tell that module is removed from him
                         module_previously_assigned_team_leader.save()
                         # create new task history object with module removed from previous team leader
                         task_history = TaskHistory()
                         task_history.module = selected_module
                         task_history.description = (model_to_dict(selected_module))
+                        task_history.user = module_previously_assigned_team_leader
                         task_history.status = 'Module Removed'
                         task_history.save()
-                        # if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
-                        #     module_assigned_team_leader.notification_count = 0  # then make it 0
-                        #     module_assigned_team_leader.save()
 
-
-                        if module_status == '':
+                        if module_status == '' or int(module_status) == 1:
                             selected_module.status = 1  # then change the status of the project to new
                             selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
                             selected_module.save()
 
                         # if only change team with empty status
                         # if module_status == '' and selected_module.assigned_team != selected_team_obj:
-                            
 
-                    """If project is assigned already to a dep and then change the dep and 
-                       change the status to assigned at same time """
-                    if module_status != '':
-                        if selected_team_obj != selected_module.assigned_team and int(module_status) == 2:
-                            print('enter into same time change')
-                            module_previously_assigned_team_leader.notification_count -= 1  # decrease previous member notification c
-                            print(module_previously_assigned_team_leader.notification_count, module_previously_assigned_team_leader)
+                        """If module is assigned already to a leader and then change both the leader and 
+                       status to assigned at same time"""
+                    elif module_status != '' and selected_team_obj != selected_module.assigned_team and int(
+                            module_status) == 2:
+                        print('2')
+                        # if selected_team_obj != selected_module.assigned_team and int(module_status) == 2:
+                        # print('enter into same time change')
+                        if selected_module in Module.objects.filter(assigned_team=selected_module.assigned_team, status=2):
+                            module_previously_assigned_team_leader.notification_count += 1  # increase previous leader notification count to tell that module is removed from him
                             module_previously_assigned_team_leader.save()
 
-                            if module_previously_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
-                                module_previously_assigned_team_leader.notification_count = 0  # then make it 0
-                                module_previously_assigned_team_leader.save()
-
-                            selected_module.assigned_team = module_previously_assigned_team_leader
-                            selected_project.save()
-                            new_leader_with_assigned_module_same_time = selected_module.assigned_team.team_member.get(
-                                role__name__iexact=role_team_leader)
-                            new_leader_with_assigned_module_same_time.notification_count += 1
-                            new_leader_with_assigned_module_same_time.save()
-                            selected_module.status = 2
-                            selected_module.assigned_at = datetime.now()
-                            selected_module.team_leader_notified = False
-                            selected_module.save()
-                            # create new task history object
-                            # task_history = TaskHistory()
-                            # task_history.module = selected_module
-                            # task_history.description = (model_to_dict(selected_module))
-                            # task_history.status = 'New Module'
-                            # task_history.save()
-
-                            # print(selected_project.status, selected_project.assigned_member,
-                            #       selected_project.assigned_member.notification_count)
-
-
-                    if module_status != '':  # means if any status is not selected
-                        if selected_module.status != 2 and int(module_status) == 2:  # if status is assigned
-                            # if selected project previous status not 2 means not assigned and user select 2 then...
-                            # print('here selected module.status is not 2 and user select 2 so count++')
-                            module_previously_assigned_team_leader.notification_count += 1  # Then increase the notification count
-                            module_previously_assigned_team_leader.save()
-                            selected_module.assigned_at = datetime.now()  # setting the assigned date
-                            selected_module.team_leader_notified = False
-                            selected_module.save()
-                            # create new task history object  for see the notification and history of tasks..
                             task_history = TaskHistory()
                             task_history.module = selected_module
                             task_history.description = (model_to_dict(selected_module))
-                            task_history.status = 'New Module'
-                            task_history.save()
-                            print('module history created.======')
-                            print(selected_module.status, 'selected module status....', module_status)
-
-                        elif selected_module.status == 2 and int(module_status) == 1:  # if status is new or not assigned
-                            # if module previous status is 2 and user select 1 then only do --
-                            print('here selected module.status is 2 and user select 1 so  count--')
-                            module_previously_assigned_team_leader.notification_count += 1  # then decrease the notification count
-                            module_previously_assigned_team_leader.save()
-                            selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
-                            selected_module.save()
-                            # create new task history object
-                            task_history = TaskHistory()
-                            task_history.module = selected_module
-                            task_history.description = (model_to_dict(selected_module))
+                            task_history.user = module_previously_assigned_team_leader  # this module is removed from this user
                             task_history.status = 'Module Removed'
+                            task_history.save()
 
+                        # adding the module to the new leader
+                        selected_module.assigned_team = selected_team_obj
+                        selected_module.save()
+                        # print('updated team of the module is ::', selected_module.assigned_team, selected_module.assigned_team.get_team_leader())
+                        new_leader_with_assigned_module_same_time = selected_module.assigned_team.team_member_user.get(
+                            role__name__iexact=role_team_leader)
+                        # print(new_leader_with_assigned_module_same_time, 'leader after team change with assign status')
+                        new_leader_with_assigned_module_same_time.notification_count += 1
+                        new_leader_with_assigned_module_same_time.save()
+                        selected_module.status = 2
+                        selected_module.assigned_at = datetime.now()
+                        selected_module.team_leader_notified = False
+                        selected_module.save()
 
-                            # if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
-                            #     module_assigned_team_leader.notification_count = 0  # then make it 0
-                            #     module_assigned_team_leader.save()
-                    # setting status here because of notification count. if set up then got wrong notifica. count value
+                        task_history = TaskHistory()
+                        task_history.module = selected_module
+                        task_history.description = (model_to_dict(selected_module))
+                        task_history.user = new_leader_with_assigned_module_same_time  # this module is added to this user
+                        task_history.status = 'New Module'
+                        task_history.save()
+
+                        """ Assign module  to leader in edit mode then notification count..."""
+                    elif module_status != '' and selected_module.status != 2 and int(module_status) == 2:  # if status is assigned
+                        print('3')
+                        # if selected project previous status not 2 means not assigned and user select 2 then...
+                        # print('here selected module.status is not 2 and user select 2 so count++')
+                        module_previously_assigned_team_leader.notification_count += 1  # Previously means at the time of creation of the module, the leadr who is selected.
+                        module_previously_assigned_team_leader.save()
+                        selected_module.assigned_at = datetime.now()  # setting the assigned date
+                        selected_module.team_leader_notified = False
+                        selected_module.save()
+                        # create new task history object  for see the notification and history of tasks..
+                        task_history = TaskHistory()
+                        task_history.module = selected_module
+                        task_history.description = (model_to_dict(selected_module))
+                        task_history.user = module_previously_assigned_team_leader
+                        task_history.status = 'New Module'
+                        task_history.save()
+                        print('module history created.====== module assigned to ',
+                              module_previously_assigned_team_leader)
+                        print(selected_module.status, 'selected module status....', module_status)
+
+                        """ if module is already assigned then just changing the status of module."""
+                    elif (module_status == '' or int(module_status) == 1) and selected_module.status == 2:  # if status is new or not assigned
+                        print('4')
+                        # if module previous status is 2 and user select 1 then only do --
+                        print('here selected module.status is 2 and user select 1 so  count--')
+                        module_previously_assigned_team_leader.notification_count += 1  # increase previous leader notification count to tell that module is removed from him
+                        module_previously_assigned_team_leader.save()
+                        selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
+                        selected_module.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.module = selected_module
+                        task_history.description = (model_to_dict(selected_module))
+                        task_history.user = module_previously_assigned_team_leader
+                        task_history.status = 'Module Removed'
+                        task_history.save()
+
+                        # if module_assigned_team_leader.notification_count < 0:  # if notification count is < than 0
+                        #     module_assigned_team_leader.notification_count = 0  # then make it 0
+                        #     module_assigned_team_leader.save()
+                    # setting status here because of notification count. if set up then got wrong notification. count value
                     # setting status here because of notification count.
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if module_status != '':  # '' means not selecting any status
+                        print('5')
                         selected_module.status = int(module_status)  # setting the module
                     selected_module.assigned_team = selected_team_obj
                     selected_module.save()  # saving module
@@ -508,6 +514,7 @@ def module_update(request, project_code, module_id):
                     print("Error in module update: ", e)
                     messages.error(request, e)
                     return render(request, 'departments/module_update.html', context)
+
 
         return render(request, 'departments/module_update.html', context)
 
@@ -549,7 +556,6 @@ def module_assign(request, project_code, module_id):
     it will change the status of the module new to assigned
     """
     if request.user.is_authenticated:
-        modules = Module.objects.all()
 
         selected_project = get_object_or_404(Project, code=project_code)
         selected_module = get_object_or_404(Module, id=module_id)
@@ -561,24 +567,30 @@ def module_assign(request, project_code, module_id):
             selected_module.team_leader_notified = False
             selected_module.save()
 
+            # getting the team leader
+            module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
+                                                           role__name__exact=role_team_leader)
+
             # create new task history object  for see the notification and history of tasks..
             task_history = TaskHistory()
             task_history.module = selected_module
             task_history.description = (model_to_dict(selected_module))
             task_history.status = 'New Module'
+            task_history.user = module_assigned_team_leader
             task_history.save()
-            print('module history created.======')
+            print('module history created.====== module assigned to ', module_assigned_team_leader)
 
             """ Setting notification count number as module is assigned to a team leader """
-            # getting the team leader
-            module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                                                           role__name__exact=role_team_leader)
-            print(module_assigned_team_leader)
+            # # getting the team leader
+            # module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
+            #                                                role__name__exact=role_team_leader)
+            # print(module_assigned_team_leader)
             # setting the notification count number as project is assigned to team leader
             module_assigned_team_leader.notification_count += 1
             module_assigned_team_leader.save()
 
-            messages.success(request, f"{selected_module.name} is assigned to the {selected_module.assigned_team.name}.")
+            messages.success(request,
+                             f"{selected_module.name} is assigned to the {selected_module.assigned_team.name}.")
             return redirect('department-project-details', project_code=selected_project.code)
         except Exception as e:
             print('module assign error ====', e)

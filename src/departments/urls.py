@@ -14,7 +14,7 @@ urlpatterns = [
     path('project/running', views.department_running_project, name="department-running-project"),
 
     path('project/<str:project_code>/module/add/', views.module_create, name='module-create'),
-    path('project/<str:project_code>/module/update/<int:module_id>/', views.module_update,
+    path('project/<str:project_code>/module/update/<int:module_id>', views.module_update,
          name='module-update'),
     path('project/<str:project_code>/module/delete/<int:module_id>/', views.module_delete,
          name='module-delete'),

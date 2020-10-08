@@ -187,6 +187,7 @@ class TaskHistory(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, null=True, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)
     submitted_task = models.ForeignKey(SubmittedToQATask, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     status = models.CharField(max_length=255, default='')
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True, editable=False)

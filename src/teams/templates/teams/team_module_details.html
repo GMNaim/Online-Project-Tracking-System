@@ -217,23 +217,24 @@
                             <tr style="background-color: white;">
                                 <td class="td-padding">{{ forloop.counter }}</td>
                                 <td class="td-padding">
-                                    {{ task.name|slice:":20" }}{% if task.name|length > 20 %}...{% endif %}</td>
+                                    {{ task.name|slice:":22" }}{% if task.name|length > 22 %}...{% endif %}</td>
                                 <td class="td-padding">{{ task.assigned_member }}</td>
                                 <td class="td-padding"><span style="font-weight: bolder"
-                                                             class="badge {% if task.status == 1 %}
+                                                             class="badge text-white
+                                                             {% if task.status == 1 %}
                                                                  badge-default bg-secondary
                                                              {% elif task.status == 2 %}
-                                                                 badge-info
+                                                                 badge-info bg-info
                                                              {% elif task.status == 3 %}
-                                                                 badge-primary
+                                                                 badge-primary bg-primary
                                                              {% elif task.status == 4 %}
-                                                                 badge-warning
+                                                                 badge-warning bg-warning
                                                              {% elif task.status == 5 %}
-                                                                 badge-danger
+                                                                 badge-danger bg-danger
                                                              {% elif task.status == 6 %}
-                                                                 badge-secondary
+                                                                 badge-success bg-success
                                                              {% elif task.status == 7 %}
-                                                                 badge-success
+                                                                 badge-success bg-success
                                                              {% endif %}">{{ task.get_status_display }}</span>
                                 </td>
                                 <td class="td-padding">

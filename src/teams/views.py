@@ -2,7 +2,6 @@
 
 
 # Create your views here.
-import json
 from datetime import datetime
 
 from django.contrib import messages
@@ -13,8 +12,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.decorators import has_access
 from accounts.models import User, Role
-from projectmanager.models import Module, Task, TaskHistory
 from departments.models import Department
+from projectmanager.models import Module, Task, TaskHistory
 from teams.models import Team
 
 # Role Names
@@ -94,7 +93,7 @@ def team_add(request):
     if request.user.is_authenticated:
         # requested users department
         department = Department.objects.get(name__iexact=request.user.department.name)
-        free_employee_in_department = User.objects.filter(department=department).exclude(
+        free_employee_in_department = User.objects.filter(department=department, is_tester=False).exclude(
             role__name__exact=role_department_head).filter(team_member_id=10)
         # for free_employee in free_employee_in_department:
         #     print(free_employee.username)
@@ -390,19 +389,10 @@ def team_delete(request, team_name):
 def team_member_list(request):
     if request.user.is_authenticated:
         members = User.objects.filter(team_member=request.user.team_member)
-        context={'members': members, 'active': 'active'}
+        context = {'members': members, 'active': 'active'}
         for mem in members:
             print(mem.username, mem.team_member.name, 'task no', mem.task_set.count())
         return render(request, 'teams/team_member_list.html', context)
-
-
-
-
-
-
-
-
-
 
 
 """ ==============================================  TASK WORK  =============================================="""
@@ -416,7 +406,6 @@ def team_all_module(request):
     # print(user_notification_item, ' = user_notification_item')
     assigned_modules_list_to_leader = Module.objects.filter(assigned_team=request.user.team_member,
                                                             status__gte=2).order_by('-assigned_at', 'status')
-    print(assigned_modules_list_to_leader, '--------------', assigned_modules_list_to_leader[0].status)
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
     current_user = User.objects.get(id=request.user.id)
@@ -424,14 +413,13 @@ def team_all_module(request):
     current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
-    user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
-         '-assigned_at', 'status')
-    print('user_notification_item: -- ', user_notification_item)
-    if current_user.notification_count == 0:
-        user_notification_item = None
+    # user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
+    #      '-assigned_at', 'status')
+    # print('user_notification_item: -- ', user_notification_item)
+    # if current_user.notification_count == 0:
+    #     user_notification_item = None
 
-    context = {'assigned_modules_list_to_leader': assigned_modules_list_to_leader,
-               'user_notification_item': user_notification_item}
+    context = {'assigned_modules_list_to_leader': assigned_modules_list_to_leader}
     return render(request, 'teams/team_all_module.html', context)
 
 
@@ -473,11 +461,11 @@ def team_module_details(request, module_id):
         current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
-        user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
-            '-assigned_at', 'status')
-        print('user_notification_item: -- ', user_notification_item)
-        if current_user.notification_count == 0:
-            user_notification_item = None
+        # user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
+        #     '-assigned_at', 'status')
+        # print('user_notification_item: -- ', user_notification_item)
+        # if current_user.notification_count == 0:
+        #     user_notification_item = None
 
         #  If there is at least one task created then module status will be change to running.
         if selected_module.status != 4 and task_list.count() > 0:
@@ -506,13 +494,8 @@ def team_module_details(request, module_id):
         #     selected_module.completed_at = None
         #     selected_module.save()
 
-
-
-
-
         context = {'selected_module': selected_module,
-                   'task_list': task_list,
-                   'user_notification_item': user_notification_item}
+                   'task_list': task_list}
         return render(request, 'teams/team_module_details.html', context)
 
 
@@ -676,8 +659,11 @@ def task_update(request, module_id, task_id):
             else:
                 try:
                     #  Updating task data
-                    selected_member_obj = User.objects.get(id=int(selected_member))  # getting the team member obj.
-                    print('selected member for task ==', selected_member_obj)
+                    newly_selected_member_obj = User.objects.get(
+                        id=int(selected_member))  # getting the team member obj.
+                    # print('selected member for task ==', newly_selected_member_obj)
+                    previously_assigned_member = selected_task.assigned_member
+
                     # creating a new task
                     selected_task.name = name
                     selected_task.description = description
@@ -687,90 +673,110 @@ def task_update(request, module_id, task_id):
 
                     """ Setting notification as task is assigned to a team member """
 
-                    """ If task is assigned already to a member and then change the member then notification count"""
-                    if selected_member_obj != selected_task.assigned_member and selected_task.status == 2:
-                        selected_task.assigned_member.notification_count += 1  # decrease previous member notification c
-                        selected_task.assigned_member.save()
+
+                    """ If task is assigned already to a member and then just change the member
+                     then notification count"""
+                    if (task_status == '' or int(
+                            task_status) == 1) and newly_selected_member_obj != previously_assigned_member and selected_task.status == 2:
+                        print('1')
+                        previously_assigned_member.notification_count += 1  # increase previous member notification count to tell that task is removed from
+                        previously_assigned_member.save()
                         # create new task history object
                         task_history = TaskHistory()
                         task_history.task = selected_task
                         task_history.description = (model_to_dict(selected_task))
                         task_history.status = 'Task Removed'
+                        task_history.user = previously_assigned_member
                         task_history.save()
-                        # if selected_member_obj.notification_count < 0:  # if notification count is < than 0
-                        #     selected_member_obj.notification_count = 0  # then make it 0
-                        #     selected_member_obj.save()
 
-
-                        if task_status == '':
+                        if task_status == '' or int(task_status) == 1:
                             selected_task.status = 1  # then change the status of the
                             selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
                             selected_task.save()
 
-                    print(task_status, '-------------')
-                    """If task is assigned already to a member and then change the member and 
-                       change the status to assigned at same time """
-                    # if selected_member_obj != selected_task.assigned_member and task_status == 2:
-                    #     selected_task.assigned_member.notification_count -= 1  # decrease previous member notification c
-                    #     print(selected_task.assigned_member.notification_count, selected_task.assigned_member)
-                    #     selected_task.assigned_member.save()
-                    #     selected_task.assigned_member = selected_member_obj
-                    #     print(selected_task.assigned_member, 'after assign new member, without save')
-                    #     selected_task.save()
-                    #     print(selected_task.assigned_member, 'after assign new member, with save')
-                    #     selected_task.assigned_member.notification_count += 1
-                    #     selected_task.assigned_member.save()
-                    #     print(selected_task.assigned_member.notification_count, '648, after assign new member, with save')
-                    #     selected_task.status = 2
-                    #     selected_task.assigned_at = datetime.now()
-                    #     selected_task.save()
-                    #     print(selected_task.status, selected_task.assigned_member, selected_task.assigned_member.notification_count)
 
-                    # getting the team member
+                        """If task is assigned already to a member and then change both the member and 
+                       status to assigned-status at the same time """
+                    elif task_status != '' and newly_selected_member_obj != previously_assigned_member and int(
+                            task_status) == 2:
+                        print('2 is printing')
+                        # if newly_selected_member_obj != previously_assigned_member and int(task_status) == 2:
+                        # print('enter into same time change')
 
-                    # module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
-                    #                                                role__name__exact=role_team_leader)
-                    # print('module_assigned_team_leader=== ', module_assigned_team_leader,
-                    #                     #       selected_module.assigned_team.name)
-                    print(selected_task.status, 'selected selected_task status....', task_status)
-                    if task_status != '':  # means if any status is not selected
-                        if selected_task.status != 2 and int(task_status) == 2:  # if status is assigned
-                            # if selected project previous status not 2 means not assigned and user select 2 then...
-                            # print('here selected module.status is not 2 and user select 2 so count++')
-                            selected_member_obj.notification_count += 1  # Then increase the notification count
-                            selected_member_obj.save()
-                            selected_task.assigned_at = datetime.now()  # setting the assigned date
-                            selected_task.save()
-                            # create new task history object
-                            task_history = TaskHistory()
-                            task_history.task = selected_task
-                            task_history.description = (model_to_dict(selected_task))
-                            task_history.status = 'New Task'
-                            task_history.save()
-                            print('previously selected task status.', selected_task.status, 'task status:', task_status)
-                        elif selected_task.status == 2 and int(task_status) == 1:  # if status is new or not assigned
-                            # if module previous status is 2 and user select 1 then only do --
-                            print('here selected selected_task.status is 2 and user select 1 so  count--')
-                            selected_member_obj.notification_count += 1  # then decrease the notification count
-                            selected_member_obj.save()
-                            selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
-                            selected_task.save()
-                            # create new task history object
+                        if selected_task in Task.objects.filter(assigned_member=selected_task.assigned_member, status=2):
+                            selected_task.assigned_member.notification_count += 1  # increase previous head notification count to tell that project is removed from
+                            previously_assigned_member.save()
+
                             task_history = TaskHistory()
                             task_history.task = selected_task
                             task_history.description = (model_to_dict(selected_task))
                             task_history.status = 'Task Removed'
+                            task_history.user = previously_assigned_member
                             task_history.save()
-                            # if selected_member_obj.notification_count < 0:  # if notification count is < than 0
-                            #     selected_member_obj.notification_count = 0  # then make it 0
-                            #     selected_member_obj.save()
+
+                        # adding the task to the new member
+                        selected_task.assigned_member = newly_selected_member_obj
+                        selected_task.save()
+
+                        newly_selected_member_obj.notification_count += 1
+                        newly_selected_member_obj.save()
+                        selected_task.status = 2
+                        selected_task.assigned_at = datetime.now()
+                        selected_task.team_member_notified = False
+                        selected_task.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.task = selected_task
+                        task_history.description = (model_to_dict(selected_task))
+                        task_history.status = 'New Task'
+                        task_history.user = newly_selected_member_obj
+                        task_history.save()
+
+                        # print(selected_task.status, 'selected selected_task status....', task_status)
+                        """ Assign task to member in edit mode then notification count..."""
+                    elif task_status != '' and selected_task.status != 2 and int(task_status) == 2:  # if status is assigned
+                        print('3')
+                        # if selected project previous status not 2 means not assigned and user select 2 then...
+                        # print('here selected module.status is not 2 and user select 2 so count++')
+                        newly_selected_member_obj.notification_count += 1  # Then increase the notification count
+                        newly_selected_member_obj.save()
+                        selected_task.assigned_at = datetime.now()  # setting the assigned date
+                        selected_task.team_member_notified = False
+                        selected_task.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.task = selected_task
+                        task_history.description = (model_to_dict(selected_task))
+                        task_history.status = 'New Task'
+                        task_history.user = newly_selected_member_obj
+                        task_history.save()
+                        # print('previously selected task status.', selected_task.status, 'task status:', task_status)
+
+                        """ just change the status of the task from assigned to new """
+                    elif (task_status == '' or int(task_status) == 1) and selected_task.status == 2:  # if status is new or not assigned
+                        print('4')
+                        # if module previous status is 2 and user select 1 then only do --
+                        # print('here selected selected_task.status is 2 and user select 1 so  count--')
+                        previously_assigned_member.notification_count += 1  # increase previous member notification count to tell that task is removed from him
+                        previously_assigned_member.save()
+                        selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
+                        selected_task.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.task = selected_task
+                        task_history.description = (model_to_dict(selected_task))
+                        task_history.status = 'Task Removed'
+                        task_history.user = previously_assigned_member
+                        task_history.save()
+
                     # setting status here because of notification count. if set up then got wrong notifica. count value
                     # setting status here because of notification count.
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if task_status != '':  # '' means not selecting any status
+                        print('5')
                         selected_task.status = int(task_status)  # setting the module
-                    selected_task.assigned_member = selected_member_obj
+                    selected_task.assigned_member = newly_selected_member_obj
                     selected_task.save()  # saving module
                     messages.success(request, f"Task '{name}' is updated successfully!")
                     return redirect('team-module-details', module_id=selected_module.id)
@@ -824,6 +830,10 @@ def task_assign(request, module_id, task_id):
         context = {'selected_task': selected_task,
                    'selected_module': selected_module}
         try:
+            """ Setting notification count number as task is assigned to a team member """
+            # getting the team member
+            task_assigned_team_member = selected_task.assigned_member
+
             selected_task.status = 2  # status == 2 means task is assigned
             selected_task.assigned_at = datetime.now()  # setting the assigned date
             selected_task.save()
@@ -832,12 +842,9 @@ def task_assign(request, module_id, task_id):
             task_history.task = selected_task
             task_history.description = (model_to_dict(selected_task))
             task_history.status = 'New Task'
+            task_history.user = task_assigned_team_member
             task_history.save()
 
-            """ Setting notification count number as task is assigned to a team member """
-            # getting the team leader
-            task_assigned_team_member = selected_task.assigned_member
-            print(task_assigned_team_member)
             # setting the notification count numger as task is assigned to team member
             task_assigned_team_member.notification_count += 1
             task_assigned_team_member.save()
@@ -852,5 +859,3 @@ def task_assign(request, module_id, task_id):
 
 
 """==============================================   QA TEAM TASK   ==============================================="""
-
-

@@ -14,14 +14,12 @@ from django.shortcuts import render, redirect
 
 from accounts.decorators import has_access
 from accounts.models import Role, User
-from projectmanager.models import Client, Project, TaskHistory
 from departments.models import Department
-
-# from teams.models import Membership
-
-
+from projectmanager.models import Client, Project, TaskHistory
 # Role Names
 from teams.models import Team
+
+# from teams.models import Membership
 
 role_super_user = 'Super User'
 role_pm = 'Project Manager'
@@ -816,7 +814,7 @@ def project_update(request, project_code):
             description = request.POST.get('description', '')
             delivery_date = request.POST.get('delivery_date', '')
             project_status = request.POST.get('project_status', '')
-            print(name, selected_client, selected_department, description, delivery_date, project_status, '===')
+            # print(name, selected_client, selected_department, description, delivery_date, project_status, '===')
 
             date_obj = datetime.strptime(delivery_date, '%Y-%m-%d')  # converting string date to date obj
             delivery_date_obj = date_obj.date()
@@ -868,14 +866,16 @@ def project_update(request, project_code):
                     #     selected_project.status = int(project_status)
                     # selected_project.save()
 
-                    """ Setting notification as project is assigned to a head """
+                    """ Setting notification as project is assigned or removed to or from a head """
                     # Getting the assigned dep head
                     previously_assigned_head = User.objects.get(department=selected_project.department,
                                                                 role__name__iexact=role_department_head)
 
-                    """ If project is assigned already to a dep and then change the dep then notification count"""
+                    """ If project is assigned already to a dep and then only change the dep then notification count"""
 
-                    if selected_department_obj != selected_project.department and selected_project.status == 2:
+                    if (project_status == '' or int(
+                            project_status) == 1) and selected_department_obj != selected_project.department and selected_project.status == 2:
+                        print('1')
                         previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from him
                         previously_assigned_head.save()
                         # create new task history object
@@ -883,83 +883,93 @@ def project_update(request, project_code):
                         task_history.project = selected_project
                         task_history.description = (model_to_dict(selected_project))
                         task_history.status = 'Project Removed'
+                        task_history.user = previously_assigned_head
                         task_history.save()
                         # if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
                         #     previously_assigned_head.notification_count = 0  # then make it 0
                         #     previously_assigned_head.save()
 
-
-                        if project_status == '':
+                        if project_status == '' or int(project_status) == 1:
                             selected_project.status = 1  # then change the status of the project to new
                             selected_project.assigned_at = None  # setting NOne as the status is new or not assigned
                             selected_project.save()
 
+                        """If project is assigned already to a dep and then change both the dep and 
+                       status to assigned at the same time """
+                    elif project_status != '' and selected_department_obj != selected_project.department and int(
+                            project_status) == 2:
+                        print('2')
+                        # print('enter into same time change')
+                        # print(selected_project in Project.objects.filter(department=selected_project.department, status=2), '----6565')
 
-                    """If project is assigned already to a dep and then change the dep and 
-                       change the status to assigned at same time """
-                    if project_status != '':
-                        if selected_department_obj != selected_project.department and int(project_status) == 2:
-                            print('enter into same time change')
-                            previously_assigned_head.notification_count -= 1  # decrease previous member notification c
-                            print(previously_assigned_head.notification_count, previously_assigned_head)
+                        if selected_project in Project.objects.filter(department=selected_project.department, status=2):
+                            previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from
                             previously_assigned_head.save()
 
-                            if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
-                                previously_assigned_head.notification_count = 0  # then make it 0
-                                previously_assigned_head.save()
-
-                            selected_project.department = selected_department_obj
-                            selected_project.save()
-                            new_dep_head_with_assigned_project_same_time = selected_project.department.employee_department.get(
-                                role__name__iexact=role_department_head)
-                            new_dep_head_with_assigned_project_same_time.notification_count += 1
-                            new_dep_head_with_assigned_project_same_time.save()
-                            selected_project.status = 2
-                            selected_project.assigned_at = datetime.now()
-                            selected_project.save()
-                            # create new task history object
-                            task_history = TaskHistory()
-                            task_history.project = selected_project
-                            task_history.description = (model_to_dict(selected_project))
-                            task_history.status = 'New Project'
-                            task_history.save()
-
-                            # print(selected_project.status, selected_project.assigned_member,
-                            #       selected_project.assigned_member.notification_count)
-
-                    print(previously_assigned_head, 'if change dep....')
-                    if project_status != '':  # means if any status is not selected
-                        if selected_project.status != 2 and int(project_status) == 2:
-                            # if selected project previous status not 2 means not assigned and user select 2 then...
-                            previously_assigned_head.notification_count += 1  # Then increase the notification count
-                            selected_project.assigned_at = datetime.now()  # after assigning the project setting date.
-                            selected_project.save()
-                            previously_assigned_head.save()
-                            # create new task history object
-                            task_history = TaskHistory()
-                            task_history.project = selected_project
-                            task_history.description = (model_to_dict(selected_project))
-                            task_history.status = 'New Project'
-                            task_history.save()
-                        elif selected_project.status == 2 and int(project_status) == 1:
-                            # if module previous status is 2 and user select 1 then only do --
-                            previously_assigned_head.notification_count += 1  # then decrease the notification count
-                            previously_assigned_head.save()
-                            selected_project.assigned_at = None  # setting NOne as the status is set new or not assigned
-                            selected_project.save()
-                            # create new task history object
                             task_history = TaskHistory()
                             task_history.project = selected_project
                             task_history.description = (model_to_dict(selected_project))
                             task_history.status = 'Project Removed'
+                            task_history.user = previously_assigned_head
                             task_history.save()
-                            # if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
-                            #     previously_assigned_head.notification_count = 0  # then n.c. is 0
-                            #     previously_assigned_head.save()
+
+                        # adding the module to the new leader
+                        selected_project.department = selected_department_obj
+                        selected_project.save()
+                        new_dep_head_with_assigned_project_same_time = selected_project.department.employee_department.get(
+                            role__name__iexact=role_department_head)
+                        new_dep_head_with_assigned_project_same_time.notification_count += 1
+                        new_dep_head_with_assigned_project_same_time.save()
+                        selected_project.status = 2
+                        selected_project.assigned_at = datetime.now()
+                        selected_project.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.project = selected_project
+                        task_history.description = (model_to_dict(selected_project))
+                        task_history.status = 'New Project'
+                        task_history.user = new_dep_head_with_assigned_project_same_time
+                        task_history.save()
+
+                        """ Assign project  to head in edit mode then notification count..."""
+                    elif project_status != '' and selected_project.status != 2 and int(project_status) == 2:
+                        print('3')
+                        # if selected project previous status not 2 means not assigned and user select 2 then...
+                        previously_assigned_head.notification_count += 1  # Then increase the notification count
+                        selected_project.assigned_at = datetime.now()  # after assigning the project setting date.
+                        selected_project.save()
+                        previously_assigned_head.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.project = selected_project
+                        task_history.description = (model_to_dict(selected_project))
+                        task_history.status = 'New Project'
+                        task_history.user = previously_assigned_head
+                        task_history.save()
+
+                        """ just change the status of the project from assigned to new"""
+                    elif (project_status == '' or int(project_status) == 1) and selected_project.status == 2:
+                        print('4')
+                        # if module previous status is 2 and user select 1 then only do --
+                        previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from
+                        previously_assigned_head.save()
+                        selected_project.assigned_at = None  # setting NOne as the status is set new or not assigned
+                        selected_project.save()
+                        # create new task history object
+                        task_history = TaskHistory()
+                        task_history.project = selected_project
+                        task_history.description = (model_to_dict(selected_project))
+                        task_history.status = 'Project Removed'
+                        task_history.user = previously_assigned_head
+                        task_history.save()
+                        # if previously_assigned_head.notification_count < 0:  # if notification count is < than 0
+                        #     previously_assigned_head.notification_count = 0  # then n.c. is 0
+                        #     previously_assigned_head.save()
                     # setting status, department here because of notification count.
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if project_status != '':  # '' means not select any status.
+                        print('5')
                         selected_project.status = int(project_status)
                     selected_project.department = selected_department_obj  # if change dep after assigned to a dep thats why setting here not top
                     selected_project.save()
@@ -1017,25 +1027,25 @@ def project_assign(request, project_code):
             selected_project.status = 2  # project is assigned
             selected_project.save()
 
+            # getting the head
+            assigned_head = User.objects.get(department=selected_project.department,
+                                             role__name__iexact=role_department_head)
             # create new task history object
             task_history = TaskHistory()
             task_history.project = selected_project
             task_history.description = (model_to_dict(selected_project))
             task_history.status = 'New Project'
+            task_history.user = assigned_head
             task_history.save()
 
-
             """ Setting notification as project is assigned to a head """
-            # dep = selected_project.department.name
-            assigned_head = User.objects.get(department=selected_project.department,
-                                             role__name__iexact=role_department_head)
             assigned_head.notification_count += 1
             assigned_head.save()
             selected_project.assigned_at = datetime.now()  # setting the assigned time
             selected_project.save()
             # print(assigned_head, '------------------------------------------*********************',
             #       assigned_head.notification_count)
-            messages.success(request, f"{selected_project.name} is assigned to the department head.")
+            messages.success(request, f"Project '{selected_project.name}' is assigned to the department head.")
             return redirect('project-list')
         except Exception as e:
             print('error at assign project ====', e)

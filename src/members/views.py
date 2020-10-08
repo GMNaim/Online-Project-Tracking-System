@@ -48,14 +48,13 @@ def member_all_task(request):
     current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
-    user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
-        '-assigned_at', 'status')
-    print('user_notification_item: -- ', user_notification_item)
-    if current_user.notification_count == 0:
-        user_notification_item = None
+    # user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
+    #     '-assigned_at', 'status')
+    # print('user_notification_item: -- ', user_notification_item)
+    # if current_user.notification_count == 0:
+    #     user_notification_item = None
 
-    context = {'assigned_tasks_list_to_member': assigned_tasks_list_to_member,
-               'user_notification_item': user_notification_item}
+    context = {'assigned_tasks_list_to_member': assigned_tasks_list_to_member,}
     return render(request, 'members/member_all_task.html', context)
 
 
@@ -75,11 +74,11 @@ def member_task_details(request, task_id):
         current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS """
-        user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
-            '-assigned_at', 'status')
-        print('user_notification_item: -- ', user_notification_item)
-        if current_user.notification_count == 0:
-            user_notification_item = None
+        # user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
+        #     '-assigned_at', 'status')
+        # print('user_notification_item: -- ', user_notification_item)
+        # if current_user.notification_count == 0:
+            # user_notification_item = None
 
         #  If member see details of the task then team_member_notified will be true and module's status will be 3
         if selected_task.status != 7:
@@ -96,7 +95,6 @@ def member_task_details(request, task_id):
         all_submitted_task_to_tester = SubmittedToQATask.objects.filter(task=selected_task, status__gt=2).order_by(
             '-created_at')
         context = {'selected_task': selected_task,
-                   'user_notification_item': user_notification_item,
                    'all_submitted_task_to_tester': all_submitted_task_to_tester}
 
 
@@ -126,6 +124,7 @@ def member_task_details(request, task_id):
                     task_history.module = module_of_the_task
                     task_history.description = (model_to_dict(selected_task))
                     task_history.status = 'Task Completed'
+                    task_history.user = task_send_to_team_leader
                     task_history.save()
 
 
@@ -273,6 +272,7 @@ def submit_task_to_tester(request, task_id):
                 task_history.submitted_task = submitted_task
                 task_history.description = (model_to_dict(get_task))
                 task_history.status = 'New Task'
+                task_history.user = get_tester
                 task_history.save()
 
                 # Assign this task to the tester...
@@ -305,11 +305,11 @@ def member_need_modification_tasks(request):
         return render(request, 'members/member_need_modification_tasks.html', context)
 
 
-#
-@login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
-def member_task_send_to_leader(request, task_id):
-    if request.user.is_authenticated:
+# #
+# @login_required(login_url='login')
+# @has_access(allowed_roles=[role_team_member])
+# def member_task_send_to_leader(request, task_id):
+#     if request.user.is_authenticated:
         #         selected_task = get_object_or_404(Task, id=task_id)
         #         # module_of_the_task = selected_task.module  # getting the module of the task
         #         # current_user = User.objects.get(id=request.user.id)
@@ -340,7 +340,7 @@ def member_task_send_to_leader(request, task_id):
         #                 print('error at task send to leader...', e)
         #                 return render(request, 'members/member_task_details.html', context)
         #
-        return render(request, 'members/member_task_details.html')
+        # return render(request, 'members/member_task_details.html')
 
 
 #
@@ -364,14 +364,13 @@ def tester_all_task(request):
     current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
-    user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,
-                                                              status=1).order_by('-created_at', 'status', )
-    print('user_notification_item: -- ', user_notification_item)
-    if current_user.notification_count == 0:
-        user_notification_item = None
+    # user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,
+    #                                                           status=1).order_by('-created_at', 'status', )
 
-    context = {'tasks_list_of_tester': tasks_list_of_tester,
-               'user_notification_item': user_notification_item}
+    # if current_user.notification_count == 0:
+    #     user_notification_item = None
+
+    context = {'tasks_list_of_tester': tasks_list_of_tester}
     return render(request, 'members/tester_all_task.html', context)
 
 
@@ -395,11 +394,11 @@ def tester_task_details(request, task_id):
         current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS """
-        user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,
-                                                                  status=1).order_by('-created_at', 'status')
-        print('user_notification_item: -- ', user_notification_item)
-        if current_user.notification_count == 0:
-            user_notification_item = None
+        # user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,
+        #                                                           status=1).order_by('-created_at', 'status')
+        # print('user_notification_item: -- ', user_notification_item)
+        # if current_user.notification_count == 0:
+        #     user_notification_item = None
 
         #  If member see details of the task then team_member_notified will be true and module's status will be 3
         if selected_task.status != 4:
@@ -408,8 +407,7 @@ def tester_task_details(request, task_id):
                     selected_task.status = 2
                     selected_task.save()
 
-        context = {'selected_task': selected_task,
-                   'user_notification_item': user_notification_item}
+        context = {'selected_task': selected_task}
 
         if request.method == "POST":
             bug_suggestion = request.POST.get('bug_suggestion', '')
@@ -441,6 +439,7 @@ def tester_task_details(request, task_id):
                         task_history.task = actual_task
                         task_history.description = (model_to_dict(actual_task))
                         task_history.status = 'Need Modification'
+                        task_history.user = developer_of_actual_task
                         task_history.save()
                         # setting the notification count number as task is done and send to the developer again
                         developer_of_actual_task.notification_count += 1
@@ -471,7 +470,8 @@ def tester_task_details(request, task_id):
                     task_history = TaskHistory()
                     task_history.task = actual_task
                     task_history.description = (model_to_dict(actual_task))
-                    task_history.status = 'Worked Nice!'
+                    task_history.status = 'Worked Done'
+                    task_history.user = developer_of_actual_task
                     task_history.save()
                     # setting the notification count number as task is done and send to the developer again
                     developer_of_actual_task.notification_count += 1

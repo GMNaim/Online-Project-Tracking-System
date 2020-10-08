@@ -50,13 +50,13 @@ def dashboard(request):
 
 
         # task count of member
-        total_task_of_member = Task.objects.filter(assigned_member=request.user).count()
+        total_task_of_member = Task.objects.filter(assigned_member=request.user, status__gte=2).count()
         completed_task_of_member = Task.objects.filter(assigned_member=request.user, status=7).count()
         # Task count of tester
         total_task_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user).count()
         running_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user, status=2).count()
         completed_tasks_count_of_tester = SubmittedToQATask.objects.filter(assigned_member=request.user,
-                                                                           status=4).count()
+                                                                           status__in=[3, 4]).count()
 
         # """ DEPARTMENT INFO """
         # total_team_in_department = Team.objects.filter(department__name__iexact=request.user.department.name).count()

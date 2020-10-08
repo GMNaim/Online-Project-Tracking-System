@@ -74,7 +74,7 @@
                                     {% endif %}
                                 </a>
                                 <ul class="dropdown-menu animated bounceIn notifications"
-                                    style="{% if user_notification_count %}height:400px; overflow-y: scroll {% endif %}">
+                                    style="max-height: 400px; overflow-y: scroll;">
                                     {#                                    {% if is_department_head %}#}
                                     {#                                        {% if user_notification_count %}#}
                                     {#                                            <li class="header"><strong>You have {{ user_notification_count }} new#}
@@ -107,6 +107,8 @@
                                         <li class="header"><strong>You have {{ user_notification_count }} new Notification{{ user_notification_count|pluralize }}</strong></li>
                                     {% else %}
                                         <li class="header"><strong>You don't have any new Notifications</strong>
+                                        </li>
+                                        <li class="header p-0"><strong>Earlier: </strong>
                                         </li>
                                     {% endif %}
 
@@ -184,17 +186,17 @@
                                                         {% endif %}
 
                                                             {% if is_department_head %}
-                                                                <span style="color:#d4d4d4;" class="timestamp">Assigned at: {{ item.project.assigned_at }}</span>
+                                                                <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
                                                             {% elif is_team_leader and item.task.status == 7 %}
                                                               {#    if the user is leader and the task is completed then .....    #}
                                                              <span style="color:#d4d4d4;" class="timestamp">Completed at: {{ item.task.completed_at }}</span>
                                                            {% elif is_team_leader %}
-                                                             <span style="color:#d4d4d4;" class="timestamp">Assigned at: {{ item.module.assigned_at }}</span>
+                                                             <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
                                                             {% elif is_team_member %}
-                                                                 <span style="color:#d4d4d4;" class="timestamp">Assigned at: {{ item.task.assigned_at }}</span>
+                                                                 <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
                                                             {% elif is_tester %}
 {#                                                                for now giving task submission date as didn't create any sub. date for tester. #}
-                                                                    <span style="color:#d4d4d4;" class="timestamp">Assigned at: {{ item.submitted_task.task.submitted_to_tester_at }}</span>
+                                                                    <span style="color:#d4d4d4;" class="timestamp">{{ item.created_at }}</span>
                                                             {% endif %}
 
                                                         </div>
