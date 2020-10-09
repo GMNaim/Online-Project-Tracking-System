@@ -50,6 +50,7 @@ class Project(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     assigned_at = models.DateTimeField(default=None, null=True, blank=True)
     completed_at = models.DateTimeField(default=None, null=True, blank=True)
+    progress = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -87,6 +88,7 @@ class Module(models.Model):
     assigned_at = models.DateTimeField(default=None, null=True, blank=True)
     completed_at = models.DateTimeField(default=None, null=True, blank=True)
     is_completed = models.BooleanField(default=False)
+    progress = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -128,6 +130,33 @@ class Task(models.Model):
     submitted_to_tester_at = models.DateTimeField(default=None, null=True, blank=True)
     completed_at = models.DateTimeField(default=None, null=True, blank=True)
     is_send_to_leader = models.BooleanField(default=False)
+    progress = models.IntegerField(default=0)
+
+    def get_task_progress(self):
+        if self.status == 1:
+            self.progress = 0
+            self.save()
+        elif self.status == 2:
+            self.progress = 10
+            self.save()
+        elif self.status == 3:
+            self.progress = 50
+            self.save()
+        elif self.status == 4:
+            self.progress = 80
+            self.save()
+        elif self.status == 5:
+            self.progress = 70
+            self.save()
+        elif self.status == 6:
+            self.progress = 95
+            self.save()
+        elif self.status == 7:
+            self.progress = 100
+            self.save()
+        return self.progress
+
+
     def __str__(self):
         return self.name
 

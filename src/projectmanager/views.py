@@ -988,6 +988,12 @@ def project_update(request, project_code):
 @has_access(allowed_roles=[role_pm, role_super_user])
 def project_list(request):
     projects = Project.objects.all().order_by('-created_at')
+
+    """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
+    current_user = User.objects.get(id=request.user.id)
+    current_user.notification_count = 0
+    current_user.save()
+
     context = {'projects': projects}
     return render(request, 'projectmanager/project_list.html', context)
 

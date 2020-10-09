@@ -69,13 +69,13 @@
                                 </td>
                                 <td class="td-padding">
                                     <div class="progress progress-xs">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: 0%; "></div>
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ task.get_task_progress }}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ task.get_task_progress }}%; "></div>
                                     </div>
-                                    <small>Completion: 0%</small>
+                                    <small>Completion: {{ task.get_task_progress }}%</small>
                                 </td>
                                 <td>{{ task.submitted_to_tester_at }}</td>
-                                <td {% if task.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ task.submission_date|date }} <br>
+                                <td {% if task.get_day_left_to_submit < 2 %} style="color: red;" {% endif %}>{{ task.submission_date|date }} <br>
                                     {{ task.get_day_left_to_submit }} days left</td>
                                 <td class="actions">
                                     {#                                    <a {% if project.status == 2 %}{% else %}href="{% url 'project-assign' project.code %}"{% endif %}>#}

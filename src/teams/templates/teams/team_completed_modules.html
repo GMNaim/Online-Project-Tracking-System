@@ -64,10 +64,10 @@
                                 </td>
                                 <td class="td-padding">
                                     <div class="progress progress-xs">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: 0%; "></div>
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ module.progress }}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ module.progress }}%; "></div>
                                     </div>
-                                    <small>Completion: 0%</small>
+                                    <small>Completion: {{ module.progress }}%</small>
                                 </td>
 
                                 <td class="td-padding" {% if module.get_day_left_to_submit < 15 %} style="color: red;" {% endif %}>{{ module.submission_date }}<br/>{{ module.get_day_left_to_submit}} days left</td>

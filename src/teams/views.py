@@ -468,31 +468,60 @@ def team_module_details(request, module_id):
         #     user_notification_item = None
 
         #  If there is at least one task created then module status will be change to running.
-        if selected_module.status != 4 and task_list.count() > 0:
-            selected_module.status = 3  # if any task then status will be 3 means running
+        # if selected_module.status != 4 and task_list.count() > 0:
+        #     selected_module.status = 3  # if any task then status will be 3 means running
+        #     selected_module.save()
+
+        """ Changing the status and progress of the module"""
+        if task_list.count() > 0:
+            selected_module.status = 3  # if any module then status will be 3 means running
             selected_module.save()
 
-        #
-        # """ ============= Module completed ============="""
-        # all_task = task_list.count()
-        # task_complete_counter = 0
-        # print(task_list, type(task_list), all_task)
-        #
-        # for task in task_list:
-        #     print(task.get_status_display())
-        #     if task.status == 7:
-        #         task_complete_counter += 1  # if task is completed then increment then compare it with total task.
-        #
-        # if all_task == task_complete_counter:
-        #     selected_module.status = 4
-        #     selected_module.is_completed = True
-        #     selected_module.completed_at = datetime.now()
-        #     selected_module.save()
-        # else:
-        #     selected_module.is_completed = False
-        #     selected_module.status = 3
-        #     selected_module.completed_at = None
-        #     selected_module.save()
+            #  if all module's status is 4 then project is completed... below code is for that
+            all_task_of_module = Task.objects.filter(module=selected_module)
+            print(all_task_of_module)
+            task_complete_counter = 0
+            for task in all_task_of_module:
+                print(task.status, 'in for....')
+                if task.status == 7:
+                    task_complete_counter += 1
+
+            selected_module.progress = int((task_complete_counter / all_task_of_module.count()) * 100)   # progress of the module...
+            selected_module.save()
+            print(selected_module.progress, '% == progress of the module....')
+
+            if all_task_of_module.count() == task_complete_counter:
+                selected_module.status = 4
+                selected_module.save()
+
+        """ Changing the status and progress of the project """
+        project_of_the_module = selected_module.project
+        all_module_of_project = Module.objects.filter(project=project_of_the_module)
+
+        if all_module_of_project.count() > 0:
+            project_of_the_module.status = 3  # if any module then status will be 3 means running
+            project_of_the_module.save()
+
+            #  if all module's status is 4 then project is completed... below code is for that
+
+            print(all_module_of_project)
+            module_complete_count = 0
+            for module in all_module_of_project:
+                print(module.status, 'in for....')
+                if module.status == 4:
+                    module_complete_count += 1
+
+            project_of_the_module.progress = int((module_complete_count / all_module_of_project.count()) * 100)   # progress of the module...
+            project_of_the_module.save()
+            print(project_of_the_module.progress, '% == progress of the project....')
+
+            if all_module_of_project.count() == module_complete_count:
+                project_of_the_module.status = 4
+                project_of_the_module.save()
+
+
+
+
 
         context = {'selected_module': selected_module,
                    'task_list': task_list}

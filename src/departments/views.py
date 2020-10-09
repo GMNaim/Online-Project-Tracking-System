@@ -191,9 +191,26 @@ def department_project_details(request, project_code):
     module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
     print(module_list.count())
     #  If there is at least one module created then project status will be change to running.
-    if selected_project.status != 4 and module_list.count() > 0:
+    # if selected_project.status != 4 and module_list.count() > 0:
+    if module_list.count() > 0:
         selected_project.status = 3  # if any module then status will be 3 means running
         selected_project.save()
+        # selected_project.save()
+        #  if all module's status is 4 then project is completed... below code is for that
+        print(module_list)
+        module_complete_count = 0
+        for module in module_list:
+            print(module.status, 'in for....')
+            if module.status == 4:
+                module_complete_count += 1
+
+        selected_project.progress = int((module_complete_count / module_list.count()) * 100)   # progress of the module...
+        selected_project.save()
+        print(selected_project.progress, '% == progress of the project....')
+
+        if module_list.count() == module_complete_count:
+            selected_project.status = 4
+            selected_project.save()
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
     current_user = User.objects.get(id=request.user.id)

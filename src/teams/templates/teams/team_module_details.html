@@ -47,6 +47,24 @@
                                                                  badge-success
                                                              {% endif %}">{{ selected_module.get_status_display }}</span>
                                         </li>
+
+                                        <li>
+                                            <div style="display: flex; align-items: center; width: 100%; justify-content: space-between">
+                                                <div>
+                                                    <i class="fas fa-spinner m-r-10"></i>
+                                                    Module Progress:
+                                                </div>
+                                                <div style="display: flex; justify-content: end; width: 33%">
+                                                    <div class="progress w-100" style="border-radius: 20px;">
+                                                        <div class="progress-bar progress-bar-success progress-bar-striped text-center"
+                                                             style="width: {{ selected_module.progress }}%">
+                                                            <span class="text-center {% if selected_module.progress == 0 %}text-dark{% endif %}">{{selected_module.progress}} %</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
                                         <li><i class="fa fa-calendar-alt m-r-5"></i> Module Assigned Date: <span
                                                 class="badge-primary badge">{{ selected_module.assigned_at|default_if_none:'' }}</span>
                                         </li>
@@ -79,7 +97,7 @@
                                 <div class="body col-lg-12 col-md-12">
                                     <ul class=" list-unstyled basic-list font-15">
                                         <li style="text-align: left" class="align-left">
-                                            <span>{{ selected_module.description|linebreaks }}</span>
+                                            <span style="width: 100%">{{ selected_module.description|linebreaks }}</span>
                                         </li>
 
                                         </li>
@@ -112,6 +130,25 @@
                                                                  badge-success bg-success
                                                              {% endif %}">{{ selected_module.project.get_status_display }}</span>
                                         </li>
+                                        <li>
+                                            <div style="display: flex; align-items: center; width: 100%; justify-content: space-between">
+                                                <div>
+                                                    <i class="fas fa-spinner m-r-10"></i>
+                                                    Project Progress:
+                                                </div>
+                                                <div style="display: flex; justify-content: end; width: 33%">
+                                                    <div class="progress w-100" style="border-radius: 20px;">
+                                                        <div class="progress-bar progress-bar-success progress-bar-striped text-center"
+                                                             style="width: {{ selected_module.project.progress }}%">
+                                                            <span class="text-center {% if selected_module.project.progress == 0 %}text-dark{% endif %}">{{selected_module.project.progress}}%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+
+
 {#                                        <li><i class="fa fa-calendar-alt m-r-5"></i> Project Assigned Date: <span#}
 {#                                                class="badge-primary badge">{{ selected_module.project.assigned_at|default_if_none:'' }}</span>#}
 {#                                        </li>#}
@@ -142,7 +179,7 @@
                                 <div class="body col-lg-12 col-md-12">
                                     <ul class=" list-unstyled basic-list font-15">
                                         <li style="text-align: left" class="align-left">
-                                            <span>{{ selected_module.project.description|linebreaks }}</span>
+                                            <span style="width: 100%">{{ selected_module.project.description|linebreaks }}</span>
                                         </li>
 
                                         </li>
@@ -154,16 +191,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -239,10 +266,10 @@
                                 </td>
                                 <td class="td-padding">
                                     <div class="progress progress-xs">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100" style="width: 0%; "></div>
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ task.get_task_progress }}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ task.get_task_progress }}%; "></div>
                                     </div>
-                                    <small>Completion: 0%</small>
+                                    <small>Completion: {{ task.get_task_progress }}%</small>
                                 </td>
                                 <td class="td-padding">{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td class="td-padding">{{ task.submission_date|date }}</td>

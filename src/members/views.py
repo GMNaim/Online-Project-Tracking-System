@@ -141,11 +141,17 @@ def member_task_details(request, task_id):
                         if task.status == 7:
                             task_complete_counter += 1  # if task is completed then increment then compare it with total task.
 
+                    module_of_the_task.progress = (task_complete_counter / all_task) * 100   # progress of the module...
+                    module_of_the_task.save()
+                    print(module_of_the_task.progress, '% == progress of the module....')
+
                     if all_task == task_complete_counter:
                         module_of_the_task.status = 4
                         module_of_the_task.is_completed = True
                         module_of_the_task.completed_at = datetime.now()
                         module_of_the_task.save()
+
+
 
                         """ Setting notification for head as the module is completed. """
                         # getting the head
@@ -198,12 +204,13 @@ def member_task_details(request, task_id):
                         all_pm = User.objects.filter(role__name__iexact=role_pm)
                         pm = project_of_the_modules.assigned_by
                         print('All pm are: : ', pm, all_pm)
-                        task_history = TaskHistory()
+
                         for p_m in all_pm:
                             # setting the notification count number as task is completed
                             p_m.notification_count += 1
                             p_m.save()
                             # create new task history object as module is completed
+                            task_history = TaskHistory()
                             task_history.project = project_of_the_modules
                             task_history.description = (model_to_dict(project_of_the_modules))
                             task_history.status = 'Project Completed'

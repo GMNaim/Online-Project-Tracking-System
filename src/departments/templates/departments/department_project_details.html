@@ -46,6 +46,24 @@
                                                                  badge-success bg-success
                                                              {% endif %}">{{ selected_project.get_status_display }}</span>
                                         </li>
+                                        <li>
+                                            <div style="display: flex; align-items: center; width: 100%; justify-content: space-between">
+                                                <div>
+                                                    <i class="fas fa-spinner m-r-10"></i>
+                                                    Project Progress:
+                                                </div>
+                                                <div style="display: flex; justify-content: end; width: 33%">
+                                                    <div class="progress w-100" style="border-radius: 20px;">
+
+                                                        <div class="progress-bar progress-bar-success progress-bar-striped text-center"
+                                                             style="width: {{ selected_project.progress }}%">
+                                                            <span class="text-center {% if selected_project.progress == 0 %}text-dark{% endif %}">{{selected_project.progress}}%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
                                         <li><i class="fa fa-calendar-alt m-r-5"></i> Project Assigned Date: <span
                                                 class="badge-primary badge">{{ selected_project.assigned_at|default_if_none:'' }}</span>
                                         </li>
@@ -155,11 +173,11 @@
                                 </td>
                                 <td class="td-padding">
                                     <div class="progress progress-xs">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="30"
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ module.progress }}"
                                              aria-valuemin="0"
-                                             aria-valuemax="100" style="width: 30%; "></div>
+                                             aria-valuemax="100" style="width: {{ module.progress }}%; "></div>
                                     </div>
-                                    <small>Completion: 0%</small>
+                                    <small>Completion: {{ module.progress }}%</small>
                                 </td>
                                 <td class="td-padding">{{ module.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td class="td-padding">{{ module.submission_date|date }}</td>

@@ -1,9 +1,7 @@
 from django.db.models import Q
 
 from accounts.models import User
-from projectmanager.models import TaskHistory
-
-
+from projectmanager.models import TaskHistory, Task
 
 role_super_user = 'Super User'
 role_pm = 'Project Manager'
@@ -25,6 +23,31 @@ def left_sidebar_content(request):
         is_employee = request.user.role.name == role_employee
         is_tester = request.user.role.name == role_tester
 
+        # if is_team_leader or is_team_member:
+        #     all_task = Task.objects.all()
+        #     for task in all_task:
+        #         if task.status == 1:
+        #             task.progress = 0
+        #             task.save()
+        #         elif task.status == 2:
+        #             task.progress = 10
+        #             task.save()
+        #         elif task.status == 3:
+        #             task.progress = 50
+        #             task.save()
+        #         elif task.status == 4:
+        #             task.progress = 80
+        #             task.save()
+        #         elif task.status == 5:
+        #             task.progress = 70
+        #             task.save()
+        #         elif task.status == 6:
+        #             task.progress = 95
+        #             task.save()
+        #         elif task.status == 7:
+        #             task.progress = 100
+        #             task.save()
+
         sidebar_department_name = None
         if request.user.department.id != 16:
             sidebar_department_name = request.user.department.name
@@ -41,18 +64,38 @@ def left_sidebar_content(request):
 
 def nav_bar_content(request):
     if request.user.is_authenticated:
-        if request.user.department.id != 16:
 
-            """ all user role"""
-            is_super_user_or_pm = request.user.role.name == role_pm or request.user.role.name == role_super_user
-            is_department_head = request.user.role.name == role_department_head
-            is_team_leader = request.user.role.name == role_team_leader
-            is_team_member = request.user.role.name == role_team_member
-            is_employee = request.user.role.name == role_employee
-            is_tester = request.user.role.name == role_tester
-            """ NOTIFICATIONS SETTING """
-            user_notification_count = User.objects.get(id=request.user.id).notification_count
-            user_notification_item = None  # default notification item None
+        """ all user role"""
+        is_super_user_or_pm = request.user.role.name == role_pm or request.user.role.name == role_super_user
+        is_department_head = request.user.role.name == role_department_head
+        is_team_leader = request.user.role.name == role_team_leader
+        is_team_member = request.user.role.name == role_team_member
+        is_employee = request.user.role.name == role_employee
+        is_tester = request.user.role.name == role_tester
+
+        """ NOTIFICATIONS SETTING """
+        user_notification_count = User.objects.get(id=request.user.id).notification_count
+        user_notification_item = None  # default notification item None
+
+        """PM NOTIFICATION ITEM"""
+        if is_super_user_or_pm:
+            """ LIST OF NOTIFICATION ITEMS """
+            user_notification_item = TaskHistory.objects.filter(user=request.user).order_by('-created_at')[:10]
+            print('user_notification_item: -- ', user_notification_item, 'user notification count',
+                  user_notification_count)
+            return {'user_notification_count': user_notification_count,
+                    'user_notification_item': user_notification_item,
+                    'is_super_user_or_pm': is_super_user_or_pm,
+                    'is_department_head': is_department_head,
+                    'is_team_leader': is_team_leader,
+                    'is_employee': is_employee,
+                    'is_team_member': is_team_member,
+                    'is_tester': is_tester}
+        if request.user.department.id != 16:
+            # """ NOTIFICATIONS SETTING """
+            # user_notification_count = User.objects.get(id=request.user.id).notification_count
+            # user_notification_item = None  # default notification item None
+
             """HEAD NOTIFICATION ITEM"""
             if is_department_head:
                 """ LIST OF NOTIFICATION ITEMS """
