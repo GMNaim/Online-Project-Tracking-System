@@ -112,10 +112,14 @@
             <br/>
             <br/>
             <br/>
+
+            {% if is_department_head %}
             <a href="{% url 'module-create' selected_project.code %}">
                 <button type="button" class="btn btn-success"><i
                         class="fa fa-plus-square"></i><span> Create New Module</span></button>
             </a>
+
+        {% endif %}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -182,6 +186,7 @@
                                 <td class="td-padding">{{ module.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td class="td-padding">{{ module.submission_date|date }}</td>
                                 <td class="actions">
+                                {% if is_department_head %}
                                     {% if module.status >= 2 %}{% else %} <a
                                             href="{% url 'module-assign' selected_project.code  module.id %}">
                                         <button type="button"
@@ -206,6 +211,16 @@
                                        title="Delete Module"><span class="sr-only">Delete Module</span> <i
                                             class="fas fa-trash-alt text-col-white"></i>
                                     </a>
+
+                                {% endif %}
+                                    <a href="{% url 'team-module-details' module.id %}">
+                                        <button type="button"
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details"><span
+                                                class="sr-only">Details</span> <i
+                                                class="fas fa-info-circle"></i></button>
+                                    </a>
+
                                 </td>
                             </tr>
                         {% endfor %}

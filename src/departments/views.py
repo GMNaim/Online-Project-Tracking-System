@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404, redirect
 
-from accounts.decorators import has_access
+from accounts.decorators import has_access, has_access_to_assigned_project
 from accounts.models import User
 from projectmanager.models import Project, Module, TaskHistory
 from teams.models import Team
@@ -149,9 +149,9 @@ def department_all_project(request):
     assigned_projects_list_to_head = Project.objects.filter(department_id=request.user.department.id,
                                                             status__gte=2).order_by('-assigned_at')
     """ CHANGING THE NOTIFICATION COUNT TO ZERO """
-    current_user = User.objects.get(id=request.user.id)
-    current_user.notification_count = 0
-    current_user.save()
+    # current_user = User.objects.get(id=request.user.id)
+    # current_user.notification_count = 0
+    # current_user.save()
     """ LIST OF NOTIFICATION ITEMS """
     # user_notification_item = Project.objects.filter(department_id=request.user.department.id,
     #                                                    status=2).order_by('-assigned_at', 'status')
@@ -182,7 +182,8 @@ def department_completed_project(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_department_head])
+@has_access(allowed_roles=[role_department_head, role_pm])
+@has_access_to_assigned_project
 def department_project_details(request, project_code):
     # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
     selected_project = get_object_or_404(Project, code=project_code)
@@ -196,26 +197,44 @@ def department_project_details(request, project_code):
         selected_project.status = 3  # if any module then status will be 3 means running
         selected_project.save()
         # selected_project.save()
-        #  if all module's status is 4 then project is completed... below code is for that
+        #  if all task's status is 7 then project is completed... below code is for that
         print(module_list)
-        module_complete_count = 0
+        # module_complete_count = 0
+        # for module in module_list:
+        #     # print(module.status, 'in for....')
+        #     if module.status == 4:
+        #         module_complete_count += 1
+
+        total_task = 0
+        task_complete_counter = 0
         for module in module_list:
-            print(module.status, 'in for....')
-            if module.status == 4:
-                module_complete_count += 1
+            # total_task += module.task_set.all().count()
+            for task in module.task_set.all():
+                total_task += 1
+                if task.status == 7:
+                    task_complete_counter += 1
 
-        selected_project.progress = int((module_complete_count / module_list.count()) * 100)   # progress of the module...
-        selected_project.save()
-        print(selected_project.progress, '% == progress of the project....')
-
-        if module_list.count() == module_complete_count:
+        print(f'total task of the project {selected_project.name} is : ====== ', total_task)
+        # changing the status of the project based on task completion
+        if total_task > 0 and total_task == task_complete_counter:
             selected_project.status = 4
+            selected_project.completed_at = datetime.now()
             selected_project.save()
 
+        if total_task != 0:
+            selected_project.progress = int((task_complete_counter / total_task) * 100)   # progress of the project
+            selected_project.save()
+        print(selected_project.progress, '% == progress of the project....')
+
+        # if module_list.count() == module_complete_count:
+        #     selected_project.status = 4
+        #     selected_project.save()
+
+
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
-    current_user = User.objects.get(id=request.user.id)
-    current_user.notification_count = 0
-    current_user.save()
+    # current_user = User.objects.get(id=request.user.id)
+    # current_user.notification_count = 0
+    # current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
     # user_notification_item = Project.objects.filter(department_id=request.user.department.id,

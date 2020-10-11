@@ -66,7 +66,7 @@
                                                     <div class="progress w-100" style="border-radius: 20px;">
                                                         <div class="progress-bar progress-bar-success progress-bar-striped"
                                                              style="width: {{ selected_task.get_task_progress }}%">
-                                                            <span class="">{{selected_task.get_task_progress}}%</span>
+                                                            <span {% if selected_task.progress == 0 %}style="color: black;" {% endif %}>{{ selected_task.get_task_progress }}%</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -144,7 +144,7 @@
 
                                                         <div class="progress-bar progress-bar-success progress-bar-striped text-center"
                                                              style="width: {{ selected_task.module.progress }}%">
-                                                            <span class="text-center {% if selected_task.module.progress == 0 %}text-dark{% endif %}">{{selected_task.module.progress}}%</span>
+                                                            <span class="text-center {% if selected_task.module.progress == 0 %}text-dark{% endif %}">{{ selected_task.module.progress }}%</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -226,7 +226,7 @@
 
                                                         <div class="progress-bar progress-bar-success progress-bar-striped text-center"
                                                              style="width: {{ selected_task.module.project.progress }}%">
-                                                            <span class="text-center {% if selected_task.module.project.progress == 0 %}text-dark{% endif %}">{{selected_task.module.project.progress}}%</span>
+                                                            <span class="text-center {% if selected_task.module.project.progress == 0 %}text-dark{% endif %}">{{ selected_task.module.project.progress }}%</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -281,18 +281,31 @@
             <br/>
             <br/>
             <br/>
-            {% if selected_task.status == 7 %}
+            {% if selected_task.assigned_member == request.user and selected_task.status == 2 %}
+                <a href="{% url 'member-task-details' selected_task.id %}?status=3">
+                    <button type="button" class="btn btn-success"><i
+                            class="fas fa-paper-plane"></i><span> Start Working</span></button>
+                </a>
+            {% endif %}
+
+            {% if selected_task.assigned_member == request.user and  selected_task.status == 7 %}
                 {#                task is comepleted so nothing to send to nowhere.           #}
-            {% elif selected_task.status == 6 %}
+            {% elif is_team_leader and selected_task.assigned_member == request.user and selected_task.status == 6 %}
+                <a href="{% url 'member-task-details' selected_task.id %}?status=7">
+                    <button type="button" class="btn btn-success"><i
+                            class="fas fa-paper-plane"></i><span> Mark task as completed</span></button>
+                </a>
+
+            {% elif selected_task.assigned_member == request.user and  selected_task.status == 6 %}
                 <a href="{% url 'member-task-details' selected_task.id %}?status=7">
                     <button type="button" class="btn btn-success"><i
                             class="fas fa-paper-plane"></i><span> Submit Task to Team Leader</span></button>
                 </a>
-            {% elif selected_task.status == 4 %}
+            {% elif selected_task.assigned_member == request.user and  selected_task.status == 4 %}
                 <span class="bg-dark badge badge-warning font-weight-bolder font-14"> You have submit this task to tester.</span>
-            {% else %}
+            {% elif  selected_task.assigned_member == request.user and selected_task.status == 3 or selected_task.status == 5 %}
                 <a href="{% url 'submit-task' selected_task.id %}">
-                    <button type="button" class="btn btn-success"><i
+                    <button type="button" class="btn btn-warning"><i
                             class="fas fa-paper-plane"></i><span> Submit Task to Tester</span></button>
                 </a>
             {% endif %}

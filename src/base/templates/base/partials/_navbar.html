@@ -20,7 +20,7 @@
                         <button type="button" class="btn-toggle-offcanvas"><i
                                 class="lnr lnr-menu fa fa-bars"></i></button>
                     </div>
-                    <a href="javascript:void(0);" class="btn-toggle-fullwidth btn-toggle-hide"><i
+                    <a class="btn-toggle-fullwidth btn-toggle-hide"><i
                             class="fa fa-bars"></i></a>
                 </li>
                 <li>
@@ -35,53 +35,17 @@
                         <ul class="nav navbar-nav" style="">
 
                             <li class="dropdown">
-                                <a href="javascript:void(0);" class="dropdown-toggle icon-menu"
+                                <a id="notification_bell" href=""  class="dropdown-toggle icon-menu"
                                    data-toggle="dropdown">
                                     <i class="icon-bell" style="font-size: 18px"></i>
-                                    {#                                    {% if is_department_head and user_notification_count %}#}
-                                    {#                                        <span class="notification-dot text-center"#}
-                                    {#                                              style="width: 15px; height: 15px; font-size: 9px; color: #fff">#}
-                                    {#                                        {{ user_notification_count }}</span>#}
-                                    {#                                    {% elif is_team_leader and user_notification_count %}#}
-                                    {#                                        <span class="notification-dot text-center"#}
-                                    {#                                              style="width: 15px; height: 15px; font-size: 9px; color: #fff">#}
-                                    {#                                        {{ user_notification_count }}</span>#}
-                                    {#                                    {% endif %}#}
                                     {% if user_notification_count %}
-                                        <span class="notification-dot text-center"
+                                        <span id="notification_number" class="notification-dot text-center"
                                               style="width: 15px; height: 15px; font-size: 9px; color: #fff">
                                         {{ user_notification_count }}</span>
                                     {% endif %}
                                 </a>
                                 <ul class="dropdown-menu animated bounceIn notifications"
                                     style="max-height: 400px; overflow-y: scroll;">
-                                    {#                                    {% if is_department_head %}#}
-                                    {#                                        {% if user_notification_count %}#}
-                                    {#                                            <li class="header"><strong>You have {{ user_notification_count }} new#}
-                                    {#                                                Notification{{ user_notification_count|pluralize }}</strong></li>#}
-                                    {#                                        {% else %}#}
-                                    {#                                            <li class="header"><strong>You don't have any new Notifications</strong>#}
-                                    {#                                            </li>#}
-                                    {#                                        {% endif %}#}
-                                    {#                                        {% if user_notification_item is not None %}#}
-                                    {#                                            {% for project in user_notification_item %}#}
-                                    {#                                                <li>#}
-                                    {#                                                    <a href="{% url 'department-all-project' %}">#}
-                                    {#                                                        <div class="media">#}
-                                    {#                                                            <div class="media-left">#}
-                                    {#                                                                <i class="fa fa-tasks text-warning"></i>#}
-                                    {#                                                            </div>#}
-                                    {#                                                            <div class="media-body">#}
-                                    {#                                                                <p class="text">New Project ::#}
-                                    {#                                                                    <strong>{{ project.name }}</strong></p>#}
-                                    {#                                                                <span class="timestamp">Delivery Date: {{ project.delivery_date }}</span>#}
-                                    {#                                                            </div>#}
-                                    {#                                                        </div>#}
-                                    {#                                                    </a>#}
-                                    {#                                                </li>#}
-                                    {#                                            {% endfor %}#}
-                                    {#                                        {% endif %}#}
-
 
                                     {% if user_notification_count %}
                                         <li class="header"><strong>You have {{ user_notification_count }} new
@@ -132,10 +96,13 @@
                                             <li>
                                                 <a style="color:#d4d4d4;" href="
                                                         {% if is_super_user_or_pm %}
-                                                            {% url 'project-list' %}
+                                                            {% url 'department-project-details' item.project.code %}
+                                                        {% elif is_department_head and item.module%}
+                                                            {% url 'team-module-details' item.module.id %}
                                                         {% elif is_department_head %}
                                                             {% url 'department-project-details' item.project.code %}
-
+                                                        {% elif is_team_leader and item.task %}
+                                                            {% url 'member-task-details' item.task.id %}
                                                         {% elif is_team_leader %}
                                                             {% url 'team-module-details' item.module.id %}
                                                         {% elif is_team_member %}
@@ -160,7 +127,8 @@
                                                                 {#                                                        {% elif is_team_leader %}#}
                                                                 {#                                                            <p class="text">{{ item.status }} ::#}
                                                                 {#                                                                <strong>{{ item.module.name }}</strong></p>#}
-                                                            {% elif is_team_leader and item.task.status == 7 %}
+
+                                                            {% elif is_team_leader and item.task %}
                                                                 <p class="text">{{ item.status }} ::
                                                                     <strong>{{ item.task.name }}</strong></p>
                                                             {% elif is_team_leader %}
@@ -293,3 +261,21 @@
         </div>
     </div>
 </nav>
+
+<script>
+    $("#notification_bell").click(function () {
+        $("#notification_number").remove();
+        let csrf_token = '{{ csrf_token }}';
+
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            url: "{% url 'notification-number-zero' %}",
+            data: {
+                button_clicked: 'clicked'
+            },
+            dataType: 'json',
+        });
+
+    });
+</script>

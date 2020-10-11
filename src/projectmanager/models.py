@@ -1,10 +1,22 @@
 from django.db import models
+from django.forms import model_to_dict
 from django.utils import timezone
 from datetime import datetime
 
 from accounts.models import User
 from departments.models import Department
 from teams.models import Team
+
+
+
+# Role Names
+role_super_user = 'Super User'
+role_pm = 'Project Manager'
+role_department_head = 'Department Head'
+role_team_leader = 'Team Leader'
+role_team_member = 'Team Member'
+role_employee = 'Employee'
+role_tester = 'Tester'
 
 
 class Client(models.Model):
@@ -54,6 +66,14 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def total_task_of_the_project(self):
+        total_task = 0
+        for module in self.module_set.all():
+            # for task in module.task_set.all():
+            #     total_task += 1
+            total_task += module.task_set.all().count()
+        return total_task
 
     def get_day_left_to_submit(self):
         # date_obj = datetime.strptime(self.submission_date, '%Y-%m-%d')  # converting string date to date obj
@@ -155,6 +175,27 @@ class Task(models.Model):
             self.progress = 100
             self.save()
         return self.progress
+
+
+    def get_project_progress_status(self):
+        project = self.module.project
+        all_task_of_a_project = Task.objects.filter(module__project=project)
+        # print(' all task of a project in model====', all_task_of_a_project, project)
+
+        task_complete_counter = 0
+        for task in all_task_of_a_project:
+            if task.status == 7:
+                task_complete_counter += 1
+        if all_task_of_a_project.count() == task_complete_counter:
+            project.status = 4  # if all task is completed then project is completed.
+            project.completed_at = datetime.now()
+            project.save()
+
+
+        if all_task_of_a_project != 0:
+            project.progress = int((task_complete_counter / all_task_of_a_project.count()) * 100)   # progress of the project
+            project.save()
+        print(project.progress, '% == progress of the project in model.... and status is ', project.get_status_display())
 
 
     def __str__(self):

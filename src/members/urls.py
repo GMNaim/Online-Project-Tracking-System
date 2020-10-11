@@ -21,6 +21,8 @@ urlpatterns = [
     path('task/need-modification/', views.member_need_modification_tasks, name="member-need-modification-task"),
     # path('task/send-leader/<int:task_id>', views.member_task_send_to_leader, name="member-task-send-leader"),
 
+    path('notification/', views.notification_number_zero, name='notification-number-zero'),
+
     # """ --------------      TESTER        ========================"""
     path('tester/task/all/', views.tester_all_task, name="tester-all-task"),
     path('tester/task/<int:task_id>/', views.tester_task_details, name="tester-task-details"),

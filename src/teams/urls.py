@@ -10,6 +10,7 @@ urlpatterns = [
     # if you change url then must change in team_list.html.
     path('delete/<str:team_name>', views.team_delete, name="team-delete"),
     path('my-team-members/', views.team_member_list, name="my-team-members"),
+    path('my-member-dashboard/', views.team_my_member_dashboard, name="my-member-dashboard"),
 
 
     path('module/all/', views.team_all_module, name="team-all-module"),

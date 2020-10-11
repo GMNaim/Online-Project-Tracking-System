@@ -10,7 +10,7 @@ from django.contrib.auth.models import Group
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect, get_object_or_404
 
-from accounts.decorators import has_access
+from accounts.decorators import has_access, has_access_to_assigned_module
 from accounts.models import User, Role
 from departments.models import Department
 from projectmanager.models import Module, Task, TaskHistory
@@ -408,9 +408,9 @@ def team_all_module(request):
                                                             status__gte=2).order_by('-assigned_at', 'status')
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
-    current_user = User.objects.get(id=request.user.id)
-    current_user.notification_count = 0
-    current_user.save()
+    # current_user = User.objects.get(id=request.user.id)
+    # current_user.notification_count = 0
+    # current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
     # user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
@@ -444,7 +444,8 @@ def team_completed_modules(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_leader])
+@has_access(allowed_roles=[role_team_leader, role_department_head, role_pm, role_super_user])
+@has_access_to_assigned_module
 def team_module_details(request, module_id):
     if request.user.is_authenticated:
         # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
@@ -456,9 +457,9 @@ def team_module_details(request, module_id):
         print(task_list.count())
 
         """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
-        current_user = User.objects.get(id=request.user.id)
-        current_user.notification_count = 0
-        current_user.save()
+        # current_user = User.objects.get(id=request.user.id)
+        # current_user.notification_count = 0
+        # current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS making zero as he see the notification... """
         # user_notification_item = Module.objects.filter(assigned_team=request.user.team_member, status=2).order_by(
@@ -479,20 +480,42 @@ def team_module_details(request, module_id):
 
             #  if all module's status is 4 then project is completed... below code is for that
             all_task_of_module = Task.objects.filter(module=selected_module)
-            print(all_task_of_module)
-            task_complete_counter = 0
+            # print(all_task_of_module)
+            projects_task_complete_counter = 0
             for task in all_task_of_module:
-                print(task.status, 'in for....')
+                # print(task.status, 'in for....')
                 if task.status == 7:
-                    task_complete_counter += 1
+                    projects_task_complete_counter += 1
 
-            selected_module.progress = int((task_complete_counter / all_task_of_module.count()) * 100)   # progress of the module...
-            selected_module.save()
+            if all_task_of_module != 0:
+                selected_module.progress = int(
+                    (projects_task_complete_counter / all_task_of_module.count()) * 100)  # progress of the module...
+                selected_module.save()
             print(selected_module.progress, '% == progress of the module....')
 
-            if all_task_of_module.count() == task_complete_counter:
+            if all_task_of_module.count() == projects_task_complete_counter:
                 selected_module.status = 4
+                selected_module.completed_at = datetime.now()
+                selected_module.is_completed = True
                 selected_module.save()
+
+                """ Setting notification for head as the module is completed. """
+                # getting the head
+                if request.user.role.name != role_pm:  # as pm has no dep...
+                    head_of_the_dep = User.objects.get(department=request.user.department, role__name__iexact=role_department_head)
+                    print('head_of_the_dep: ', head_of_the_dep)
+                    # setting the notification count number as task is completed
+                    head_of_the_dep.notification_count += 1
+                    head_of_the_dep.save()
+
+                    # create new task history object as module is completed
+                    task_history = TaskHistory()
+                    task_history.module = selected_module
+                    task_history.project = selected_module.project
+                    task_history.description = (model_to_dict(selected_module))
+                    task_history.status = 'Module Completed'
+                    task_history.user = head_of_the_dep
+                    task_history.save()
 
         """ Changing the status and progress of the project """
         project_of_the_module = selected_module.project
@@ -502,26 +525,65 @@ def team_module_details(request, module_id):
             project_of_the_module.status = 3  # if any module then status will be 3 means running
             project_of_the_module.save()
 
-            #  if all module's status is 4 then project is completed... below code is for that
+            for t in task_list:
+                t.get_project_progress_status()  # running the method to get project progress and status...
+            print(task_list.count())
 
-            print(all_module_of_project)
-            module_complete_count = 0
-            for module in all_module_of_project:
-                print(module.status, 'in for....')
-                if module.status == 4:
-                    module_complete_count += 1
+            if project_of_the_module.status == 4:
+                """ Setting notification for pm as the project is completed. """
+                # getting the project managers
+                all_pm = User.objects.filter(role__name__iexact=role_pm)
+                pm = project_of_the_module.assigned_by
+                print('All pm are: : ', pm, all_pm)
 
-            project_of_the_module.progress = int((module_complete_count / all_module_of_project.count()) * 100)   # progress of the module...
-            project_of_the_module.save()
-            print(project_of_the_module.progress, '% == progress of the project....')
+                for p_m in all_pm:
+                    # setting the notification count number as task is completed
+                    p_m.notification_count += 1
+                    p_m.save()
+                    # create new task history object as module is completed
+                    task_history = TaskHistory()
+                    task_history.project = project_of_the_module
+                    task_history.description = (model_to_dict(project_of_the_module))
+                    task_history.status = 'Project Completed'
+                    task_history.user = p_m
+                    task_history.save()
 
-            if all_module_of_project.count() == module_complete_count:
-                project_of_the_module.status = 4
-                project_of_the_module.save()
+            # """  if all task's status is 7 then project is completed... below code is for that"""
+            # total_task_of_the_project = 0
+            # projects_task_complete_counter = 0
+            # for module in all_module_of_project:
+            #     # total_task += module.task_set.all().count()
+            #     for task in module.task_set.all():
+            #         total_task_of_the_project += 1
+            #         if task.status == 7:
+            #             projects_task_complete_counter += 1
+            #
+            # print(f'total task of the project {project_of_the_module.name} is : ====== ', total_task_of_the_project)
+            # # changing the status of the project based on task completion
+            # if total_task_of_the_project == projects_task_complete_counter:
+            #     project_of_the_module.status = 4
+            #     project_of_the_module.completed_at = datetime.now()
+            #     project_of_the_module.save()
+            #
+            #
+            # project_of_the_module.progress = int((projects_task_complete_counter / total_task_of_the_project) * 100)   # progress of the project
+            # project_of_the_module.save()
+            # print(project_of_the_module.progress, '% == progress of the project....')
 
-
-
-
+            # print(all_module_of_project)
+            # module_complete_count = 0
+            # for module in all_module_of_project:
+            #     print(module.status, 'in for....')
+            #     if module.status == 4:
+            #         module_complete_count += 1
+            #
+            # project_of_the_module.progress = int((module_complete_count / all_module_of_project.count()) * 100)   # progress of the module...
+            # project_of_the_module.save()
+            # print(project_of_the_module.progress, '% == progress of the project....')
+            #
+            # if all_module_of_project.count() == module_complete_count:
+            #     project_of_the_module.status = 4
+            #     project_of_the_module.save()
 
         context = {'selected_module': selected_module,
                    'task_list': task_list}
@@ -603,6 +665,7 @@ def task_create(request, module_id):
                                 module=selected_module,
                                 submission_date=submission_date_obj)
                     task.save()  # saving new created task
+                    task.get_project_progress_status()  # running the method to get project progress and status...
                     print(task.module.name)
                     # #  If there is at least one module created then project status will be change to running.
                     # if selected_project.module_set.all().count() > 0:
@@ -702,7 +765,6 @@ def task_update(request, module_id, task_id):
 
                     """ Setting notification as task is assigned to a team member """
 
-
                     """ If task is assigned already to a member and then just change the member
                      then notification count"""
                     if (task_status == '' or int(
@@ -723,7 +785,6 @@ def task_update(request, module_id, task_id):
                             selected_task.assigned_at = None  # setting NOne as the status is new or not assigned
                             selected_task.save()
 
-
                         """If task is assigned already to a member and then change both the member and 
                        status to assigned-status at the same time """
                     elif task_status != '' and newly_selected_member_obj != previously_assigned_member and int(
@@ -732,7 +793,8 @@ def task_update(request, module_id, task_id):
                         # if newly_selected_member_obj != previously_assigned_member and int(task_status) == 2:
                         # print('enter into same time change')
 
-                        if selected_task in Task.objects.filter(assigned_member=selected_task.assigned_member, status=2):
+                        if selected_task in Task.objects.filter(assigned_member=selected_task.assigned_member,
+                                                                status=2):
                             selected_task.assigned_member.notification_count += 1  # increase previous head notification count to tell that project is removed from
                             previously_assigned_member.save()
 
@@ -763,7 +825,8 @@ def task_update(request, module_id, task_id):
 
                         # print(selected_task.status, 'selected selected_task status....', task_status)
                         """ Assign task to member in edit mode then notification count..."""
-                    elif task_status != '' and selected_task.status != 2 and int(task_status) == 2:  # if status is assigned
+                    elif task_status != '' and selected_task.status != 2 and int(
+                            task_status) == 2:  # if status is assigned
                         print('3')
                         # if selected project previous status not 2 means not assigned and user select 2 then...
                         # print('here selected module.status is not 2 and user select 2 so count++')
@@ -782,7 +845,8 @@ def task_update(request, module_id, task_id):
                         # print('previously selected task status.', selected_task.status, 'task status:', task_status)
 
                         """ just change the status of the task from assigned to new """
-                    elif (task_status == '' or int(task_status) == 1) and selected_task.status == 2:  # if status is new or not assigned
+                    elif (task_status == '' or int(
+                            task_status) == 1) and selected_task.status == 2:  # if status is new or not assigned
                         print('4')
                         # if module previous status is 2 and user select 1 then only do --
                         # print('here selected selected_task.status is 2 and user select 1 so  count--')
@@ -874,7 +938,7 @@ def task_assign(request, module_id, task_id):
             task_history.user = task_assigned_team_member
             task_history.save()
 
-            # setting the notification count numger as task is assigned to team member
+            # setting the notification count number as task is assigned to team member
             task_assigned_team_member.notification_count += 1
             task_assigned_team_member.save()
 
@@ -887,4 +951,16 @@ def task_assign(request, module_id, task_id):
             return render(request, 'teams/team_module_details.html', context)
 
 
-"""==============================================   QA TEAM TASK   ==============================================="""
+def team_my_member_dashboard(request):
+    if request.user.is_authenticated:
+        # task count of member
+        total_task_of_member = Task.objects.filter(assigned_member=request.user, status__gte=2).count()
+        completed_task_of_member = Task.objects.filter(assigned_member=request.user, status=7).count()
+
+        context = {'total_task_of_member': total_task_of_member,
+                   'completed_task_of_member': completed_task_of_member}
+
+        return render(request, 'teams/team_my_member_dashboard.html', context)
+
+
+"""==============================================      ==============================================="""

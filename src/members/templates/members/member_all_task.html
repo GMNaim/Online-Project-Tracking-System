@@ -47,7 +47,7 @@
 
                         {% for task in assigned_tasks_list_to_member %}
 
-                            <tr {% if task.team_member_notified == False %}style="background-color: #ffd587" {% endif %}>
+                            <tr {% if task.team_member_notified == False and task.status == 2 or task.status == 5  or task.status == 6 %}style="background-color: #ffd587" {% endif %}>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ task.name|slice:":20" }}{% if task.name|length > 20 %}...{% endif %}</td>
                                 <td>{{ task.module.name|slice:":20" }}{% if task.module.name|length > 20 %}

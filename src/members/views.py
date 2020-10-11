@@ -7,12 +7,12 @@ from django.contrib.auth.models import Group
 from django.forms import model_to_dict
 from django.shortcuts import render, get_object_or_404, redirect
 
-from accounts.decorators import has_access
+from accounts.decorators import has_access, has_access_to_assigned_task
 from accounts.models import User
 from projectmanager.models import Task, SubmittedToQATask, user_directory_path, TaskHistory, Module
 
-# Role Names
 
+# Role Names
 role_super_user = 'Super User'
 role_pm = 'Project Manager'
 role_department_head = 'Department Head'
@@ -33,7 +33,7 @@ group_tester = Group.objects.get(name__iexact=role_tester)
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_all_task(request):
     # user_notification_item = Module.objects.filter(
     #     assigned_team__team_member_user__username__iexact=request.user.username, status__gte=2)
@@ -43,9 +43,9 @@ def member_all_task(request):
     print('assigned_tasks_list_to_member == ', assigned_tasks_list_to_member)
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
-    current_user = User.objects.get(id=request.user.id)
-    current_user.notification_count = 0
-    current_user.save()
+    # current_user = User.objects.get(id=request.user.id)
+    # current_user.notification_count = 0
+    # current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
     # user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
@@ -54,12 +54,13 @@ def member_all_task(request):
     # if current_user.notification_count == 0:
     #     user_notification_item = None
 
-    context = {'assigned_tasks_list_to_member': assigned_tasks_list_to_member,}
+    context = {'assigned_tasks_list_to_member': assigned_tasks_list_to_member, }
     return render(request, 'members/member_all_task.html', context)
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader, role_department_head, role_pm, role_super_user])
+@has_access_to_assigned_task  # this decorator is for to see the task by the assigned member only not other member.
 def member_task_details(request, task_id):
     if request.user.is_authenticated:
         # user_notification_item = Project.objects.filter(department_id=request.user.department.id, status=2)
@@ -70,33 +71,48 @@ def member_task_details(request, task_id):
 
         """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
         current_user = User.objects.get(id=request.user.id)
-        current_user.notification_count = 0
-        current_user.save()
+
+        # current_user.notification_count = 0
+        # current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS """
         # user_notification_item = Task.objects.filter(assigned_member=request.user, status=2).order_by(
         #     '-assigned_at', 'status')
         # print('user_notification_item: -- ', user_notification_item)
         # if current_user.notification_count == 0:
-            # user_notification_item = None
+        # user_notification_item = None
 
         #  If member see details of the task then team_member_notified will be true and module's status will be 3
-        if selected_task.status != 7:
-            if selected_task.status != 6:
-                if selected_task.status != 5:
-                    if selected_task.status != 4:
-                        if selected_task.team_member_notified:
-                            module_of_the_task.status = 3  # if there is any task then status will be 3 means running
-                            module_of_the_task.save()
-                            selected_task.status = 3
-                            selected_task.save()
+        # if selected_task.status != 7:
+        #     if selected_task.status != 6:
+        #         if selected_task.status != 5:
+        #             if selected_task.status != 4:
+        #                 if selected_task.team_member_notified:
+        #                     module_of_the_task.status = 3  # if there is any task then status will be 3 means running
+        #                     module_of_the_task.save()
+        #                     selected_task.status = 3
+        #                     selected_task.save()
+
+        """ START THE TASK BY CLICKING ON START WORKING """
+        if request.GET.get('status', None) == '3':
+            if selected_task.status == 2:  # if assigned
+                if selected_task.status != 7 and selected_task.status != 6 and selected_task.status != 5 and selected_task.status != 4 and selected_task.team_member_notified:
+                    try:
+                        module_of_the_task.status = 3  # if there is any task then status will be 3 means running
+                        module_of_the_task.save()
+                        selected_task.status = 3
+                        selected_task.save()
+                        messages.success(request, f"You have started the task.")
+                        return redirect('member-task-details', task_id=task_id)
+                    except Exception as e:
+                        print('error at task send to leader...', e)
+                        return render(request, 'members/member_task_details.html')
 
         # history of the task submitted which are verified or need modification status
         all_submitted_task_to_tester = SubmittedToQATask.objects.filter(task=selected_task, status__gt=2).order_by(
             '-created_at')
         context = {'selected_task': selected_task,
                    'all_submitted_task_to_tester': all_submitted_task_to_tester}
-
 
         """ SENDING TASK TO THE LEADER BY CLICKING THE BUTTON """
         if request.GET.get('status', None) == '7':
@@ -127,9 +143,6 @@ def member_task_details(request, task_id):
                     task_history.user = task_send_to_team_leader
                     task_history.save()
 
-
-
-
                     """ =============Checking whether the Module is completed ============="""
                     task_list = Task.objects.filter(module=module_of_the_task)
                     all_task = task_list.count()
@@ -141,8 +154,9 @@ def member_task_details(request, task_id):
                         if task.status == 7:
                             task_complete_counter += 1  # if task is completed then increment then compare it with total task.
 
-                    module_of_the_task.progress = (task_complete_counter / all_task) * 100   # progress of the module...
-                    module_of_the_task.save()
+                    if all_task != 0:
+                        module_of_the_task.progress = (task_complete_counter / all_task) * 100  # progress of the module...
+                        module_of_the_task.save()
                     print(module_of_the_task.progress, '% == progress of the module....')
 
                     if all_task == task_complete_counter:
@@ -151,11 +165,10 @@ def member_task_details(request, task_id):
                         module_of_the_task.completed_at = datetime.now()
                         module_of_the_task.save()
 
-
-
                         """ Setting notification for head as the module is completed. """
                         # getting the head
-                        head_of_the_dep = User.objects.get(department=request.user.department, role__name__iexact=role_department_head)
+                        head_of_the_dep = User.objects.get(department=request.user.department,
+                                                           role__name__iexact=role_department_head)
                         print('head_of_the_dep: ', head_of_the_dep)
                         # setting the notification count number as task is completed
                         head_of_the_dep.notification_count += 1
@@ -177,29 +190,47 @@ def member_task_details(request, task_id):
                         module_of_the_task.save()
                     print('---------.///', module_of_the_task.name, module_of_the_task.get_status_display())
 
-
                     """ =============Checking whether the Project is completed ============="""
                     project_of_the_modules = module_of_the_task.project  # getting the project of the tasks/modules
-                    print(project_of_the_modules)
-                    list_of_modules_of_a_project = Module.objects.filter(project=project_of_the_modules)  # all module of the project
+                    # print(project_of_the_modules)
+                    list_of_modules_of_a_project = Module.objects.filter(
+                        project=project_of_the_modules)  # all module of the project
                     total_modules_of_a_project = list_of_modules_of_a_project.count()
-                    print(total_modules_of_a_project)
-                    module_complete_counter = 0
+                    print(f'total_modules_of__project= {project_of_the_modules} = ', total_modules_of_a_project)
 
-                    for module in list_of_modules_of_a_project:
-                        print(module.get_status_display())
-                        if module.status == 4:
-                            module_complete_counter += 1  # if module is completed then increment then compare it with total task.
+                    # module_complete_counter = 0
+                    # for module in list_of_modules_of_a_project:
+                    #     print(module.get_status_display())
+                    #     if module.status == 4:
+                    #         module_complete_counter += 1  # if module is completed then increment then compare it with total task.
+                    #
+                    # if total_modules_of_a_project == module_complete_counter:
+                    #     project_of_the_modules.status = 4
+                    #     print(project_of_the_modules.get_status_display(), 'showing status after setting 4')
+                    #     # project_of_the_modules.is_completed = True
+                    #     project_of_the_modules.completed_at = datetime.now()
+                    #     project_of_the_modules.save()
 
-                    if total_modules_of_a_project == module_complete_counter:
-                        project_of_the_modules.status = 4
-                        print(project_of_the_modules.get_status_display(), 'showing status after setting 4')
-                        # project_of_the_modules.is_completed = True
-                        project_of_the_modules.completed_at = datetime.now()
-                        project_of_the_modules.save()
+                    """  if all task's status is 7 then project is completed... below code is for that"""
+                    # total_task_of_the_project = 0
+                    # projects_task_complete_counter = 0
+                    # for module in list_of_modules_of_a_project:
+                    #     # total_task += module.task_set.all().count()
+                    #     for task in module.task_set.all():
+                    #         total_task_of_the_project += 1
+                    #         if task.status == 7:
+                    #             projects_task_complete_counter += 1
+                    #
+                    # print(f'total task of the project {project_of_the_modules.name} is : ====== ', total_task_of_the_project)
+                    # # changing the status of the project based on task completion
+                    # if total_task_of_the_project == projects_task_complete_counter:
+                    #     project_of_the_modules.status = 4
+                    #     project_of_the_modules.completed_at = datetime.now()
+                    #     project_of_the_modules.save()
 
-
-                        """ Setting notification for pm as the module is completed. """
+                    selected_task.get_project_progress_status()  # running the method to get project progress and status...
+                    if project_of_the_modules.status == 4:
+                        """ Setting notification for pm as the project is completed. """
                         # getting the project manager
                         all_pm = User.objects.filter(role__name__iexact=role_pm)
                         pm = project_of_the_modules.assigned_by
@@ -226,16 +257,16 @@ def member_task_details(request, task_id):
 
                     print('---------.///', module_of_the_task.name, module_of_the_task.get_status_display())
 
-
-
+                    #  Changing the progress of the project
+                    # project_of_the_modules.progress = int((projects_task_complete_counter / total_task_of_the_project) * 100)   # progress of the project
+                    # project_of_the_modules.save()
+                    # print(project_of_the_modules.progress, '% == progress of the project....')
 
                     messages.success(request, f"Congratulation! You have completed the task. Task Send to Team Leader.")
                     return redirect('member-completed-task')
                 except Exception as e:
                     print('error at task send to leader...', e)
                     return render(request, 'members/member_task_details.html', context)
-
-
 
         # task_history = TaskHistory.objects.filter(task=selected_task)
         # print(task_history)
@@ -244,7 +275,22 @@ def member_task_details(request, task_id):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader, role_pm, role_super_user, role_department_head, role_tester])
+def notification_number_zero(request):
+    """"""
+    """BY CLICKING ON THE BELL BUTTON, CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification  """
+    if request.method == "POST":
+        current_user = User.objects.get(id=request.user.id)
+        button_clicked = request.POST.get('button_clicked', '')
+        if button_clicked == 'clicked':
+            current_user.notification_count = 0
+            current_user.save()
+            print(current_user.notification_count, 'notification count after ajax post request =========')
+            return redirect('dashboard')
+
+
+@login_required(login_url='login')
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_running_tasks(request):
     if request.user.is_authenticated:
         running_task = Task.objects.filter(status__in=[3], assigned_member=request.user).order_by(
@@ -254,7 +300,7 @@ def member_running_tasks(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_test_passed_tasks(request):
     if request.user.is_authenticated:
         completed_task = Task.objects.filter(status=6, assigned_member=request.user).order_by(
@@ -264,7 +310,7 @@ def member_test_passed_tasks(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_completed_tasks(request):
     if request.user.is_authenticated:
         completed_task = Task.objects.filter(status=7, assigned_member=request.user).order_by(
@@ -275,7 +321,7 @@ def member_completed_tasks(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_submitted_tasks(request):
     if request.user.is_authenticated:
         submitted_to_qa_task = Task.objects.filter(status=4, assigned_member=request.user).order_by(
@@ -286,7 +332,7 @@ def member_submitted_tasks(request):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def submit_task_to_tester(request, task_id):
     if request.user.is_authenticated:
         get_task = get_object_or_404(Task, id=task_id)
@@ -367,7 +413,7 @@ def submit_task_to_tester(request, task_id):
 
 
 @login_required(login_url='login')
-@has_access(allowed_roles=[role_team_member])
+@has_access(allowed_roles=[role_team_member, role_team_leader])
 def member_need_modification_tasks(request):
     if request.user.is_authenticated:
         need_modification_task = Task.objects.filter(status=5, assigned_member=request.user).order_by(
@@ -383,37 +429,37 @@ def member_need_modification_tasks(request):
 # @has_access(allowed_roles=[role_team_member])
 # def member_task_send_to_leader(request, task_id):
 #     if request.user.is_authenticated:
-        #         selected_task = get_object_or_404(Task, id=task_id)
-        #         # module_of_the_task = selected_task.module  # getting the module of the task
-        #         # current_user = User.objects.get(id=request.user.id)
-        #         # current_user.notification_count = 0
-        #         # current_user.save()
-        #         # if current_user.notification_count == 0:
-        #         #     user_notification_item = None
-        #         #
-        #         # #  If member see details of the task then team_member_notified will be true and module's status will be 3
-        #         # if selected_task.status != 6:
-        #         #     if selected_task.status != 5:
-        #         #         if selected_task.status != 4:
-        #         #             if selected_task.team_member_notified:
-        #         #                 module_of_the_task.status = 3  # if there is any task then status will be 3 means running
-        #         #                 module_of_the_task.save()
-        #         #                 selected_task.status = 3
-        #         #                 selected_task.save()
-        #
-        #
-        #         # history of the task submitted which are verified or need modification status
-        #         all_submitted_task_to_tester = SubmittedToQATask.objects.filter(task=selected_task, status__gt=2).order_by(
-        #             '-created_at')
-        #         context = {'selected_task': selected_task,
-        #                    'all_submitted_task_to_tester': all_submitted_task_to_tester}
-        #
-        #
-        #             except Exception as e:
-        #                 print('error at task send to leader...', e)
-        #                 return render(request, 'members/member_task_details.html', context)
-        #
-        # return render(request, 'members/member_task_details.html')
+#         selected_task = get_object_or_404(Task, id=task_id)
+#         # module_of_the_task = selected_task.module  # getting the module of the task
+#         # current_user = User.objects.get(id=request.user.id)
+#         # current_user.notification_count = 0
+#         # current_user.save()
+#         # if current_user.notification_count == 0:
+#         #     user_notification_item = None
+#         #
+#         # #  If member see details of the task then team_member_notified will be true and module's status will be 3
+#         # if selected_task.status != 6:
+#         #     if selected_task.status != 5:
+#         #         if selected_task.status != 4:
+#         #             if selected_task.team_member_notified:
+#         #                 module_of_the_task.status = 3  # if there is any task then status will be 3 means running
+#         #                 module_of_the_task.save()
+#         #                 selected_task.status = 3
+#         #                 selected_task.save()
+#
+#
+#         # history of the task submitted which are verified or need modification status
+#         all_submitted_task_to_tester = SubmittedToQATask.objects.filter(task=selected_task, status__gt=2).order_by(
+#             '-created_at')
+#         context = {'selected_task': selected_task,
+#                    'all_submitted_task_to_tester': all_submitted_task_to_tester}
+#
+#
+#             except Exception as e:
+#                 print('error at task send to leader...', e)
+#                 return render(request, 'members/member_task_details.html', context)
+#
+# return render(request, 'members/member_task_details.html')
 
 
 #
@@ -432,9 +478,9 @@ def tester_all_task(request):
     # print('tasks_list_of_tester == ', tasks_list_of_tester)
 
     """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
-    current_user = User.objects.get(id=request.user.id)
-    current_user.notification_count = 0
-    current_user.save()
+    # current_user = User.objects.get(id=request.user.id)
+    # current_user.notification_count = 0
+    # current_user.save()
 
     """ LIST OF NOTIFICATION ITEMS """
     # user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,
@@ -462,9 +508,9 @@ def tester_task_details(request, task_id):
         print(list_of_same_tasks, '-------.....')
 
         """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification """
-        current_user = User.objects.get(id=request.user.id)
-        current_user.notification_count = 0
-        current_user.save()
+        # current_user = User.objects.get(id=request.user.id)
+        # current_user.notification_count = 0
+        # current_user.save()
 
         """ LIST OF NOTIFICATION ITEMS """
         # user_notification_item = SubmittedToQATask.objects.filter(assigned_member=request.user,

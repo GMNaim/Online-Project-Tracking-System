@@ -100,6 +100,16 @@
                                        title="Delete"><span class="sr-only">Delete</span>
                                         <i class="fas fa-trash-alt text-col-white"></i>
                                     </a>
+
+                                    <a href="{% url 'department-project-details' project.code %}">
+                                        <button type="button"
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details"><span
+                                                class="sr-only">Details</span> <i
+                                                class="fas fa-info-circle"></i></button>
+                                    </a>
+
+
                                 </td>
                             </tr>
                         {% endfor %}

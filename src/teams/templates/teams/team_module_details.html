@@ -200,10 +200,12 @@
             <br/>
             <br/>
             <br/>
+        {% if is_team_leader %}
             <a href="{% url 'task-create' selected_module.id %}">
                 <button type="button" class="btn btn-success"><i
                         class="fa fa-plus-square"></i><span> Create New Task</span></button>
             </a>
+        {% endif %}
             <ul class="header-dropdown">
                 <li><a href="javascript:void(0);" data-toggle="cardloading"
                        data-loading-effect="pulse"><i class="icon-refresh"></i></a></li>
@@ -274,6 +276,7 @@
                                 <td class="td-padding">{{ task.assigned_at|default_if_none:'Not Assigned Yet' }}</td>
                                 <td class="td-padding">{{ task.submission_date|date }}</td>
                                 <td class="actions td-padding">
+                                {% if is_team_leader %}
                                     {% if task.status >= 2 %}{% else %}
                                         <a href="{% url 'task-assign' selected_module.id  task.id %}">
                                             <button type="button"
@@ -300,8 +303,15 @@
                                        title="Delete Task"><span class="sr-only">Delete Task</span> <i
                                             class="fas fa-trash-alt text-col-white"></i>
                                     </a>
+                                {% endif %}
 
-
+                                    <a href="{% url 'member-task-details' task.id %}">
+                                        <button type="button"
+                                                data-toggle="tooltip" data-placement="top" style="padding:3px 7px;"
+                                                class="btn btn-info" title="Details"><span
+                                                class="sr-only">Details</span> <i
+                                                class="fas fa-info-circle"></i></button>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}
