@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.forms import model_to_dict
 from django.utils import timezone
@@ -245,6 +247,9 @@ class SubmittedToQATask(models.Model):
     assigned_at = models.DateTimeField(null=True, blank=True)
     verified_at = models.DateTimeField(default=None, null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+
+    def file_name(self):
+        return os.path.basename(self.submitted_file.name)
 
     def __str__(self):
         return self.task.name

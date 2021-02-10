@@ -4,6 +4,19 @@
     Task: {{ selected_task.name }}
 {% endblock %}
 {% block main_content %}
+<style>
+.file-download{
+    border: 1px solid #3070ff;
+    display: inline-block;
+    padding: 5px;
+    background: #ffb22b;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 10px 10px 40px #aca8a8;
+}
+.file-download a{
+    color: black;}
+</style>
 
     <div class="card open_task">
         <div class="header">
@@ -95,7 +108,12 @@
                 <div class="row clearfix">
                     <div class="col-lg-4 col-md-12">
                         <p style="font-size: 18px;margin-right: 0px; padding-bottom: 5px !important;">Developer Attached
-                            Files: </p>
+                            File: </p>
+                    </div>
+                    <div class="col-lg-8 col-md-12">
+                        <p class="file-download" style="font-size: 18px;">
+                            <i class="fas fa-download"></i>
+                            <a href="{{ selected_task.submitted_file.url }}" download> {{ selected_task.file_name }}</a></p>
                     </div>
                     {#                    <div class="col-lg-3 col-md-4 col-sm-12">#}
                     {#                        <div class="card">#}
