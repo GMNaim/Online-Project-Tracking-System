@@ -1,7 +1,7 @@
 {% extends 'base/base_template.html' %}
 {% load static %}
 
-{% block title %} My Team Members{% endblock %}
+{% block title %} My Team Members :: {{ team_name }}{% endblock %}
 {% block main_content %}
 
     <div class="col-lg-12 col-md-12">
@@ -30,7 +30,7 @@
                 </ul>
             </div>
             <div class="body">
-                <h4>My Team Members</h4>
+                <h4>My Team Members :: {{ team_name }}</h4>
                 <div class="body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped dataTable"

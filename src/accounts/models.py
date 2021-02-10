@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -23,12 +25,17 @@ class User(AbstractUser):
     )
 
     middle_name = models.CharField(max_length=50, blank=True, null=True)
+    user_bio = models.TextField(default='')
     email = models.EmailField(unique=True, null=False, blank=False)
     username = models.CharField(max_length=50, unique=True, null=False, blank=False,
                                 validators=[RegexValidator(
                                     regex='[-a-zA-Z0-9_.]{4,50}$',
                                     message='Username contains alphanumeric, underscore and period(.). Length: 4 to 50'
                                 )])
+    facebook_url = models.CharField(max_length=255, default='https://www.facebook.com')
+    twitter_url = models.CharField(max_length=255, default='https://www.twitter.com')
+    linkedin_url = models.CharField(max_length=255, default='https://www.linkedin.com')
+    github_url = models.CharField(max_length=255, default='https://www.github.com')
     role = models.ForeignKey(
         Role, on_delete=models.SET_DEFAULT, null=False, blank=False, related_name='user_role',
         default=6)  # default id of role is 6 =  employee
@@ -41,6 +48,7 @@ class User(AbstractUser):
     country = models.IntegerField(default=1)
     profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True,
                                         default='users/default_user.png')
+    birth_date = models.DateTimeField(default=datetime.now())
 
     team_member = models.ForeignKey(Team, on_delete=models.SET_DEFAULT, related_name='team_member_user', blank=True,
                                     null=True, default=10)
