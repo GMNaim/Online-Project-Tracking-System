@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from .views import  login_view, logout_view, registration_view, forgot_password_view, security_code_view, change_password_view
+from .views import  login_view, logout_view, registration_view, forgot_password_view, security_code_view, change_password_view, user_profile
 
 urlpatterns = [
     path('', views.dashboard, name="dashboard"),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('forgot', forgot_password_view, name='forgot_pass'),
     path('confirmation', security_code_view, name='security_code'),
     path('change_password', change_password_view, name='change_password'),
+    path('profile', user_profile, name='user-profile'),
 ]
 
 

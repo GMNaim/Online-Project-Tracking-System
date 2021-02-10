@@ -72,11 +72,11 @@ def department_add(request):
                     # new_department.save()
                     Department.objects.create(name=name, description=description)
                     messages.success(request, 'Department added! Please assign a department head.')
-                    print('department added--------------')
+                    # print('department added--------------')
                     # return render(request, 'departments/department_list.html', context)
                     return redirect('department-list')
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     messages.error(request, f"Error: {e}")
                     return render(request, 'departments/department_add.html', context)
         return render(request, 'departments/department_add.html', context)
@@ -110,11 +110,11 @@ def department_update(request, department_name):
                     selected_department.save()
                     messages.success(request,
                                      f'Department "{selected_department.name}" is Updated!')
-                    print('department added--------------')
+                    # print('department added--------------')
                     # return render(request, 'departments/department_list.html', context)
                     return redirect('department-list')
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     messages.error(request, f"Error: {e}")
                     return render(request, 'departments/department_update.html', context)
         return render(request, 'departments/department_update.html', context)
@@ -175,7 +175,7 @@ def department_running_project(request):
 @has_access(allowed_roles=[role_department_head])
 def department_completed_project(request):
     dep_completed_project = Project.objects.filter(department=request.user.department, status=4)
-    print(dep_completed_project, '-----------------------77777777')
+    # print(dep_completed_project, '-----------------------77777777')
 
     context = {'dep_completed_project': dep_completed_project, }
     return render(request, 'departments/department_completed_project.html', context)
@@ -190,7 +190,7 @@ def department_project_details(request, project_code):
     selected_project.department_head_notified = True  # if head visit project detail page that means he is notified.
     selected_project.save()
     module_list = Module.objects.filter(project=selected_project)  # module list of the selected project
-    print(module_list.count())
+    # print(module_list.count())
     #  If there is at least one module created then project status will be change to running.
     # if selected_project.status != 4 and module_list.count() > 0:
     if module_list.count() > 0:
@@ -198,7 +198,7 @@ def department_project_details(request, project_code):
         selected_project.save()
         # selected_project.save()
         #  if all task's status is 7 then project is completed... below code is for that
-        print(module_list)
+        # print(module_list)
         # module_complete_count = 0
         # for module in module_list:
         #     # print(module.status, 'in for....')
@@ -214,7 +214,7 @@ def department_project_details(request, project_code):
                 if task.status == 7:
                     task_complete_counter += 1
 
-        print(f'total task of the project {selected_project.name} is : ====== ', total_task)
+        # print(f'total task of the project {selected_project.name} is : ====== ', total_task)
         # changing the status of the project based on task completion
         if total_task > 0 and total_task == task_complete_counter:
             selected_project.status = 4
@@ -224,7 +224,7 @@ def department_project_details(request, project_code):
         if total_task != 0:
             selected_project.progress = int((task_complete_counter / total_task) * 100)   # progress of the project
             selected_project.save()
-        print(selected_project.progress, '% == progress of the project....')
+        # print(selected_project.progress, '% == progress of the project....')
 
         # if module_list.count() == module_complete_count:
         #     selected_project.status = 4
@@ -254,9 +254,9 @@ def module_create(request, project_code):
         selected_project = get_object_or_404(Project, code=project_code)
         team_in_dep = Team.objects.filter(team_member_user__department_id=request.user.department.id).exclude(
             id=10).distinct()  # getting all team of signed in department head's department
-        print(team_in_dep)
-        print(selected_project.delivery_date, type(selected_project.delivery_date),
-              selected_project.delivery_date.day > 0)
+        # print(team_in_dep)
+        # print(selected_project.delivery_date, type(selected_project.delivery_date),
+        #       selected_project.delivery_date.day > 0)
         context = {'selected_project': selected_project, 'team_in_department': team_in_dep}
 
         if request.method == "POST":
@@ -264,15 +264,15 @@ def module_create(request, project_code):
             selected_team = request.POST['select_team']
             description = request.POST['description']
             submission_date = request.POST['submission_date']
-            print('Post data: = ', name, selected_team, description, submission_date)
+            # print('Post data: = ', name, selected_team, description, submission_date)
 
             date_obj = datetime.strptime(submission_date, '%Y-%m-%d')  # converting string date to date obj
             submission_date_obj = date_obj.date()  # datetime obj to save in model
-            print('Date:', submission_date_obj)
+            # print('Date:', submission_date_obj)
             today = datetime.today().date()
-            print(today)
+            # print(today)
             check_old_date = submission_date_obj - today  # checking whether given date is old than today
-            print(check_old_date)
+            # print(check_old_date)
             context = {'team_in_department': team_in_dep,
                        'name': name,
                        'description': description,
@@ -322,7 +322,7 @@ def module_create(request, project_code):
                                     project=selected_project,
                                     submission_date=submission_date_obj)
                     module.save()  # saving new created module
-                    print(module.project.name)
+                    # print(module.project.name)
                     # #  If there is at least one module created then project status will be change to running.
                     # if selected_project.module_set.all().count() > 0:
                     #     selected_project.status = 3  # if any module then status will be 3 means nunning
@@ -330,7 +330,7 @@ def module_create(request, project_code):
                     messages.success(request, f"Module '{name}' is created successfully!")
                     return redirect('department-project-details', project_code=selected_project.code)
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     messages.error(request, e)
                     return render(request, module_add_error_link, context)
 
@@ -345,9 +345,9 @@ def module_update(request, project_code, module_id):
         selected_module = get_object_or_404(Module, id=module_id)  # getting the selected module
         team_in_dep = Team.objects.filter(team_member_user__department_id=request.user.department.id).exclude(
             id=10).distinct()  # getting all team of signed in department head's department
-        print(team_in_dep)
-        print(selected_project.delivery_date, type(selected_project.delivery_date),
-              selected_project.delivery_date.day > 0)
+        # print(team_in_dep)
+        # print(selected_project.delivery_date, type(selected_project.delivery_date),
+        #       selected_project.delivery_date.day > 0)
         context = {'selected_project': selected_project,
                    'team_in_department': team_in_dep,
                    'selected_module': selected_module,
@@ -434,7 +434,7 @@ def module_update(request, project_code, module_id):
 
                     if (module_status == '' or int(
                             module_status) == 1) and selected_team_obj != selected_module.assigned_team and selected_module.status == 2:
-                        print('1')
+                        # print('1')
                         # if selected_team_obj != selected_module.assigned_team and selected_module.status == 2:
                         module_previously_assigned_team_leader.notification_count += 1  # increase previous leader notification count to tell that module is removed from him
                         module_previously_assigned_team_leader.save()
@@ -458,7 +458,7 @@ def module_update(request, project_code, module_id):
                        status to assigned at same time"""
                     elif module_status != '' and selected_team_obj != selected_module.assigned_team and int(
                             module_status) == 2:
-                        print('2')
+                        # print('2')
                         # if selected_team_obj != selected_module.assigned_team and int(module_status) == 2:
                         # print('enter into same time change')
                         if selected_module in Module.objects.filter(assigned_team=selected_module.assigned_team, status=2):
@@ -495,7 +495,7 @@ def module_update(request, project_code, module_id):
 
                         """ Assign module  to leader in edit mode then notification count..."""
                     elif module_status != '' and selected_module.status != 2 and int(module_status) == 2:  # if status is assigned
-                        print('3')
+                        # print('3')
                         # if selected project previous status not 2 means not assigned and user select 2 then...
                         # print('here selected module.status is not 2 and user select 2 so count++')
                         module_previously_assigned_team_leader.notification_count += 1  # Previously means at the time of creation of the module, the leadr who is selected.
@@ -510,15 +510,15 @@ def module_update(request, project_code, module_id):
                         task_history.user = module_previously_assigned_team_leader
                         task_history.status = 'New Module'
                         task_history.save()
-                        print('module history created.====== module assigned to ',
-                              module_previously_assigned_team_leader)
-                        print(selected_module.status, 'selected module status....', module_status)
+                        # print('module history created.====== module assigned to ',
+                        #       module_previously_assigned_team_leader)
+                        # print(selected_module.status, 'selected module status....', module_status)
 
                         """ if module is already assigned then just changing the status of module."""
                     elif (module_status == '' or int(module_status) == 1) and selected_module.status == 2:  # if status is new or not assigned
-                        print('4')
+                        # print('4')
                         # if module previous status is 2 and user select 1 then only do --
-                        print('here selected module.status is 2 and user select 1 so  count--')
+                        # print('here selected module.status is 2 and user select 1 so  count--')
                         module_previously_assigned_team_leader.notification_count += 1  # increase previous leader notification count to tell that module is removed from him
                         module_previously_assigned_team_leader.save()
                         selected_module.assigned_at = None  # setting NOne as the status is new or not assigned
@@ -539,7 +539,7 @@ def module_update(request, project_code, module_id):
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if module_status != '':  # '' means not selecting any status
-                        print('5')
+                        # print('5')
                         selected_module.status = int(module_status)  # setting the module
                     selected_module.assigned_team = selected_team_obj
                     selected_module.save()  # saving module
@@ -547,7 +547,7 @@ def module_update(request, project_code, module_id):
                     return redirect('department-project-details', project_code=selected_project.code)
 
                 except Exception as e:
-                    print("Error in module update: ", e)
+                    # print("Error in module update: ", e)
                     messages.error(request, e)
                     return render(request, 'departments/module_update.html', context)
 
@@ -614,13 +614,13 @@ def module_assign(request, project_code, module_id):
             task_history.status = 'New Module'
             task_history.user = module_assigned_team_leader
             task_history.save()
-            print('module history created.====== module assigned to ', module_assigned_team_leader)
+            # print('module history created.====== module assigned to ', module_assigned_team_leader)
 
             """ Setting notification count number as module is assigned to a team leader """
             # # getting the team leader
             # module_assigned_team_leader = User.objects.get(team_member=selected_module.assigned_team,
             #                                                role__name__exact=role_team_leader)
-            # print(module_assigned_team_leader)
+            print(module_assigned_team_leader)
             # setting the notification count number as project is assigned to team leader
             module_assigned_team_leader.notification_count += 1
             module_assigned_team_leader.save()
@@ -629,6 +629,6 @@ def module_assign(request, project_code, module_id):
                              f"{selected_module.name} is assigned to the {selected_module.assigned_team.name}.")
             return redirect('department-project-details', project_code=selected_project.code)
         except Exception as e:
-            print('module assign error ====', e)
+            # print('module assign error ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'departments/department_project_details.html', context)

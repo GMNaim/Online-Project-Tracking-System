@@ -24,9 +24,40 @@ def left_sidebar_content(request):
         is_tester = request.user.role.name == role_tester
 
 
+
+
         sidebar_department_name = None
         if request.user.department.id != 16:
             sidebar_department_name = request.user.department.name
+
+
+            # task count of member
+        if is_team_member or is_team_leader:
+            total_task_of_member = Task.objects.filter(assigned_member=request.user, status__gte=2).count()
+            completed_task_of_member = Task.objects.filter(assigned_member=request.user, status=7).count()
+            running_task_of_member = Task.objects.filter(assigned_member=request.user, status=3).count()
+            test_passed_task_of_member = Task.objects.filter(assigned_member=request.user, status=6).count()
+            submitted_to_tester_task_of_member = Task.objects.filter(assigned_member=request.user, status=4).count()
+            need_modification_task_of_member = Task.objects.filter(assigned_member=request.user, status=5).count()
+            team_name = request.user.team_member.name
+
+            return {'sidebar_role_name': request.user.role.name,
+                    'sidebar_department_name': sidebar_department_name,
+                    'is_super_user_or_pm': is_super_user_or_pm,
+                    'is_department_head': is_department_head,
+                    'is_team_leader': is_team_leader,
+                    'is_employee': is_employee,
+                    'is_team_member': is_team_member,
+                    'is_tester': is_tester,
+
+                    'team_name': team_name,
+                    'total_task_of_member': total_task_of_member,
+                    'running_task_of_member': running_task_of_member,
+                    'submitted_to_tester_task_of_member': submitted_to_tester_task_of_member,
+                    'need_modification_task_of_member': need_modification_task_of_member,
+                    'test_passed_task_of_member': test_passed_task_of_member,
+                    'completed_task_of_member': completed_task_of_member,}
+
         return {'sidebar_role_name': request.user.role.name,
                 'sidebar_department_name': sidebar_department_name,
                 'is_super_user_or_pm': is_super_user_or_pm,

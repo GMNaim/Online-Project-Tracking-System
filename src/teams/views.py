@@ -52,9 +52,9 @@ def team_list(request):
         all_team_dep = []
         if all_team.count() != 0:
             for team in all_team:
-                print(f"team Name: {team}")
+                # print(f"team Name: {team}")
                 all_team_name.append(team.name)
-                print(all_member_count.append(team.team_member_user.count()))
+                # print(all_member_count.append(team.team_member_user.count()))
                 all_team_dep.append(team.department)
                 team_l = team.team_member_user.get(is_team_leader=True)
                 all_team_leader.append(team_l)
@@ -64,7 +64,7 @@ def team_list(request):
         """ team in department """
         team_in_dep = all_team.filter(department__name__iexact=request.user.department.name).exclude(
             department_id=16)  # department id = 16 is the Not Assigned dep.
-        print(team_in_dep.count() == 0)
+        # print(team_in_dep.count() == 0)
         team_leader = []
         team_members = []
         member_count = []
@@ -72,9 +72,9 @@ def team_list(request):
         team_dep = []
         if team_in_dep.count() != 0:
             for team in team_in_dep:
-                print(f"team Name: {team}")
+                # print(f"team Name: {team}")
                 team_name.append(team.name)
-                print(member_count.append(team.team_member_user.count()))
+                # print(member_count.append(team.team_member_user.count()))
                 team_dep.append(team.department)
                 team_l = team.team_member_user.get(is_team_leader=True)
                 team_leader.append(team_l)
@@ -104,7 +104,7 @@ def team_add(request):
             team_member = request.POST.getlist('team_member')
             team_leader = request.POST.get('team_leader')
             description = request.POST.get('description')
-            print(team_name, team_member, team_leader, description, type(team_member))
+            # print(team_name, team_member, team_leader, description, type(team_member))
 
             # Validating the information
             team_add_error_link = 'teams/team_add.html'
@@ -141,12 +141,12 @@ def team_add(request):
 
                     # if you create a team  you must have to select a team leader.
                     team = Team.objects.create(name=team_name, department=department)  # team created
-                    print(f" Team {team} saved in the database.")
+                    # print(f" Team {team} saved in the database.")
                     new_team_members = free_employee_in_department.filter(pk__in=team_member)
                     new_team_leader_object = free_employee_in_department.filter(id=team_leader)
-                    print('team members', new_team_members)
+                    # print('team members', new_team_members)
                     new_team_leader = new_team_leader_object.first()  # as it is the first obj of queryset
-                    print(new_team_leader, "team leader")
+                    # print(new_team_leader, "team leader")
 
                     """ Adding the team leader to the new team and setting role and permission group"""
                     new_team_leader.team_member = team  # adding the team for the user
@@ -154,7 +154,7 @@ def team_add(request):
                     new_team_leader.role = Role.objects.get(name__iexact=role_team_leader)  # setting the role
                     new_team_leader.is_team_leader = True
                     new_team_leader.save()
-                    print(f"{new_team_leader.username}: {new_team_leader.id} -->", new_team_leader.role.name)
+                    # print(f"{new_team_leader.username}: {new_team_leader.id} -->", new_team_leader.role.name)
                     # Adding Team Leader to team leader group and team member group.
                     group_team_leader.user_set.add(new_team_leader)
                     group_team_member.user_set.add(new_team_leader)
@@ -175,7 +175,7 @@ def team_add(request):
 
                 except Exception as e:
                     messages.success(request, f"Error: {e}")
-                    print('Error: ', e)
+                    # print('Error: ', e)
                     return redirect('team-add')
 
     return render(request, 'teams/team_add.html', context)
@@ -187,19 +187,19 @@ def team_update(request, team_name):
     if request.user.is_authenticated:
         # get the team
         team = get_object_or_404(Team, name=team_name)
-        print(team.name)
+        # print(team.name)
         team_members = User.objects.filter(team_member=team)
         existing_team_member_list = []
         existing_team_leader = ''
         # Getting the team members and team leader
         for mem in team_members:
             existing_team_member_list.append(mem)
-            print(mem.username, mem.is_team_leader, '3333')
+            # print(mem.username, mem.is_team_leader, '3333')
             if mem.is_team_leader:
                 existing_team_leader = mem
 
-        print(existing_team_member_list, existing_team_leader)
-        print(type(existing_team_leader), type(existing_team_member_list), existing_team_member_list)
+        # print(existing_team_member_list, existing_team_leader)
+        # print(type(existing_team_leader), type(existing_team_member_list), existing_team_member_list)
         # requested users department
         department = Department.objects.get(name__iexact=request.user.department.name)
         free_employee_in_department_and_team_members = User.objects.filter(department=department).exclude(
@@ -215,8 +215,8 @@ def team_update(request, team_name):
             team_member = request.POST.getlist('team_member')
             team_leader = request.POST.get('team_leader')
             description = request.POST.get('description')
-            print(team_member, '0000000000000000000000000')
-            print(team_name, team_member, team_leader, description, type(team_member))
+            # print(team_member, '0000000000000000000000000')
+            # print(team_name, team_member, team_leader, description, type(team_member))
             context.update({'description': description})
             # Validating the information
             team_update_error_link = 'teams/team_update.html'
@@ -255,10 +255,10 @@ def team_update(request, team_name):
                     new_team_members = []
                     for member in free_employee_in_department_and_team_members.filter(pk__in=team_member):
                         new_team_members.append(member)
-                    print('new team members*********', new_team_members, type(new_team_members))
+                    # print('new team members*********', new_team_members, type(new_team_members))
                     new_team_leader = free_employee_in_department_and_team_members.get(id=team_leader)
-                    print(new_team_leader, "team leader")
-                    print('-------------------------------------------------------------')
+                    # print(new_team_leader, "team leader")
+                    # print('-------------------------------------------------------------')
 
                     """ Adding the team leader to the new team and setting role and permission group"""
 
@@ -276,10 +276,10 @@ def team_update(request, team_name):
                         existing_team_leader.is_team_leader = False  # as he is not a leader now so false.
                         existing_team_leader.save()  # saving update of existing team leader.
 
-                        print(f"{new_team_leader.username}: {new_team_leader.id} -->",
-                              new_team_leader.role.name,
-                              f"Existing team leader status: {existing_team_leader.team_member.name},"
-                              f" {existing_team_leader.is_team_leader}, {existing_team_leader.role.name}")
+                        # print(f"{new_team_leader.username}: {new_team_leader.id} -->",
+                        #       new_team_leader.role.name,
+                        #       f"Existing team leader status: {existing_team_leader.team_member.name},"
+                        #       f" {existing_team_leader.is_team_leader}, {existing_team_leader.role.name}")
                         # Adding Team Leader to team leader and team member group.
                         group_team_leader.user_set.add(new_team_leader)
                         group_team_member.user_set.add(new_team_leader)
@@ -319,7 +319,7 @@ def team_update(request, team_name):
 
                 except Exception as e:
                     messages.error(request, f"Error: {e}")
-                    print('Error: ', e)
+                    # print('Error: ', e)
                     return render(request, 'teams/team_update.html', context)
 
         return render(request, 'teams/team_update.html', context)
@@ -332,7 +332,7 @@ def team_delete(request, team_name):
         # get the team
         team = get_object_or_404(Team, name=team_name)
 
-        print(team.name, team.department, team)
+        # print(team.name, team.department, team)
         team_members = User.objects.filter(team_member=team)
         selected_teams_member_list = []
         selected_teams_leader = ''
@@ -342,8 +342,8 @@ def team_delete(request, team_name):
             if mem.is_team_leader:
                 selected_teams_leader = mem
 
-        print(selected_teams_member_list, selected_teams_leader)
-        print(type(selected_teams_leader), type(selected_teams_member_list), selected_teams_member_list)
+        # print(selected_teams_member_list, selected_teams_leader)
+        # print(type(selected_teams_leader), type(selected_teams_member_list), selected_teams_member_list)
         # requested users department
         department = Department.objects.get(name__iexact=request.user.department.name)
         free_employee_in_department_and_team_members = User.objects.filter(department=department).exclude(
@@ -375,7 +375,7 @@ def team_delete(request, team_name):
                     # removing Team member group and setting employee group
                     member.groups.remove(group_team_member)
 
-            print(f"{team} deleted..............")
+            # print(f"{team} deleted..............")
             messages.success(request, f"Team '{team.name}' is deleted!")
             return redirect('team-list')
         except team.DoesNotExist:
@@ -390,8 +390,8 @@ def team_member_list(request):
     if request.user.is_authenticated:
         members = User.objects.filter(team_member=request.user.team_member)
         context = {'members': members, 'active': 'active'}
-        for mem in members:
-            print(mem.username, mem.team_member.name, 'task no', mem.task_set.count())
+        # for mem in members:
+        #     print(mem.username, mem.team_member.name, 'task no', mem.task_set.count())
         return render(request, 'teams/team_member_list.html', context)
 
 
@@ -452,9 +452,9 @@ def team_module_details(request, module_id):
         selected_module = get_object_or_404(Module, id=module_id)
         selected_module.team_leader_notified = True  # as leader visit detail page so he is notified
         selected_module.save()
-        print(selected_module.status, '---------------')
+        # print(selected_module.status, '---------------')
         task_list = Task.objects.filter(module_id=module_id)  # task list of the selected module
-        print(task_list.count())
+        # print(task_list.count())
 
         """ CHANGING THE NOTIFICATION COUNT TO ZERO as he see the notification"""
         # current_user = User.objects.get(id=request.user.id)
@@ -491,7 +491,7 @@ def team_module_details(request, module_id):
                 selected_module.progress = int(
                     (projects_task_complete_counter / all_task_of_module.count()) * 100)  # progress of the module...
                 selected_module.save()
-            print(selected_module.progress, '% == progress of the module....')
+            # print(selected_module.progress, '% == progress of the module....')
 
             if all_task_of_module.count() == projects_task_complete_counter:
                 selected_module.status = 4
@@ -503,7 +503,7 @@ def team_module_details(request, module_id):
                 # getting the head
                 if request.user.role.name != role_pm:  # as pm has no dep...
                     head_of_the_dep = User.objects.get(department=request.user.department, role__name__iexact=role_department_head)
-                    print('head_of_the_dep: ', head_of_the_dep)
+                    # print('head_of_the_dep: ', head_of_the_dep)
                     # setting the notification count number as task is completed
                     head_of_the_dep.notification_count += 1
                     head_of_the_dep.save()
@@ -525,16 +525,18 @@ def team_module_details(request, module_id):
             project_of_the_module.status = 3  # if any module then status will be 3 means running
             project_of_the_module.save()
 
-            for t in task_list:
-                t.get_project_progress_status()  # running the method to get project progress and status...
-            print(task_list.count())
+            # for t in task_list:
+            #     t.get_project_progress_status()  # running the method to get project progress and status...
+            # print(task_list.count())
+            if task_list.count() > 0:
+                task_list[0].get_project_progress_status()
 
             if project_of_the_module.status == 4:
                 """ Setting notification for pm as the project is completed. """
                 # getting the project managers
                 all_pm = User.objects.filter(role__name__iexact=role_pm)
                 pm = project_of_the_module.assigned_by
-                print('All pm are: : ', pm, all_pm)
+                # print('All pm are: : ', pm, all_pm)
 
                 for p_m in all_pm:
                     # setting the notification count number as task is completed
@@ -666,7 +668,7 @@ def task_create(request, module_id):
                                 submission_date=submission_date_obj)
                     task.save()  # saving new created task
                     task.get_project_progress_status()  # running the method to get project progress and status...
-                    print(task.module.name)
+                    # print(task.module.name)
                     # #  If there is at least one module created then project status will be change to running.
                     # if selected_project.module_set.all().count() > 0:
                     #     selected_project.status = 3  # if any module then status will be 3 means nunning
@@ -674,7 +676,7 @@ def task_create(request, module_id):
                     messages.success(request, f"Task '{name}' is created successfully!")
                     return redirect('team-module-details', module_id=selected_module.id)
                 except Exception as e:
-                    print('Error at creating task: ', e)
+                    # print('Error at creating task: ', e)
                     messages.error(request, e)
                     return render(request, task_add_error_link, context)
 
@@ -688,7 +690,7 @@ def task_update(request, module_id, task_id):
         selected_module = get_object_or_404(Module, id=module_id)  # getting the selected module
         selected_task = get_object_or_404(Task, id=task_id)
         members_in_team = User.objects.filter(team_member__id=request.user.team_member.id)
-        print('member in the team ', members_in_team)
+        # print('member in the team ', members_in_team)
 
         context = {'members_in_team': members_in_team,
                    'selected_module': selected_module,
@@ -769,7 +771,7 @@ def task_update(request, module_id, task_id):
                      then notification count"""
                     if (task_status == '' or int(
                             task_status) == 1) and newly_selected_member_obj != previously_assigned_member and selected_task.status == 2:
-                        print('1')
+                        # print('1')
                         previously_assigned_member.notification_count += 1  # increase previous member notification count to tell that task is removed from
                         previously_assigned_member.save()
                         # create new task history object
@@ -789,7 +791,7 @@ def task_update(request, module_id, task_id):
                        status to assigned-status at the same time """
                     elif task_status != '' and newly_selected_member_obj != previously_assigned_member and int(
                             task_status) == 2:
-                        print('2 is printing')
+                        # print('2 is printing')
                         # if newly_selected_member_obj != previously_assigned_member and int(task_status) == 2:
                         # print('enter into same time change')
 
@@ -827,7 +829,7 @@ def task_update(request, module_id, task_id):
                         """ Assign task to member in edit mode then notification count..."""
                     elif task_status != '' and selected_task.status != 2 and int(
                             task_status) == 2:  # if status is assigned
-                        print('3')
+                        # print('3')
                         # if selected project previous status not 2 means not assigned and user select 2 then...
                         # print('here selected module.status is not 2 and user select 2 so count++')
                         newly_selected_member_obj.notification_count += 1  # Then increase the notification count
@@ -847,7 +849,7 @@ def task_update(request, module_id, task_id):
                         """ just change the status of the task from assigned to new """
                     elif (task_status == '' or int(
                             task_status) == 1) and selected_task.status == 2:  # if status is new or not assigned
-                        print('4')
+                        # print('4')
                         # if module previous status is 2 and user select 1 then only do --
                         # print('here selected selected_task.status is 2 and user select 1 so  count--')
                         previously_assigned_member.notification_count += 1  # increase previous member notification count to tell that task is removed from him
@@ -867,7 +869,7 @@ def task_update(request, module_id, task_id):
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if task_status != '':  # '' means not selecting any status
-                        print('5')
+                        # print('5')
                         selected_task.status = int(task_status)  # setting the module
                     selected_task.assigned_member = newly_selected_member_obj
                     selected_task.save()  # saving module
@@ -875,7 +877,7 @@ def task_update(request, module_id, task_id):
                     return redirect('team-module-details', module_id=selected_module.id)
 
                 except Exception as e:
-                    print("Error in task update: ", e)
+                    # print("Error in task update: ", e)
                     messages.error(request, e)
                     return render(request, task_update_error_link, context)
 
@@ -946,7 +948,7 @@ def task_assign(request, module_id, task_id):
                              f"{selected_task.name} is assigned to the {selected_task.assigned_member}.")
             return redirect('team-module-details', module_id=selected_module.id)
         except Exception as e:
-            print('task assign error ====', e)
+            # print('task assign error ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'teams/team_module_details.html', context)
 

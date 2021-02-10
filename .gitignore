@@ -101,3 +101,9 @@ opts_venv/
 
 .DS_Store
 media/
+
+db.sqlite3
+db_2.sqlite3
+
+
+credentials.py

@@ -2,51 +2,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Project Tracking System</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="{% static 'accounts/images/icons/favicon.ico' %}"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/bootstrap/css/bootstrap.min.css' %}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
-<!--===============================================================================================-->
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/animate/animate.css' %}">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/css-hamburgers/hamburgers.min.css' %}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/select2/select2.min.css' %}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/util.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/main.css' %}">
-<!--===============================================================================================-->
+
+    <title>Project Tracking System:: {% block title %}{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="{% static 'accounts/images/icons/favicon.ico' %}"/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'accounts/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/animate/animate.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/css-hamburgers/hamburgers.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/vendor/select2/select2.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/util.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/main.css' %}">
+    <!--===============================================================================================-->
 </head>
 <body>
-	
+
 {% block content %}
 {% endblock %}
-	
 
-	
-<!--===============================================================================================-->	
-	<script src="{% static 'accounts/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+
+
 <!--===============================================================================================-->
-	<script src="{% static 'accounts/vendor/bootstrap/js/popper.js' %}"></script>
-	<script src="{% static 'accounts/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'accounts/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
 <!--===============================================================================================-->
-	<script src="{% static 'accounts/vendor/select2/select2.min.js' %}"></script>
+<script src="{% static 'accounts/vendor/bootstrap/js/popper.js' %}"></script>
+<script src="{% static 'accounts/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 <!--===============================================================================================-->
-	<script src="{% static 'accounts/vendor/tilt/tilt.jquery.min.js' %}"></script>
-	<script >
-		$('.js-tilt').tilt({
-			scale: 1.1
-		})
-	</script>
+<script src="{% static 'accounts/vendor/select2/select2.min.js' %}"></script>
 <!--===============================================================================================-->
-	<script src="{% static 'accounts/js/main.js' %}"></script>
+<script src="{% static 'accounts/vendor/tilt/tilt.jquery.min.js' %}"></script>
+<script>
+    $('.js-tilt').tilt({
+        scale: 1.1
+    })
+</script>
+<!--===============================================================================================-->
+<script src="{% static 'accounts/js/main.js' %}"></script>
 
 </body>
 </html>

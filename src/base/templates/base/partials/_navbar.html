@@ -172,19 +172,19 @@
 
                                         {% endfor %}
 
-                                        <li class="footer"><a href="
-                                                            {% if is_super_user_or_pm %}
-                                                            {% url 'project-list' %}
-                                                            {% elif is_department_head %}
-                                                            {% url 'department-all-project' %}
-                                                            {% elif is_team_leader %}
-                                                            {% url 'team-all-module' %}
-                                                            {% elif is_team_member %}
-                                                            {% url 'member-all-task' %}
-                                                            {% elif is_tester %}
-                                                            {% url 'tester-all-task' %}
-                                                            {% endif %}" class="more">See all
-                                            notifications</a></li>
+{#                                        <li class="footer"><a href="#}
+{#                                                            {% if is_super_user_or_pm %}#}
+{#                                                            {% url 'project-list' %}#}
+{#                                                            {% elif is_department_head %}#}
+{#                                                            {% url 'department-all-project' %}#}
+{#                                                            {% elif is_team_leader %}#}
+{#                                                            {% url 'team-all-module' %}#}
+{#                                                            {% elif is_team_member %}#}
+{#                                                            {% url 'member-all-task' %}#}
+{#                                                            {% elif is_tester %}#}
+{#                                                            {% url 'tester-all-task' %}#}
+{#                                                            {% endif %}" class="more">See all#}
+{#                                            notifications</a></li>#}
                                     {% endif %}
 
                                     {#                                    {% elif is_team_leader %}#}
@@ -239,12 +239,12 @@
                                     </div>
                                     <div class="m-t-10 p-3 drop-list">
                                         <ul class="list-unstyled">
-                                            <li><a href="page-profile.html"><i class="icon-user"></i>My
+                                            <li><a href="{% url 'user-profile' %}"><i class="icon-user"></i>My
                                                 Profile</a></li>
-                                            <li><a href="app-inbox.html"><i
-                                                    class="icon-envelope-open"></i>Messages</a></li>
-                                            <li><a href="javascript:void(0);"><i
-                                                    class="icon-settings"></i>Settings</a></li>
+{#                                            <li><a href="app-inbox.html"><i#}
+{#                                                    class="icon-envelope-open"></i>Messages</a></li>#}
+{#                                            <li><a href="javascript:void(0);"><i#}
+{#                                                    class="icon-settings"></i>Settings</a></li>#}
                                             <li class="divider"></li>
                                             {% if request.user.is_authenticated %}
                                                 <li><a href="{% url 'logout' %}"><i
@@ -263,6 +263,8 @@
 </nav>
 
 <script>
+
+{#    AJAX code for notification zero      #}
     $("#notification_bell").click(function () {
         $("#notification_number").remove();
         let csrf_token = '{{ csrf_token }}';

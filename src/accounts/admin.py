@@ -10,7 +10,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 class UserAdmin(admin.ModelAdmin):
     fields = (
-        'first_name', 'middle_name', 'last_name', 'gender', 'username', 'email', 'password', 'mobile_number',
+        'first_name', 'middle_name', 'last_name', 'gender', 'user_bio', 'username', 'email', 'password', 'mobile_number',
         'address', 'department', 'role', 'profile_picture', 'groups', 'user_permissions', 'date_joined', 'last_login', 'is_active',
         'is_superuser', 'is_staff', 'team_member', 'is_team_leader', 'notification_count', 'is_tester')
     list_display = ('id', 'username', 'email', 'role', 'department', 'team_member', 'is_team_leader', 'is_tester', 'notification_count')

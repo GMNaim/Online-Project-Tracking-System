@@ -23,7 +23,26 @@ $(function () {
   $('#datatable-pm-project_list').DataTable({
       dom: 'Bfrtip',
       buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
+          {
+              extend: 'print',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+              }
+          },
+          {
+              extend: 'excel',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6]
+              }
+          },
+          {
+              extend: 'pdf',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6]
+              }
+          },
+          'colvis'
+
       ],
       "order": [[0, "asc"]], // default order will be by first column
       // "lengthMenu": [[5, 10, 20, 50, 100, -1], [5, 10, 20, 50, 100, "All"]],
@@ -33,6 +52,38 @@ $(function () {
       }]
   });
 
+
+  $('#datatable-only-pm-project_list').DataTable({
+      dom: 'Bfrtip',
+      buttons: [
+          {
+              extend: 'print',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+              }
+          },
+          {
+              extend: 'excel',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6, 7]
+              }
+          },
+          {
+              extend: 'pdf',
+              exportOptions: {
+                  columns: [ 0, 1, 2, 3, 4, 5, 6, 7]
+              }
+          },
+          'colvis'
+
+      ],
+      "order": [[0, "asc"]], // default order will be by first column
+      // "lengthMenu": [[5, 10, 20, 50, 100, -1], [5, 10, 20, 50, 100, "All"]],
+      "columnDefs": [{
+          "targets": [7], // column index
+          "orderable": false
+      }]
+  });
 
 
 

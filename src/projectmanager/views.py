@@ -55,7 +55,7 @@ def sidebar_department_name(request):
 def employee_add(request):
     sidebar_department_name(request)
 
-    print(str(request.user.groups.all()[0]))
+    # print(str(request.user.groups.all()[0]))
     role_list = Role.objects.exclude(name__iexact=role_super_user)
     department_list = Department.objects.all()
     existence_department_head = [user.department.name for user in
@@ -244,7 +244,7 @@ def employee_add(request):
                     messages.success(request, f"{username} is added.")
                     return redirect('employee-list')
             except Exception as e:
-                print(e, 'exception -----at empoyee add !!!')
+                # print(e, 'exception -----at empoyee add !!!')
                 messages.error(request, f"Error: {e}")
                 return render(request, 'projectmanager/employee_add.html')
             #     return redirect('employee-list')
@@ -453,7 +453,7 @@ def employee_update(request, employee_username):
                         messages.success(request, f"{employee.username}'s information is updated.")
                         return redirect('employee-list')
                 except Exception as e:
-                    print(e, 'exception ---at empoyee update !!!!!!')
+                    # print(e, 'exception ---at empoyee update !!!!!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, 'projectmanager/employee_update.html')
                 #     return redirect('employee-list')
@@ -588,7 +588,7 @@ def client_add(request):
                         return redirect('client-list')
 
                 except Exception as e:
-                    print(e, 'exception --at client add!!')
+                    # print(e, 'exception --at client add!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, 'projectmanager/client_add.html')
 
@@ -681,7 +681,7 @@ def client_update(request, client_id):
                         return redirect('client-list')
 
                 except Exception as e:
-                    print(e, 'exception --at client update!!')
+                    # print(e, 'exception --at client update!!')
                     messages.error(request, f"Error: {e}")
                     return render(request, client_update_error_link, context)
 
@@ -786,7 +786,7 @@ def project_add(request):
                     messages.success(request, f"Project '{name}' is created successfully!")
                     return redirect('project-list')
                 except Exception as e:
-                    print("Error at project add===:", e)
+                    # print("Error at project add===:", e)
                     messages.error(request, e)
                     return render(request, project_add_error_link, context)
 
@@ -875,7 +875,7 @@ def project_update(request, project_code):
 
                     if (project_status == '' or int(
                             project_status) == 1) and selected_department_obj != selected_project.department and selected_project.status == 2:
-                        print('1')
+                        # print('1')
                         previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from him
                         previously_assigned_head.save()
                         # create new task history object
@@ -898,7 +898,7 @@ def project_update(request, project_code):
                        status to assigned at the same time """
                     elif project_status != '' and selected_department_obj != selected_project.department and int(
                             project_status) == 2:
-                        print('2')
+                        # print('2')
                         # print('enter into same time change')
                         # print(selected_project in Project.objects.filter(department=selected_project.department, status=2), '----6565')
 
@@ -933,7 +933,7 @@ def project_update(request, project_code):
 
                         """ Assign project  to head in edit mode then notification count..."""
                     elif project_status != '' and selected_project.status != 2 and int(project_status) == 2:
-                        print('3')
+                        # print('3')
                         # if selected project previous status not 2 means not assigned and user select 2 then...
                         previously_assigned_head.notification_count += 1  # Then increase the notification count
                         selected_project.assigned_at = datetime.now()  # after assigning the project setting date.
@@ -949,7 +949,7 @@ def project_update(request, project_code):
 
                         """ just change the status of the project from assigned to new"""
                     elif (project_status == '' or int(project_status) == 1) and selected_project.status == 2:
-                        print('4')
+                        # print('4')
                         # if module previous status is 2 and user select 1 then only do --
                         previously_assigned_head.notification_count += 1  # increase previous head notification count to tell that project is removed from
                         previously_assigned_head.save()
@@ -969,7 +969,7 @@ def project_update(request, project_code):
                     # if set up then got wrong notification count value cause we checked db value of previous status
                     # which is updated by doing following thing.
                     if project_status != '':  # '' means not select any status.
-                        print('5')
+                        # print('5')
                         selected_project.status = int(project_status)
                     selected_project.department = selected_department_obj  # if change dep after assigned to a dep thats why setting here not top
                     selected_project.save()
@@ -977,7 +977,7 @@ def project_update(request, project_code):
                     return redirect('project-list')
 
                 except Exception as e:
-                    print("Error at project update===", e)
+                    # print("Error at project update===", e)
                     messages.error(request, e)
                     return render(request, project_update_error_link, context)
 
@@ -1054,6 +1054,15 @@ def project_assign(request, project_code):
             messages.success(request, f"Project '{selected_project.name}' is assigned to the department head.")
             return redirect('project-list')
         except Exception as e:
-            print('error at assign project ====', e)
+            # print('error at assign project ====', e)
             messages.error(request, f"Error: {e}")
             return render(request, 'projectmanager/project_list.html', context)
+
+
+
+def pm_completed_projects(request):
+    completed_projects = Project.objects.filter(status=4)
+    # print(completed_projects, '-----------------------77777777')
+
+    context = {'pm_completed_project': completed_projects, }
+    return render(request, 'projectmanager/pm_completed_projects.html', context)

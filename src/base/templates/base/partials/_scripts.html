@@ -27,11 +27,18 @@
 <script src={% static "base/js/pages/forms/advanced-form-elements.js" %}></script>
 <script src={% static "base/vendor/parsleyjs/js/parsley.min.js" %}></script>
 <script src={% static "base/bundles/datatablescripts.bundle.js" %}></script>
+{# below links are for pdf #}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+
 <script src={% static "base/vendor/jquery-datatable/buttons/dataTables.buttons.min.js" %}></script>
 <script src={% static "base/vendor/jquery-datatable/buttons/buttons.bootstrap4.min.js" %}></script>
 <script src={% static "base/vendor/jquery-datatable/buttons/buttons.colVis.min.js" %}></script>
 <script src={% static "base/vendor/jquery-datatable/buttons/buttons.html5.min.js" %}></script>
 <script src={% static "base/vendor/jquery-datatable/buttons/buttons.print.min.js" %}></script>
+
+
+{#<script src={% static "base/vendor/jquery-datatable/buttons/pdfmake.min.js" %}></script>#}
 <script src={% static "base/vendor/sweetalert/sweetalert.min.js" %}></script> <!-- SweetAlert Plugin Js -->
 <script src={% static "base/js/pages/ui/dialogs.js" %}></script>
 <script src={% static "base/js/pages/tables/jquery-datatable.js" %}></script>
