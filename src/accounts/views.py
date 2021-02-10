@@ -1,6 +1,8 @@
 import random
 import re
+from datetime import datetime
 
+from departments.models import Department
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -14,7 +16,6 @@ from teams.models import Team
 
 from .decorators import has_access, has_access_dashboard
 from .models import User
-from departments.models import Department
 
 # Role Names
 role_super_user = 'Super User'
@@ -269,7 +270,7 @@ def forgot_password_view(request):
             user = User.objects.get(email=user_email)
             if user.email == user_email:
                 security_code = send_forgot_pass_email(user_email)  # sending email to the users email
-                # print(security_code, 'after send email the code,,,,,,,')
+                print(security_code, 'after send email the code,,,,,,,')
             else:
                 messages.error(request, 'Email is not matched with any user')
                 return render(request, 'accounts/forgotPass01.html')
@@ -281,7 +282,7 @@ def forgot_password_view(request):
             messages.success(request, 'A 6 digit  code is send to your email')
             return render(request, 'accounts/forgotPass02.html')
         except Exception as e:
-            # print(e)
+            print(e)
             # messages.error(request, 'error:', e)
             return render(request, 'accounts/forgotPass01.html')
 
@@ -320,19 +321,19 @@ def send_forgot_pass_email(email):
 
 def security_code_view(request):
     """ If users forgot password """
-    # if request.method == "POST":
-    #     security_code = request.POST['securityCode']  # Collecting security code
-    #     SECURITY_CODE = request.session['SECURITY_CODE']
-    #     if SECURITY_CODE == security_code:
-    #         print(SECURITY_CODE)
-    #         return render(request, 'accounts/changePassword.html')
-    #     else:
-    #         del request.session['SECURITY_CODE']  # False attemp DELETE session
-    #         del request.session['EMPLOYEE_ID']  # False attemp DELETE session
-    #         messages.error(request, 'Invalid Security Code')
-    #         return render(request, 'accounts/forgotPass01.html')
-    # else:
-    return render(request, 'accounts/forgotPass02.html')
+    if request.method == "POST":
+        security_code = request.POST['securityCode']  # Collecting security code
+        SECURITY_CODE = request.session['SECURITY_CODE']
+        if SECURITY_CODE == security_code:
+            print(SECURITY_CODE)
+            return render(request, 'accounts/changePassword.html')
+        else:
+            del request.session['SECURITY_CODE']  # False attemp DELETE session
+            del request.session['EMPLOYEE_ID']  # False attemp DELETE session
+            messages.error(request, 'Invalid Security Code')
+            return render(request, 'accounts/forgotPass01.html')
+    else:
+        return render(request, 'accounts/forgotPass02.html')
 
 
 def change_password_view(request):
@@ -369,7 +370,9 @@ def user_profile(request):
         birth_date = request.POST.get('birth_date')
         address = request.POST.get('address')
         profile_picture = request.FILES.get('profile_picture')
-        # print(birth_date, address, profile_picture, gender, '----------------------')
+
+        date_obj = datetime.strptime(birth_date, '%Y-%m-%d')  # converting string date to date obj
+        birth_date_obj = date_obj.date()
 
         try:
             user.first_name = first_name
@@ -377,7 +380,7 @@ def user_profile(request):
             user.last_name = last_name
             user.gender = gender
             user.address = address
-            user.birth_date = birth_date
+            user.birth_date = birth_date_obj
 
             # FileSystemStorage for save the file (image)
             file_system_obj = FileSystemStorage()
@@ -443,12 +446,16 @@ def user_profile(request):
                     user.username = username
                     user.email = email
                     user.mobile_number = phone
-                    if new_password != confirm_password:
-                        messages.error(request, 'Your password is not matched!')
-                        return render(request, update_error_render_location, context)
-                    else:
-                        user.set_password(new_password)
+                    if new_password and confirm_password:
+                        if new_password != confirm_password:
+                            messages.error(request, 'Your password is not matched!')
+                            return render(request, update_error_render_location, context)
+                        else:
+                            user.set_password(new_password)
+                        user.save()
                     user.save()
+                    messages.success(request, f"{user.username}'s account information is updated.")
+                    return redirect('user-profile')
 
                 except Exception as e:
                     # print(e, 'exception ---at user profiles account data update !!!!!!')
@@ -472,6 +479,8 @@ def user_profile(request):
             user.twitter_url = twitter_url
             user.linkedin_url = linkedin_url
             user.save()
+            messages.success(request, f"{user.username}'s social information is updated.")
+            return redirect('user-profile')
 
         except Exception as e:
             # print(e, 'exception ---at user profile update !!!!!!')

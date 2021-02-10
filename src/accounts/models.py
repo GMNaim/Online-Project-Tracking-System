@@ -48,7 +48,7 @@ class User(AbstractUser):
     country = models.IntegerField(default=1)
     profile_picture = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True,
                                         default='users/default_user.png')
-    birth_date = models.DateTimeField(default=datetime.now())
+    birth_date = models.DateField(null=True, blank=True)
 
     team_member = models.ForeignKey(Team, on_delete=models.SET_DEFAULT, related_name='team_member_user', blank=True,
                                     null=True, default=10)
